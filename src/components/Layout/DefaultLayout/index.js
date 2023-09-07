@@ -8,8 +8,10 @@ function DefaultLayout({ children }) {
             <Sidebar />
             <div className="w-main float-end">
                 <Header />
-                <div className="container">
-                    <div className="content">{children}</div>
+                <div className="mt-header">
+                    <div className="container ">
+                        <div className="content">{children}</div>
+                    </div>
                 </div>
             </div>
             <Footer />

@@ -1,5 +1,6 @@
 .wrapper {
     background: var(--iq-body-header);
+    width: calc(100% - var(--iq-width-sidebar));
     .search {
         border-radius: 99999px;
         background-color: var(--iq-light);

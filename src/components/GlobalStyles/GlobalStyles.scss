@@ -53,6 +53,7 @@
     --iq-color7: #f35f3b;
     --iq-color8: #fde117;
     --iq-width-sidebar: 250px;
+    --iq-height-header: 74px;
 }
 
 * {
@@ -118,4 +119,8 @@ body {
 
 .w-main {
     width: calc(100% - var(--iq-width-sidebar));
+}
+
+.mt-header {
+    margin-top: var(--iq-height-header);
 }
