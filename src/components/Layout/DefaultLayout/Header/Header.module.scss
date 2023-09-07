@@ -1,0 +1,13 @@
+.wrapper {
+    background: var(--iq-body-header);
+    .search {
+        border-radius: 99999px;
+        background-color: var(--iq-light);
+        width: 400px;
+        padding: 8px 16px;
+        input {
+            outline: none;
+            flex: 1;
+        }
+    }
+}

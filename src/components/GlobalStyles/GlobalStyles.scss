@@ -52,9 +52,70 @@
     --iq-color6: #00ced1;
     --iq-color7: #f35f3b;
     --iq-color8: #fde117;
+    --iq-width-sidebar: 250px;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
     font-family: 'Playfair Display', serif;
     font-family: 'Poppins', sans-serif;
+}
+
+.text--primary {
+    color: var(--iq-body-text);
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    transition: 0.3s;
+    &:hover {
+        color: var(--iq-primary);
+    }
+}
+
+.f-family {
+    font-family: 'Poppins', sans-serif;
+}
+
+.fs-13 {
+    font-size: 13px;
+}
+
+.subtitle_color {
+    color: var(--iq-secondary);
+}
+
+.is_truncate {
+    text-decoration: none;
+    transition: 0.3s;
+    &:hover {
+        text-decoration: underline;
+        color: var(--iq-light);
+    }
+}
+
+.is-hover-circle {
+    transition: 0.3s;
+    &:hover {
+        background-color: #ffffff1a;
+    }
+}
+
+.is_circle {
+    background-color: rgb(147 127 127 / 10%);
+}
+
+.square_30 {
+    width: 30px;
+    height: 30px;
+}
+
+.square_40 {
+    width: 40px;
+    height: 40px;
+}
+
+.w-main {
+    width: calc(100% - var(--iq-width-sidebar));
 }

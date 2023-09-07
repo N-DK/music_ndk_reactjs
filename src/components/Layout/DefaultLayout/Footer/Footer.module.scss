@@ -1,0 +1,36 @@
+.wrapper {
+    z-index: 1000;
+    background-color: var();
+
+    .song__container {
+        .thumbnail {
+            width: 64px;
+            height: 64px;
+
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    .duration {
+        border-radius: 9999999px;
+        width: 500px;
+        background-color: var(--iq-secondary);
+        height: 4px;
+        margin: 0 10px 0 10px;
+    }
+
+    .duration.sound {
+        width: 100px;
+    }
+
+    .song__container {
+        width: 30%;
+    }
+
+    .control-right__container {
+        width: 30%;
+    }
+}
