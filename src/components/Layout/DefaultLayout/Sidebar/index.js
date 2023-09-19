@@ -8,6 +8,7 @@ import {
     faIcons,
     faPlus,
 } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
 function Sidebar() {
@@ -23,22 +24,22 @@ function Sidebar() {
             <div>
                 <ul className={` m-0 p-0 list-unstyled mt-4`}>
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            to="/"
                             className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                         >
                             <FontAwesomeIcon icon={faHouse} />
                             <span className={`${cx('')} ms-2`}>Home</span>
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            to="/album"
                             className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                         >
                             <FontAwesomeIcon icon={faCompactDisc} />
                             <span className={`${cx('')} ms-2 `}>Album</span>
-                        </a>
+                        </Link>
                     </li>
                     <li>
                         <a

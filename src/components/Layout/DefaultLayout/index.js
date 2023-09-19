@@ -9,7 +9,7 @@ function DefaultLayout({ children }) {
             <div className="w-main float-end">
                 <Header />
                 <div className="mt-header">
-                    <div className="container ">
+                    <div className="container">
                         <div className="content">{children}</div>
                     </div>
                 </div>
