@@ -34,23 +34,25 @@ function Sidebar() {
                     </li>
                     <li>
                         <Link
-                            to="/album"
+                            to="/mymusic"
                             className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                         >
                             <FontAwesomeIcon icon={faCompactDisc} />
-                            <span className={`${cx('')} ms-2 `}>Album</span>
+                            <span className={`${cx('')} ms-2 `}>
+                                My space music
+                            </span>
                         </Link>
                     </li>
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            to="/hub"
                             className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                         >
                             <FontAwesomeIcon icon={faIcons} />
                             <span className={`${cx('')} ms-2`}>
                                 Topic and Genre
                             </span>
-                        </a>
+                        </Link>
                     </li>
                     <li>
                         <a

@@ -1,10 +1,12 @@
 import Home from '~/pages/Home';
-import Album from '~/pages/Album';
+import MyMusic from '~/pages/MyMusic';
+import Topic from '~/pages/Topic';
 
 // not need login
 const publicRoutes = [
     { path: '/', component: Home },
-    { path: '/album', component: Album },
+    { path: '/mymusic', component: MyMusic },
+    { path: '/hub', component: Topic },
 ];
 
 // need login

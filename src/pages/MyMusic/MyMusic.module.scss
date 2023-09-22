@@ -1,0 +1,16 @@
+.wrapper {
+    margin-bottom: 120px;
+}
+
+.active {
+    position: relative;
+    &::after {
+        content: '';
+        display: block;
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        background-color: var(--iq-dark);
+        bottom: -9px;
+    }
+}
