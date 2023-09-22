@@ -47,8 +47,8 @@ function Receptacle({ title, control, limit = 5, video = false }) {
             <div className={`p-3`}>
                 <div className={` row pt-3 pb-3`}>
                     {video &&
-                        Array(2)
-                            .fill(2)
+                        Array(3)
+                            .fill(3)
                             .map((element, index) => (
                                 <CardVideoSongItem key={index} />
                             ))}

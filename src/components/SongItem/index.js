@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const cx = classNames.bind(styles);
 
-function SongItem() {
+function SongItem({ colorTextBlack }) {
     return (
         <div className={`${cx('wrapper')} d-flex align-items-center pb-2 pt-2`}>
             <div className="d-flex align-items-center">
@@ -29,7 +29,9 @@ function SongItem() {
                             href="#"
                             className={`${cx(
                                 ' text-decoration-none text-truncate',
-                            )} text-white f-family`}
+                            )} ${
+                                colorTextBlack ? 'text-black' : 'text-white'
+                            } f-family`}
                         >
                             Gác Lại Âu Lo
                         </a>
@@ -51,23 +53,35 @@ function SongItem() {
                     </div>
                 </div>
             </div>
-            <h5 className="text-white f-family m-0 ms-5 me-5">9:52</h5>
+            <h5
+                className={`${
+                    colorTextBlack ? 'text-black' : 'text-white'
+                } f-family m-0 ms-5 me-5`}
+            >
+                9:52
+            </h5>
             <a
                 href=""
-                className="ms-5 me-5 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                className={`ms-4 me-4 ${
+                    colorTextBlack ? 'text-black' : 'text-white'
+                } rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
             >
                 <FontAwesomeIcon className="fs-5" icon={faHeart} />
             </a>
             <a
                 href=""
-                className="fs-2 ms-5 me-5 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
+                className={`fs-2 ms-4 me-4 ${
+                    colorTextBlack ? 'text-black' : 'text-white'
+                } rounded-circle d-flex align-items-center justify-content-center square_30`}
             >
                 <FontAwesomeIcon icon={faCirclePlay} />
                 {/* <FontAwesomeIcon icon={faCirclePause} /> */}
             </a>
             <a
                 href=""
-                className="ms-5 me-5 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                className={`ms-4 me-4 ${
+                    colorTextBlack ? 'text-black' : 'text-white'
+                } rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
             >
                 <FontAwesomeIcon icon={faEllipsisVertical} />
             </a>
