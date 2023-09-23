@@ -1,8 +1,7 @@
 .banner__artist {
     width: calc(100% - var(--iq-width-sidebar));
     max-height: 250px;
-    background-color: var(--iq-black);
-
+    background-color: rgba(74, 82, 95, 0.8);
     .banner__artist--item {
         bottom: 30px;
     }
