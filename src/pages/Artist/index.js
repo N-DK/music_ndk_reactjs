@@ -112,7 +112,7 @@ function Artist() {
                             '',
                         )} d-flex align-items-center justify-content-between f-family mb-2`}
                     >
-                        <p className={`${cx('')} mb-0 fs-5`}>Hot song</p>
+                        <h4 className={`${cx('')} mb-2 fs-4`}>Hot song</h4>
                         <a
                             href="#"
                             className="f-family text--primary d-flex align-items-center text-decoration-none"
@@ -138,7 +138,7 @@ function Artist() {
                 <Receptacle title="Album" />
                 <Receptacle title="MV" video={true} />
                 <div className={`${cx('about__artist')} f-family mt-5`}>
-                    <h4 className={`${cx('')}`}>Về Sơn Tùng M-TP</h4>
+                    <h4 className={`${cx('')}`}>About Sơn Tùng M-TP</h4>
                     <div className={`${cx('')} d-flex align-items-start mt-4`}>
                         <div
                             className={`${cx(

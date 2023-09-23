@@ -1,3 +1,4 @@
+import Album from '~/pages/Album';
 import Artist from '~/pages/Artist';
 import Home from '~/pages/Home';
 import MyMusic from '~/pages/MyMusic';
@@ -9,6 +10,7 @@ const publicRoutes = [
     { path: '/mymusic', component: MyMusic },
     { path: '/hub', component: Topic },
     { path: '/artist/:slug', component: Artist },
+    { path: '/album/:slug', component: Album },
 ];
 
 // need login

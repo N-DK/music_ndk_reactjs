@@ -58,16 +58,6 @@ function Receptacle({ title, control, limit = 5, video = false }) {
                             .map((element, index) => (
                                 <CardSongItem key={index} />
                             ))}
-
-                    {/* <CardSongItem />
-                    <CardSongItem />
-                    <CardSongItem />
-                    <CardSongItem />
-                    <CardSongItem />
-                    <CardSongItem />
-                    <CardSongItem />
-                    <CardSongItem />
-                    <CardSongItem /> */}
                 </div>
             </div>
         </div>
