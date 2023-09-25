@@ -1,27 +1,47 @@
-import { faCirclePlay, faHeart } from '@fortawesome/free-regular-svg-icons';
+import {
+    faCirclePause,
+    faCirclePlay,
+    faHeart,
+} from '@fortawesome/free-regular-svg-icons';
 import styles from './SongItem.module.scss';
 import classNames from 'classnames/bind';
-import {
-    faEllipsis,
-    faEllipsisVertical,
-} from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
+import { connect, useDispatch, useSelector } from 'react-redux';
+// import { setPlaying } from '~/redux_';
+// import { useSelector, useDispatch } from 'react-redux';
+import { reducer, setPlaying } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
-function SongItem({ colorTextBlack }) {
+function SongItem({
+    colorTextBlack,
+    handlePlay,
+    handlePause,
+    song,
+    activeSong,
+    isPlaying,
+}) {
+    // const [isPlaying, setIsPlaying] = useState(false);
+
+    // useEffect(() => {
+    //     setIsPlaying(activeSong == data.id);
+    // }, [activeSong]);
+
+    useSelector(() => reducer);
+    const dispatch = useDispatch();
+    // dispatch(setPlaying(activeSong == song.id));
+
     return (
         <div className={`${cx('wrapper')} d-flex align-items-center pb-2 pt-2`}>
-            <div className="d-flex align-items-center">
+            <div className="d-flex align-items-center w-25">
                 <div
                     className={`${cx(
                         'thumbnail',
                     )} rounded-2 overflow-hidden me-2`}
                 >
-                    <img
-                        src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/d/5/8/a/d58aa48a38c0a8dc89c95277b456bc75.jpg"
-                        alt=""
-                    />
+                    <img src={song.thumbnail} alt="" />
                 </div>
                 <div className="d-flex align-items-center">
                     <div className={`${cx('song__container--name')} pe-3`}>
@@ -33,22 +53,18 @@ function SongItem({ colorTextBlack }) {
                                 colorTextBlack ? 'text-black' : 'text-white'
                             } f-family`}
                         >
-                            Gác Lại Âu Lo
+                            {song.name}
                         </a>
                         <div className="fs-13 f-family subtitle_color">
-                            <a
-                                href="#"
-                                className={` subtitle_color is_truncate`}
-                            >
-                                Da LAB
-                            </a>
-                            ,
-                            <a
-                                href="#"
-                                className={`ms-1 subtitle_color is_truncate`}
-                            >
-                                Miu Lê
-                            </a>
+                            {song.artists.map((artist, index) => (
+                                <Link
+                                    key={index}
+                                    to={`/artist/${artist}`}
+                                    className={` subtitle_color is_truncate`}
+                                >
+                                    {artist}
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -61,7 +77,7 @@ function SongItem({ colorTextBlack }) {
                 9:52
             </h5>
             <a
-                href=""
+                href="#"
                 className={`ms-4 me-4 ${
                     colorTextBlack ? 'text-black' : 'text-white'
                 } rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
@@ -69,13 +85,24 @@ function SongItem({ colorTextBlack }) {
                 <FontAwesomeIcon className="fs-5" icon={faHeart} />
             </a>
             <a
-                href=""
+                onClick={() => {
+                    console.log('activeSong: ', activeSong);
+                    if (isPlaying && song.id == activeSong) {
+                        handlePause();
+                    } else {
+                        handlePlay(song.audio, song.id);
+                    }
+                }}
+                href="#"
                 className={`fs-2 ms-4 me-4 ${
                     colorTextBlack ? 'text-black' : 'text-white'
                 } rounded-circle d-flex align-items-center justify-content-center square_30`}
             >
-                <FontAwesomeIcon icon={faCirclePlay} />
-                {/* <FontAwesomeIcon icon={faCirclePause} /> */}
+                {song.id == activeSong && isPlaying ? (
+                    <FontAwesomeIcon icon={faCirclePause} />
+                ) : (
+                    <FontAwesomeIcon icon={faCirclePlay} />
+                )}
             </a>
             <a
                 href=""
@@ -88,5 +115,15 @@ function SongItem({ colorTextBlack }) {
         </div>
     );
 }
+const mapStateToProps = (state) => {
+    if (state) {
+        return {
+            data: state.data,
+            isPlaying: state.isPlaying,
+        };
+    }
+};
 
-export default SongItem;
+export default connect(mapStateToProps)(SongItem);
+
+// export default SongItem;

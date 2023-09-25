@@ -1,7 +1,7 @@
 .wrapper {
     background: var(--iq-body-header);
     width: calc(100% - var(--iq-width-sidebar));
-    z-index: 10000;
+    z-index: 100;
     .search {
         border-radius: 99999px;
         background-color: rgba(147, 127, 127, 0.1);

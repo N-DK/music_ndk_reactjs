@@ -5,12 +5,19 @@ import reportWebVitals from './reportWebVitals';
 import GlobalStyle from '~/components/GlobalStyles';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import { reducer } from '~/redux_';
+
+const store = createStore(reducer);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
         <GlobalStyle>
-            <App />
+            <Provider store={store}>
+                <App />
+            </Provider>
         </GlobalStyle>
     </React.StrictMode>,
 );

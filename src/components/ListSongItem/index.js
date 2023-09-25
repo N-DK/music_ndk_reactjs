@@ -59,6 +59,8 @@ function ListSongItem() {
                         )} d-flex align-items-center h-100 justify-content-end`}
                     >
                         <a
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalId"
                             href=""
                             className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                         >
