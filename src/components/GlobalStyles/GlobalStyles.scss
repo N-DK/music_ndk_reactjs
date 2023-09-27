@@ -6,7 +6,7 @@
     --iq-body-text: #4a525f;
     --iq-body-header: #fbfcff;
     --iq-body-bg: #ffffff;
-    --iq-primary: #ff4545;
+    --iq-primary: #6a5acd;
     --iq-secondary: #a09e9e;
     --iq-success: #1ee2ac;
     --iq-warning: #ffdd31;
@@ -128,4 +128,8 @@ body {
 .col-2-4 {
     flex: 0 0 auto;
     width: 20% !important;
+}
+
+.is_repeat {
+    color: var(--iq-primary);
 }

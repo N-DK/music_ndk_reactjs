@@ -8,30 +8,46 @@ import classNames from 'classnames/bind';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
-import { connect, useDispatch, useSelector } from 'react-redux';
-// import { setPlaying } from '~/redux_';
-// import { useSelector, useDispatch } from 'react-redux';
-import { reducer, setPlaying } from '~/redux_';
+import {
+    reducer,
+    setActive,
+    setCurrAudio,
+    setData,
+    setPlaying,
+} from '~/redux_';
+import { useSelector, useDispatch, connect } from 'react-redux';
 
 const cx = classNames.bind(styles);
 
 function SongItem({
     colorTextBlack,
-    handlePlay,
-    handlePause,
     song,
     activeSong,
     isPlaying,
+    currAudio,
+    songs,
 }) {
-    // const [isPlaying, setIsPlaying] = useState(false);
-
-    // useEffect(() => {
-    //     setIsPlaying(activeSong == data.id);
-    // }, [activeSong]);
-
     useSelector(() => reducer);
     const dispatch = useDispatch();
-    // dispatch(setPlaying(activeSong == song.id));
+
+    const handlePlay = (audioUrl, songActive) => {
+        var audio = currAudio;
+        if (songActive != activeSong) {
+            audio = new Audio(audioUrl);
+            if (currAudio) currAudio.pause();
+        }
+        audio.play();
+        let song = songs.find((song) => song.id == songActive);
+        dispatch(setPlaying(true));
+        dispatch(setCurrAudio(audio));
+        dispatch(setData(song));
+        dispatch(setActive(songActive));
+    };
+
+    const handlePause = () => {
+        currAudio.pause();
+        dispatch(setPlaying(false));
+    };
 
     return (
         <div className={`${cx('wrapper')} d-flex align-items-center pb-2 pt-2`}>
@@ -39,9 +55,16 @@ function SongItem({
                 <div
                     className={`${cx(
                         'thumbnail',
-                    )} rounded-2 overflow-hidden me-2`}
+                    )} rounded-2 overflow-hidden me-2 position-relative`}
                 >
                     <img src={song.thumbnail} alt="" />
+                    {song.id == activeSong && isPlaying && (
+                        <div
+                            className={`${cx(
+                                'wave-music',
+                            )} position-absolute w-100 h-100 top-0`}
+                        ></div>
+                    )}
                 </div>
                 <div className="d-flex align-items-center">
                     <div className={`${cx('song__container--name')} pe-3`}>
@@ -74,7 +97,7 @@ function SongItem({
                     colorTextBlack ? 'text-black' : 'text-white'
                 } f-family m-0 ms-5 me-5`}
             >
-                9:52
+                {song.time}
             </h5>
             <a
                 href="#"
@@ -86,7 +109,6 @@ function SongItem({
             </a>
             <a
                 onClick={() => {
-                    console.log('activeSong: ', activeSong);
                     if (isPlaying && song.id == activeSong) {
                         handlePause();
                     } else {
@@ -120,10 +142,10 @@ const mapStateToProps = (state) => {
         return {
             data: state.data,
             isPlaying: state.isPlaying,
+            activeSong: state.isActive,
+            currAudio: state.currSong,
         };
     }
 };
 
 export default connect(mapStateToProps)(SongItem);
-
-// export default SongItem;

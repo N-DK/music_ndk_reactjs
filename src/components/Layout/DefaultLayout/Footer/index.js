@@ -18,28 +18,144 @@ import {
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useSelector, useDispatch } from 'react-redux';
-import { reducer, setPlaying } from '~/redux_';
+import {
+    reducer,
+    setActive,
+    setCurrAudio,
+    setData,
+    setPlaying,
+} from '~/redux_';
 
 const cx = classNames.bind(styles);
 
-function Footer({ data, isPlaying }) {
+// aip res => return
+const songs = [
+    {
+        id: 1,
+        thumbnail:
+            'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/f/0/c/6/f0c6b74652e9ed643f3183c7617aaa30.jpg',
+        name: 'Chúng ta của hiện tại',
+        audio: 'https://vnso-zn-23-tf-a320-zmp3.zmdcdn.me/ef080817ff86ee5eddf9133440c0aae4?authen=exp=1695819245~acl=/ef080817ff86ee5eddf9133440c0aae4/*~hmac=702a78f1961d7c69593714ff1c39fdfc',
+        artists: ['Sơn Tùng M-TP'],
+        lyric: '',
+        genre: [''],
+        album_id: '',
+        time: '05:02',
+        prevSong: 0,
+        nextSong: 2,
+    },
+    {
+        id: 2,
+        name: 'Có Chắc yêu là đây',
+        thumbnail:
+            'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/9/d/7/9/9d79ebd03bbb6482bab748d67bbe0afb.jpg',
+        audio: 'https://vnso-zn-10-tf-a320-zmp3.zmdcdn.me/82b05166a489d1b883ee28b63a0fcb8f?authen=exp=1695822415~acl=/82b05166a489d1b883ee28b63a0fcb8f/*~hmac=76dcf3a9ebf3f8783a2496eaa7861c3d',
+        artists: ['Sơn Tùng M-TP'],
+        lyric: '',
+        genre: [''],
+        album_id: '',
+        time: '03:35',
+        nextSong: 3,
+        prevSong: 1,
+    },
+];
+const NEXT = 'next';
+const PREV = 'prev';
+
+function Footer({ data, isPlaying, currAudio }) {
     const [currSong, setCurrSong] = useState('');
+    const [currTimeSong, setCurrTimeSong] = useState();
+    const [isRepeat, setIsRepeat] = useState(false);
+    const [disableNext, setDisableNext] = useState(false);
+
     useSelector(() => reducer);
     const dispatch = useDispatch();
 
     const handlePlay = () => {
-        currSong.currAudio.play();
+        currAudio.play();
         dispatch(setPlaying(true));
     };
 
     const handlePause = () => {
-        currSong.currAudio.pause();
+        currAudio.pause();
         dispatch(setPlaying(false));
+    };
+
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+
+        return seconds ? `${formattedMinutes}:${formattedSeconds}` : NaN;
+    };
+
+    const handleNavigationSong = (type) => {
+        var indexNextSong = -1;
+        var value = 0;
+        switch (type) {
+            case NEXT:
+                value = 1;
+                break;
+            case PREV:
+                value = -1;
+                break;
+            default:
+                break;
+        }
+        for (let i = 0; i < songs.length; i++) {
+            if (songs[i].id === data.id && songs[i + value]) {
+                indexNextSong = i + value;
+                break;
+            }
+        }
+        if (indexNextSong >= 0) {
+            dispatch(setData(songs[indexNextSong]));
+            dispatch(setActive(songs[indexNextSong].id));
+            dispatch(setPlaying(true));
+            currAudio.pause();
+            var audio = new Audio(songs[indexNextSong].audio);
+            dispatch(setCurrAudio(audio));
+            audio.play();
+        } else {
+            // if next (value = 1)
+            // set disable next song
+            // else prev
+            // set disable prev song
+        }
     };
 
     useEffect(() => {
         setCurrSong(data);
     }, [data]);
+
+    useEffect(() => {
+        if (currSong) {
+            currAudio.addEventListener('timeupdate', () => {
+                setCurrTimeSong(currAudio.currentTime);
+            });
+        }
+    }, [currSong]);
+
+    useEffect(() => {
+        const handleAudioEnd = () => {
+            if (isRepeat) {
+                currAudio.play();
+            } else {
+                currAudio.pause();
+                dispatch(setPlaying(false));
+            }
+        };
+
+        if (currSong) {
+            currAudio.addEventListener('ended', handleAudioEnd);
+
+            return () => {
+                currAudio.removeEventListener('ended', handleAudioEnd);
+            };
+        }
+    }, [isRepeat, currSong]);
 
     return (
         <>
@@ -126,7 +242,10 @@ function Footer({ data, isPlaying }) {
                                         <FontAwesomeIcon icon={faShuffle} />
                                     </a>
                                     <a
-                                        href=""
+                                        onClick={() =>
+                                            handleNavigationSong(PREV)
+                                        }
+                                        href="#"
                                         className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                     >
                                         <FontAwesomeIcon
@@ -155,26 +274,59 @@ function Footer({ data, isPlaying }) {
                                         )}
                                     </a>
                                     <a
-                                        href=""
+                                        onClick={() =>
+                                            handleNavigationSong(NEXT)
+                                        }
+                                        href="#"
                                         className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                     >
                                         <FontAwesomeIcon icon={faForwardStep} />
                                     </a>
                                     <a
-                                        href=""
-                                        className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                        onClick={() => {
+                                            setIsRepeat(!isRepeat);
+                                        }}
+                                        href="#"
+                                        className={`${
+                                            isRepeat
+                                                ? 'is_repeat'
+                                                : 'text-white'
+                                        } fs-5 ms-3 me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
                                     >
                                         <FontAwesomeIcon icon={faRepeat} />
                                     </a>
                                 </div>
-                                <div className="subtitle_color d-flex align-items-center mt-2 f-family">
-                                    <span>00:00</span>
-                                    <div>
-                                        <div
-                                            className={`${cx('duration')}`}
-                                        ></div>
-                                    </div>
-                                    <span>04:43</span>
+                                <div
+                                    className={`${cx(
+                                        'duration__container',
+                                    )} subtitle_color d-flex align-items-center mt-2 f-family`}
+                                >
+                                    <span>
+                                        {formatTime(currTimeSong) || '00:00'}
+                                    </span>
+                                    <input
+                                        className={`${cx('duration')}`}
+                                        type="range"
+                                        min={0}
+                                        max={100}
+                                        value={
+                                            (currTimeSong * 100) /
+                                            currAudio.duration
+                                                ? Math.ceil(
+                                                      (currTimeSong * 100) /
+                                                          currAudio.duration,
+                                                  )
+                                                : 0
+                                        }
+                                        readOnly={true}
+                                        onChange={(e) =>
+                                            (currAudio.currentTime =
+                                                (e.target.value *
+                                                    currAudio.duration) /
+                                                100)
+                                        }
+                                    />
+                                    <span>{data.time}</span>
                                 </div>
                             </div>
                             <div
@@ -224,39 +376,9 @@ const mapStateToProps = (state) => {
         return {
             data: state.data,
             isPlaying: state.isPlaying,
+            currAudio: state.currSong,
         };
     }
 };
 
 export default connect(mapStateToProps)(Footer);
-
-// // ConfigureStore.js
-// import { createStore } from 'redux';
-// import rootReducer from '../path/to/rootReducer';
-
-// const store = createStore(rootReducer);
-
-// export default store;
-
-// // Footer.js
-// import { connect } from 'react-redux';
-
-// const Footer = ({ data }) => {
-//   return <div>{data}</div>;
-// };
-
-// const mapStateToProps = (state) => ({
-//   data: state.data,
-// });
-
-// export default connect(mapStateToProps)(Footer);
-
-// // Home.js
-// import store from '../path/to/configureStore';
-// import { setData } from '../path/to/actions';
-
-// const Home = () => {
-//   const data = 'Dữ liệu từ Home';
-//   store.dispatch(setData(data));
-//   return <></>;
-// };

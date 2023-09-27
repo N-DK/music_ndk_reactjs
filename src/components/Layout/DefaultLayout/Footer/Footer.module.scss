@@ -14,12 +14,20 @@
         }
     }
 
+    .duration__container {
+        span {
+            display: block;
+            min-width: 43px;
+        }
+    }
+
     .duration {
         border-radius: 9999999px;
         width: 500px;
         background-color: var(--iq-secondary);
         height: 4px;
         margin: 0 10px 0 10px;
+        flex: 1;
     }
 
     .duration.sound {

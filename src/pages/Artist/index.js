@@ -124,12 +124,8 @@ function Artist() {
                     <div className={`${cx('')} row `}>
                         <div className="col-6">
                             <SongItem colorTextBlack={true} />
-                            <SongItem colorTextBlack={true} />
-                            <SongItem colorTextBlack={true} />
                         </div>
                         <div className="col-6">
-                            <SongItem colorTextBlack={true} />
-                            <SongItem colorTextBlack={true} />
                             <SongItem colorTextBlack={true} />
                         </div>
                     </div>
