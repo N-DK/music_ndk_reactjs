@@ -14,6 +14,8 @@ import {
     faRepeat,
     faShuffle,
     faVolumeHigh,
+    faVolumeLow,
+    faVolumeXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -67,6 +69,8 @@ function Footer({ data, isPlaying, currAudio }) {
     const [currTimeSong, setCurrTimeSong] = useState();
     const [isRepeat, setIsRepeat] = useState(false);
     const [disableNext, setDisableNext] = useState(false);
+    const [volume, setVolume] = useState(0.8);
+    const [isMute, setIsMute] = useState(false);
 
     useSelector(() => reducer);
     const dispatch = useDispatch();
@@ -132,6 +136,7 @@ function Footer({ data, isPlaying, currAudio }) {
 
     useEffect(() => {
         if (currSong) {
+            currAudio.volume = volume;
             currAudio.addEventListener('timeupdate', () => {
                 setCurrTimeSong(currAudio.currentTime);
             });
@@ -348,19 +353,44 @@ function Footer({ data, isPlaying, currAudio }) {
                                     )} d-flex align-items-center `}
                                 >
                                     <a
-                                        href=""
+                                        onClick={() => {
+                                            if (!isMute) {
+                                                currAudio.volume = 0;
+                                            } else {
+                                                currAudio.volume = volume;
+                                            }
+                                            setIsMute(!isMute);
+                                        }}
+                                        href="#"
                                         className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                     >
-                                        <FontAwesomeIcon icon={faVolumeHigh} />
+                                        {currAudio.volume === 0 ? (
+                                            <FontAwesomeIcon
+                                                icon={faVolumeXmark}
+                                            />
+                                        ) : currAudio.volume <= 0.5 ? (
+                                            <FontAwesomeIcon
+                                                icon={faVolumeLow}
+                                            />
+                                        ) : (
+                                            <FontAwesomeIcon
+                                                icon={faVolumeHigh}
+                                            />
+                                        )}
                                     </a>
-                                    <div>
-                                        <div
-                                            className={`${cx(
-                                                'duration',
-                                                'sound',
-                                            )}`}
-                                        ></div>
-                                    </div>
+                                    <input
+                                        className={`${cx('duration', 'sound')}`}
+                                        type="range"
+                                        min={0}
+                                        max={100}
+                                        value={currAudio.volume * 100}
+                                        onChange={(e) => {
+                                            currAudio.volume =
+                                                e.target.value / 100;
+                                            setVolume(e.target.value / 100);
+                                        }}
+                                        readOnly={true}
+                                    />
                                 </div>
                             </div>
                         </div>
