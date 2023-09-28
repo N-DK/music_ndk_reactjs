@@ -1,6 +1,5 @@
 .wrapper {
     z-index: 1000;
-    background-color: var();
 
     .song__container {
         .thumbnail {
@@ -22,12 +21,22 @@
     }
 
     .duration {
-        border-radius: 9999999px;
+        border-radius: 9999px;
         width: 500px;
         background-color: var(--iq-secondary);
         height: 4px;
         margin: 0 10px 0 10px;
         flex: 1;
+        cursor: pointer;
+
+        &::-webkit-slider-thumb {
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        &:hover::-webkit-slider-thumb {
+            opacity: 1;
+        }
     }
 
     .duration.sound {

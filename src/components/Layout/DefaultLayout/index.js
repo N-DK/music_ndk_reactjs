@@ -1,8 +1,24 @@
 import Footer from './Footer';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import styles from './DefaultLayout.module.scss';
+import classNames from 'classnames/bind';
+import { useEffect, useState } from 'react';
+
+const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
+    const [lyric, setLyric] = useState('');
+
+    useEffect(() => {
+        var exampleModal = document.getElementById('modalId');
+        exampleModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var recipient = button.getAttribute('data-bs-lyric');
+            setLyric(recipient);
+        });
+    }, []);
+
     return (
         <>
             <div className="overflow-hidden">
@@ -29,8 +45,12 @@ function DefaultLayout({ children }) {
                                     style={{ height: 300 }}
                                     className={`mt-3 mb-3 border rounded-3 overflow-hidden`}
                                 >
-                                    <div className=" overflow-y-scroll h-100 p-2 lh-lg">
-                                        Đưa em về nhà
+                                    <div
+                                        className={`${cx(
+                                            'lyric',
+                                        )} h-100 p-2 lh-lg`}
+                                    >
+                                        {/* Đưa em về nhà
                                         <br />
                                         Mây trôi chiều tà <br />
                                         Sao trong lòng muốn Lối đi về càng thêm
@@ -58,7 +78,8 @@ function DefaultLayout({ children }) {
                                         <br />
                                         Đưa em về, đưa em về <br />
                                         Đưa em về, đưa em về <br />
-                                        Đưa em về, đưa em về <br />
+                                        Đưa em về, đưa em về <br /> */}
+                                        {lyric}
                                     </div>
                                 </div>
                                 <button

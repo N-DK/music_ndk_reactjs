@@ -35,14 +35,14 @@ const songs = [
     {
         id: 1,
         thumbnail:
-            'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/f/0/c/6/f0c6b74652e9ed643f3183c7617aaa30.jpg',
-        name: 'Chúng ta của hiện tại',
-        audio: 'https://vnso-zn-23-tf-a320-zmp3.zmdcdn.me/ef080817ff86ee5eddf9133440c0aae4?authen=exp=1695819245~acl=/ef080817ff86ee5eddf9133440c0aae4/*~hmac=702a78f1961d7c69593714ff1c39fdfc',
+            'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/a/3/1/c/a31cdf3a266dfa3fcbc586613c70ed52.jpg',
+        name: 'Âm thầm bên em',
+        audio: 'https://vnso-zn-10-tf-a320-zmp3.zmdcdn.me/523fb2bef2f3b3c8497c6efe228c737c?authen=exp=1696090690~acl=/523fb2bef2f3b3c8497c6efe228c737c/*~hmac=4e53a75d8b5a2e1b3ac7fb4a785a65d6',
         artists: ['Sơn Tùng M-TP'],
-        lyric: '',
+        lyric: 'Yêu em âm thầm bên em',
         genre: [''],
         album_id: '',
-        time: '05:02',
+        time: '04:51',
         prevSong: 0,
         nextSong: 2,
     },
@@ -53,7 +53,7 @@ const songs = [
             'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/9/d/7/9/9d79ebd03bbb6482bab748d67bbe0afb.jpg',
         audio: 'https://vnso-zn-10-tf-a320-zmp3.zmdcdn.me/82b05166a489d1b883ee28b63a0fcb8f?authen=exp=1695822415~acl=/82b05166a489d1b883ee28b63a0fcb8f/*~hmac=76dcf3a9ebf3f8783a2496eaa7861c3d',
         artists: ['Sơn Tùng M-TP'],
-        lyric: '',
+        lyric: 'Có chắc yêu là đây',
         genre: [''],
         album_id: '',
         time: '03:35',
@@ -61,6 +61,7 @@ const songs = [
         prevSong: 1,
     },
 ];
+
 const NEXT = 'next';
 const PREV = 'prev';
 
@@ -69,7 +70,7 @@ function Footer({ data, isPlaying, currAudio }) {
     const [currTimeSong, setCurrTimeSong] = useState();
     const [isRepeat, setIsRepeat] = useState(false);
     const [disableNext, setDisableNext] = useState(false);
-    const [volume, setVolume] = useState(0.8);
+    const [volume, setVolume] = useState(1);
     const [isMute, setIsMute] = useState(false);
 
     useSelector(() => reducer);
@@ -122,11 +123,6 @@ function Footer({ data, isPlaying, currAudio }) {
             var audio = new Audio(songs[indexNextSong].audio);
             dispatch(setCurrAudio(audio));
             audio.play();
-        } else {
-            // if next (value = 1)
-            // set disable next song
-            // else prev
-            // set disable prev song
         }
     };
 
@@ -148,8 +144,12 @@ function Footer({ data, isPlaying, currAudio }) {
             if (isRepeat) {
                 currAudio.play();
             } else {
-                currAudio.pause();
-                dispatch(setPlaying(false));
+                if (currSong === songs[songs.length - 1]) {
+                    currAudio.pause();
+                    dispatch(setPlaying(false));
+                } else {
+                    handleNavigationSong(NEXT);
+                }
             }
         };
 
@@ -342,6 +342,7 @@ function Footer({ data, isPlaying, currAudio }) {
                                 <a
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalId"
+                                    data-bs-lyric={`${currSong.lyric}`}
                                     href=""
                                     className="ms-3 me-2 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                 >

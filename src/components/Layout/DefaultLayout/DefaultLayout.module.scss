@@ -1,0 +1,7 @@
+.lyric {
+    overflow-y: overlay;
+}
+
+.lyric::-webkit-scrollbar {
+    background-color: transparent;
+}
