@@ -95,7 +95,7 @@ function SongItem({
             <h5
                 className={`${
                     colorTextBlack ? 'text-black' : 'text-white'
-                } f-family m-0 ms-5 me-5`}
+                } f-family m-0 ms-5 me-5 ${cx('time')}`}
             >
                 {song.time}
             </h5>

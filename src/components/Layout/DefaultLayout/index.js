@@ -8,14 +8,12 @@ import { useEffect, useState } from 'react';
 const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
-    const [lyric, setLyric] = useState('');
-
     useEffect(() => {
-        var exampleModal = document.getElementById('modalId');
-        exampleModal.addEventListener('show.bs.modal', function (event) {
+        var modal = document.getElementById('modalId');
+        modal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
             var recipient = button.getAttribute('data-bs-lyric');
-            setLyric(recipient);
+            modal.querySelector('.lyricModal').innerHTML = recipient;
         });
     }, []);
 
@@ -48,39 +46,8 @@ function DefaultLayout({ children }) {
                                     <div
                                         className={`${cx(
                                             'lyric',
-                                        )} h-100 p-2 lh-lg`}
-                                    >
-                                        {/* Đưa em về nhà
-                                        <br />
-                                        Mây trôi chiều tà <br />
-                                        Sao trong lòng muốn Lối đi về càng thêm
-                                        xa
-                                        <br /> Đưa em về nhà Xe đi tà tà <br />
-                                        Đi ngang nhà hát mua ly trà
-                                        <br /> Vị giống như ngày đầu mới yêu
-                                        <br /> Nói ra bao điều Nhẹ nhàng cùng
-                                        feel
-                                        <br /> Mà trong đầu không một chút nghĩ
-                                        suy
-                                        <br /> Về gần tới nơi Mà mình đâu nào
-                                        muốn rời
-                                        <br /> Còn bao điều chưa kịp trao
-                                        <br />
-                                        Thôi đành hôm khác <br />
-                                        Đưa em về nhà Mây trôi chiều tà <br />
-                                        Thật lòng chỉ muốn Lối đi này càng về
-                                        càng xa <br />
-                                        Và đưa em về nhà <br />
-                                        Con tim thật thà
-                                        <br /> Đèn đỏ ơi nếu, nếu như mà được
-                                        <br />
-                                        Thì đỏ hết thêm năm thêm bảy ngã tư
-                                        <br />
-                                        Đưa em về, đưa em về <br />
-                                        Đưa em về, đưa em về <br />
-                                        Đưa em về, đưa em về <br /> */}
-                                        {lyric}
-                                    </div>
+                                        )} h-100 p-2 lyricModal`}
+                                    ></div>
                                 </div>
                                 <button
                                     style={{ borderRadius: 9999999 }}

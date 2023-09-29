@@ -162,6 +162,46 @@ function Footer({ data, isPlaying, currAudio }) {
         }
     }, [isRepeat, currSong]);
 
+    // useEffect(() => {
+    //     if (currSong) {
+    //         var slider = document.querySelector('.slider');
+    //         var track = document.querySelector('.slider-track');
+    //         var thumb = document.querySelector('.slider-thumb');
+
+    //         slider.addEventListener('mousedown', startDrag);
+    //         slider.addEventListener('touchstart', startDrag);
+
+    //         function startDrag(event) {
+    //             event.preventDefault();
+
+    //             window.addEventListener('mousemove', drag);
+    //             window.addEventListener('touchmove', drag);
+    //             window.addEventListener('mouseup', stopDrag);
+    //             window.addEventListener('touchend', stopDrag);
+    //         }
+
+    //         function drag(event) {
+    //             var x = event.clientX || event.touches[0].clientX;
+    //             var trackRect = track.getBoundingClientRect();
+
+    //             var thumbLeft = x - trackRect.left;
+    //             var maxWidth = track.clientWidth - thumb.clientWidth;
+    //             var newPosition = Math.min(Math.max(thumbLeft, 0), maxWidth);
+
+    //             thumb.style.left = newPosition + 'px';
+    //             // track.style.width = (newPosition * 100) / 500 + '%';
+    //             // console.log((newPosition * 100) / 500);
+    //         }
+
+    //         function stopDrag() {
+    //             window.removeEventListener('mousemove', drag);
+    //             window.removeEventListener('touchmove', drag);
+    //             window.removeEventListener('mouseup', stopDrag);
+    //             window.removeEventListener('touchend', stopDrag);
+    //         }
+    //     }
+    // }, [currSong]);
+
     return (
         <>
             {currSong == '' ? (
@@ -309,7 +349,34 @@ function Footer({ data, isPlaying, currAudio }) {
                                     <span>
                                         {formatTime(currTimeSong) || '00:00'}
                                     </span>
-                                    <input
+                                    <div
+                                        onClick={(e) => {
+                                            var widthCurrent =
+                                                ((e.clientX -
+                                                    e.target.offsetLeft) *
+                                                    100) /
+                                                500;
+                                            currAudio.currentTime =
+                                                (widthCurrent *
+                                                    currAudio.duration) /
+                                                100;
+                                        }}
+                                        className={`${cx('slider')}`}
+                                    >
+                                        <div
+                                            style={{
+                                                width: `${
+                                                    (currTimeSong * 100) /
+                                                    currAudio.duration
+                                                        ? (currTimeSong * 100) /
+                                                          currAudio.duration
+                                                        : 0
+                                                }%`,
+                                            }}
+                                            className={`${cx('slider__track')}`}
+                                        ></div>
+                                    </div>
+                                    {/* <input
                                         className={`${cx('duration')}`}
                                         type="range"
                                         min={0}
@@ -330,7 +397,7 @@ function Footer({ data, isPlaying, currAudio }) {
                                                     currAudio.duration) /
                                                 100)
                                         }
-                                    />
+                                    /> */}
                                     <span>{data.time}</span>
                                 </div>
                             </div>
@@ -379,7 +446,29 @@ function Footer({ data, isPlaying, currAudio }) {
                                             />
                                         )}
                                     </a>
-                                    <input
+                                    <div
+                                        onClick={(e) => {
+                                            var widthCurrent =
+                                                ((e.clientX -
+                                                    e.target.offsetLeft) *
+                                                    100) /
+                                                100;
+                                            currAudio.volume =
+                                                widthCurrent / 100;
+                                            setVolume(widthCurrent / 100);
+                                        }}
+                                        className={`${cx('slider', 'sound')}`}
+                                    >
+                                        <div
+                                            style={{
+                                                width: `${
+                                                    currAudio.volume * 100
+                                                }%`,
+                                            }}
+                                            className={`${cx('slider__track')}`}
+                                        ></div>
+                                    </div>
+                                    {/* <input
                                         className={`${cx('duration', 'sound')}`}
                                         type="range"
                                         min={0}
@@ -391,7 +480,7 @@ function Footer({ data, isPlaying, currAudio }) {
                                             setVolume(e.target.value / 100);
                                         }}
                                         readOnly={true}
-                                    />
+                                    /> */}
                                 </div>
                             </div>
                         </div>

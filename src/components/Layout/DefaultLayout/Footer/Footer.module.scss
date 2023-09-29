@@ -16,7 +16,9 @@
     .duration__container {
         span {
             display: block;
-            min-width: 43px;
+            min-width: 50px;
+            display: flex;
+            justify-content: center;
         }
     }
 
@@ -32,6 +34,7 @@
         &::-webkit-slider-thumb {
             opacity: 0;
             transition: 0.3s;
+            size: 10px !important;
         }
 
         &:hover::-webkit-slider-thumb {
@@ -49,5 +52,44 @@
 
     .control-right__container {
         width: 30%;
+    }
+
+    .slider {
+        width: 500px;
+        background-color: #fff;
+        border-radius: 99999px;
+        height: 4px;
+        margin: 0 12px;
+        cursor: pointer;
+
+        .slider__track {
+            // width: 100%;
+            height: 100%;
+            background-color: var(--iq-secondary);
+            transition: 0.3s;
+            position: relative;
+            border-radius: 99999px;
+
+            // .slider__thumb {
+            //     width: 12px;
+            //     height: 12px;
+            //     border-radius: 50%;
+            //     background-color: var(--iq-secondary);
+            //     position: absolute;
+            //     right: -4px;
+            //     top: -10px;
+            //     transform: translateY(50%);
+            //     transition: 0.3s;
+            //     background-color: black;
+            // }
+        }
+
+        // &:hover .slider__thumb {
+        //     opacity: 1;
+        // }
+    }
+
+    .slider.sound {
+        width: 100px;
     }
 }
