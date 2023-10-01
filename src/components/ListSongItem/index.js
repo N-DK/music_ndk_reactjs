@@ -1,45 +1,108 @@
 import styles from './ListSongItem.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsis, faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import {
+    faEllipsis,
+    faMicrophone,
+    faPlay,
+} from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import {
+    reducer,
+    setActive,
+    setCurrAudio,
+    setData,
+    setPlaying,
+} from '~/redux_';
+import { Link } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
-function ListSongItem() {
+function ListSongItem({ song, activeSong, isPlaying, currAudio, songs }) {
+    useSelector(() => reducer);
+    const dispatch = useDispatch();
+
+    const handlePlay = (audioUrl, songActive) => {
+        var audio = currAudio;
+        if (songActive != activeSong) {
+            audio = new Audio(audioUrl);
+            if (currAudio) currAudio.pause();
+        }
+        audio.play();
+        let song = songs.find((song) => song.id == songActive);
+        dispatch(setPlaying(true));
+        dispatch(setCurrAudio(audio));
+        dispatch(setData(song));
+        dispatch(setActive(songActive));
+    };
+
+    const handlePause = () => {
+        currAudio.pause();
+        dispatch(setPlaying(false));
+    };
+
     return (
         <div className="container mb-3">
             <div className={`row border-bottom pb-3`}>
                 <div className="col-5">
                     <div className={` d-flex align-items-center `}>
                         <div
-                            className={` overflow-hidden rounded-2 ${cx(
+                            className={` position-relative overflow-hidden rounded-2 ${cx(
                                 'thumbnail',
                             )}`}
                         >
                             <a href="#" className={` d-block`}>
                                 <img
-                                    src="https://photo-resize-zmp3.zmdcdn.me/w94_r1x1_webp/cover/6/d/9/6/6d961b2a82f151a0f9af7de928e8f809.jpg"
+                                    src={song.thumbnail}
                                     alt=""
                                     className="w-100 h-100"
                                 />
                             </a>
+                            <div
+                                onClick={() => {
+                                    if (isPlaying && song.id == activeSong) {
+                                        handlePause();
+                                    } else {
+                                        handlePlay(song.audio, song.id);
+                                    }
+                                }}
+                                className={` align-items-center justify-content-center ${cx(
+                                    'music__container',
+                                    `${
+                                        song.id == activeSong &&
+                                        isPlaying &&
+                                        'is_playing'
+                                    }`,
+                                )} position-absolute w-100 h-100 top-0 d-flex`}
+                            >
+                                {song.id == activeSong && isPlaying ? (
+                                    <div
+                                        className={`${cx('wave-music')}`}
+                                    ></div>
+                                ) : (
+                                    <div className={`${cx('play-music')}`}>
+                                        <FontAwesomeIcon
+                                            className="text-white"
+                                            icon={faPlay}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="ms-3">
-                            <p className={`${cx('')} m-0 f-family`}>À lôi</p>
+                            <p className={`${cx('')} m-0 f-family`}>
+                                {song.name}
+                            </p>
                             <div className="fs-13 f-family subtitle_color">
-                                <a
-                                    href="#"
-                                    className={` subtitle_color is_truncate`}
-                                >
-                                    Double2T
-                                </a>
-                                ,
-                                <a
-                                    href="#"
-                                    className={`ms-1 subtitle_color is_truncate`}
-                                >
-                                    Masew
-                                </a>
+                                {song.artists.map((artist, index) => (
+                                    <Link
+                                        key={index}
+                                        to={`/artist/${artist}`}
+                                        className={` subtitle_color is_truncate`}
+                                    >
+                                        {artist}
+                                    </Link>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -49,7 +112,7 @@ function ListSongItem() {
                         href="#"
                         className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
                     >
-                        À Lôi (Single)
+                        {song.album}
                     </a>
                 </div>
                 <div className="col-2">
@@ -61,7 +124,8 @@ function ListSongItem() {
                         <a
                             data-bs-toggle="modal"
                             data-bs-target="#modalId"
-                            href=""
+                            data-bs-lyric={song.lyric}
+                            href="#"
                             className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                         >
                             <FontAwesomeIcon icon={faMicrophone} />
@@ -78,12 +142,22 @@ function ListSongItem() {
                         >
                             <FontAwesomeIcon icon={faEllipsis} />
                         </a>
-                        <p className={`ms-1 mb-0 f-family`}>03:17</p>
+                        <p className={`ms-1 mb-0 f-family`}>{song.time}</p>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+const mapStateToProps = (state) => {
+    if (state) {
+        return {
+            data: state.data,
+            isPlaying: state.isPlaying,
+            activeSong: state.isActive,
+            currAudio: state.currSong,
+        };
+    }
+};
 
-export default ListSongItem;
+export default connect(mapStateToProps)(ListSongItem);

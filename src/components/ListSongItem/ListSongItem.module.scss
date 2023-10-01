@@ -1,4 +1,31 @@
 .thumbnail {
     width: 50px;
     height: 50px;
+    cursor: pointer;
+
+    &:hover .music__container {
+        opacity: 1;
+    }
+}
+
+.music__container {
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: 0.3s;
+
+    .wave-music {
+        background: url('https://zmp3-static.zmdcdn.me/skins/zmp3-v6.1/images/icons/icon-playing.gif')
+            center no-repeat;
+        width: 100%;
+        height: 100%;
+        transform: scale(0.5);
+    }
+
+    .play-music {
+        transition: 0.3s;
+    }
+}
+
+.is_playing {
+    opacity: 1;
 }

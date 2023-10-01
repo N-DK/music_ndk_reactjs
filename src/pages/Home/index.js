@@ -2,6 +2,9 @@ import SongItem from '~/components/SongItem';
 import styles from './Home.module.scss';
 import classNames from 'classnames/bind';
 import Receptacle from '~/components/Receptacle';
+import ListSongItem from '~/components/ListSongItem';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -40,18 +43,78 @@ const songs = [
 function Home() {
     return (
         <div className={`${cx('wrapper')} pt-3`}>
-            <aside
+            <div className="row mb-5">
+                <div className="col-4">
+                    <div className={`${cx('')} rounded-3 overflow-hidden`}>
+                        <a>
+                            <img
+                                src="https://c4.wallpaperflare.com/wallpaper/765/477/132/vaporwave-glitch-art-women-closed-eyes-wallpaper-preview.jpg"
+                                className="w-100 h-100"
+                            />
+                        </a>
+                    </div>
+                </div>
+                <div className="col-4">
+                    <div className={`${cx('')} rounded-3 overflow-hidden`}>
+                        <a>
+                            <img
+                                src="https://c4.wallpaperflare.com/wallpaper/408/907/685/vaporwave-glitch-art-lockheed-sr-71-blackbird-wallpaper-preview.jpg"
+                                className="w-100 h-100"
+                            />
+                        </a>
+                    </div>
+                </div>
+                <div className="col-4">
+                    <div className={`${cx('')} rounded-3 overflow-hidden`}>
+                        <a>
+                            <img
+                                src="https://c4.wallpaperflare.com/wallpaper/706/529/203/vaporwave-plants-hd-wallpaper-preview.jpg"
+                                className="w-100 h-100"
+                            />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div
                 className={`${cx(
                     'new-realeases__container',
-                )} bg-white rounded-4 overflow-hidden`}
+                )} rounded-4 p-3 mb-5`}
             >
-                <h4 className={`mb-0 f-family p-3 pt-4 pb-4`}>New Realeases</h4>
-                <div className={`${cx('bg__new')} p-4`}>
-                    {songs.map((song) => (
-                        <SongItem key={song.id} song={song} songs={songs} />
-                    ))}
+                <div
+                    className={`${cx(
+                        '',
+                    )} d-flex align-items-center justify-content-between f-family mb-2 pb-4 pt-2`}
+                >
+                    <h4 className={`mb-0 f-family`}>New Realeases</h4>
+                    <a
+                        href="#"
+                        className="f-family text--primary d-flex align-items-center text-decoration-none"
+                    >
+                        <span className="me-2">View more</span>
+                        <FontAwesomeIcon icon={faChevronRight} />
+                    </a>
                 </div>
-            </aside>
+                <div className={`${cx('')} row `}>
+                    <div className="col-6">
+                        {songs.map((song, index) => (
+                            <ListSongItem
+                                key={index}
+                                song={song}
+                                songs={songs}
+                            />
+                        ))}
+                    </div>
+                    <div className="col-6">
+                        {songs.map((song, index) => (
+                            <ListSongItem
+                                key={index}
+                                song={song}
+                                songs={songs}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
             <Receptacle title="Featured Albums" control={true} />
             <Receptacle title="Trending Songs" limit={10} />
             <Receptacle title="Popular Hindi Songs" limit={10} />
