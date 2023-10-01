@@ -18,7 +18,14 @@ import {
 import { Link } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
-function ListSongItem({ song, activeSong, isPlaying, currAudio, songs }) {
+function ListSongItem({
+    song,
+    activeSong,
+    isPlaying,
+    currAudio,
+    songs,
+    isSearchItem,
+}) {
     useSelector(() => reducer);
     const dispatch = useDispatch();
 
@@ -43,8 +50,8 @@ function ListSongItem({ song, activeSong, isPlaying, currAudio, songs }) {
 
     return (
         <div className="container mb-3">
-            <div className={`row border-bottom pb-3`}>
-                <div className="col-5">
+            <div className={`row ${isSearchItem ? '' : 'border-bottom pb-3'}`}>
+                <div className={`${!isSearchItem ? 'col-5' : 'col-12'}`}>
                     <div className={` d-flex align-items-center `}>
                         <div
                             className={` position-relative overflow-hidden rounded-2 ${cx(
@@ -107,44 +114,50 @@ function ListSongItem({ song, activeSong, isPlaying, currAudio, songs }) {
                         </div>
                     </div>
                 </div>
-                <div className="col-5">
-                    <a
-                        href="#"
-                        className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
-                    >
-                        {song.album}
-                    </a>
-                </div>
-                <div className="col-2">
-                    <div
-                        className={`${cx(
-                            '',
-                        )} d-flex align-items-center h-100 justify-content-end`}
-                    >
-                        <a
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalId"
-                            data-bs-lyric={song.lyric}
-                            href="#"
-                            className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                        >
-                            <FontAwesomeIcon icon={faMicrophone} />
-                        </a>
-                        <a
-                            href=""
-                            className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                        >
-                            <FontAwesomeIcon icon={faHeart} />
-                        </a>
-                        <a
-                            href="#"
-                            className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                        >
-                            <FontAwesomeIcon icon={faEllipsis} />
-                        </a>
-                        <p className={`ms-1 mb-0 f-family`}>{song.time}</p>
-                    </div>
-                </div>
+                {!isSearchItem && (
+                    <>
+                        <div className="col-5">
+                            <a
+                                href="#"
+                                className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
+                            >
+                                {song.album}
+                            </a>
+                        </div>
+                        <div className="col-2">
+                            <div
+                                className={`${cx(
+                                    '',
+                                )} d-flex align-items-center h-100 justify-content-end`}
+                            >
+                                <a
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalId"
+                                    data-bs-lyric={song.lyric}
+                                    href="#"
+                                    className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                >
+                                    <FontAwesomeIcon icon={faMicrophone} />
+                                </a>
+                                <a
+                                    href=""
+                                    className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                >
+                                    <FontAwesomeIcon icon={faHeart} />
+                                </a>
+                                <a
+                                    href="#"
+                                    className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                >
+                                    <FontAwesomeIcon icon={faEllipsis} />
+                                </a>
+                                <p className={`ms-1 mb-0 f-family`}>
+                                    {song.time}
+                                </p>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
