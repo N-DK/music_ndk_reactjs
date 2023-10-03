@@ -5,8 +5,20 @@ import Receptacle from '~/components/Receptacle';
 import ListSongItem from '~/components/ListSongItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import Slider from 'react-slick';
 
 const cx = classNames.bind(styles);
+
+const settings = {
+    // dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+};
 
 // aip res => return
 const songs = [
@@ -40,41 +52,35 @@ const songs = [
     },
 ];
 
+const banners = [
+    {
+        url: 'https://c4.wallpaperflare.com/wallpaper/765/477/132/vaporwave-glitch-art-women-closed-eyes-wallpaper-preview.jpg',
+    },
+    {
+        url: 'https://c4.wallpaperflare.com/wallpaper/408/907/685/vaporwave-glitch-art-lockheed-sr-71-blackbird-wallpaper-preview.jpg',
+    },
+    {
+        url: 'https://c4.wallpaperflare.com/wallpaper/706/529/203/vaporwave-plants-hd-wallpaper-preview.jpg',
+    },
+    {
+        url: 'https://c4.wallpaperflare.com/wallpaper/236/889/317/vaporwave-statue-roman-greek-wallpaper-preview.jpg',
+    },
+];
+
 function Home() {
     return (
         <div className={`${cx('wrapper')} pt-3`}>
-            <div className="row mb-5">
-                <div className="col-4">
-                    <div className={`${cx('')} rounded-3 overflow-hidden`}>
-                        <a>
-                            <img
-                                src="https://c4.wallpaperflare.com/wallpaper/765/477/132/vaporwave-glitch-art-women-closed-eyes-wallpaper-preview.jpg"
-                                className="w-100 h-100"
-                            />
-                        </a>
+            <Slider className={`${cx('slider')} mb-5`} {...settings}>
+                {banners.map((banner, index) => (
+                    <div className="pe-2 ps-2">
+                        <div className={`${cx('')} rounded-3 overflow-hidden`}>
+                            <a>
+                                <img src={banner.url} className="w-100 h-100" />
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div className="col-4">
-                    <div className={`${cx('')} rounded-3 overflow-hidden`}>
-                        <a>
-                            <img
-                                src="https://c4.wallpaperflare.com/wallpaper/408/907/685/vaporwave-glitch-art-lockheed-sr-71-blackbird-wallpaper-preview.jpg"
-                                className="w-100 h-100"
-                            />
-                        </a>
-                    </div>
-                </div>
-                <div className="col-4">
-                    <div className={`${cx('')} rounded-3 overflow-hidden`}>
-                        <a>
-                            <img
-                                src="https://c4.wallpaperflare.com/wallpaper/706/529/203/vaporwave-plants-hd-wallpaper-preview.jpg"
-                                className="w-100 h-100"
-                            />
-                        </a>
-                    </div>
-                </div>
-            </div>
+                ))}
+            </Slider>
             <div
                 className={`${cx(
                     'new-realeases__container',

@@ -6,10 +6,14 @@ import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
-function CardSongItem() {
+function CardSongItem({ isSlider }) {
     return (
-        <div className="col-2-4">
-            <div className={`${cx('wrapper')} overflow-hidden rounded-3 mb-3`}>
+        <div className={`${isSlider ? '' : 'col-2-4'}`}>
+            <div
+                className={`${cx(
+                    'wrapper',
+                )} overflow-hidden rounded-3 mb-2 mt-1`}
+            >
                 <div
                     className={`${cx(
                         'thumbnail__container',

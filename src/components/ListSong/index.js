@@ -24,14 +24,9 @@ function ListSong({ data }) {
                     </div>
                 </div>
             </div>
-            <ListSongItem />
-            <ListSongItem />
-            <ListSongItem />
-            <ListSongItem />
-            <ListSongItem />
-            <ListSongItem />
-            <ListSongItem />
-            <ListSongItem />
+            {data.map((song, index) => (
+                <ListSongItem song={song} />
+            ))}
         </div>
     );
 }

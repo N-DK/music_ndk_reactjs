@@ -9,7 +9,6 @@ import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ListSongItem from '~/components/ListSongItem';
 import { useEffect, useState } from 'react';
-
 const cx = classNames.bind(styles);
 
 const songs = [

@@ -8,6 +8,8 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { reducer } from '~/redux_';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const store = createStore(reducer);
 
