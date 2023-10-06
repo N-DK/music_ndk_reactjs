@@ -69,7 +69,6 @@ function Footer({ data, isPlaying, currAudio }) {
     const [currSong, setCurrSong] = useState('');
     const [currTimeSong, setCurrTimeSong] = useState();
     const [isRepeat, setIsRepeat] = useState(false);
-    const [disableNext, setDisableNext] = useState(false);
     const [volume, setVolume] = useState(1);
     const [isMute, setIsMute] = useState(false);
 
@@ -161,46 +160,6 @@ function Footer({ data, isPlaying, currAudio }) {
             };
         }
     }, [isRepeat, currSong]);
-
-    // useEffect(() => {
-    //     if (currSong) {
-    //         var slider = document.querySelector('.slider');
-    //         var track = document.querySelector('.slider-track');
-    //         var thumb = document.querySelector('.slider-thumb');
-
-    //         slider.addEventListener('mousedown', startDrag);
-    //         slider.addEventListener('touchstart', startDrag);
-
-    //         function startDrag(event) {
-    //             event.preventDefault();
-
-    //             window.addEventListener('mousemove', drag);
-    //             window.addEventListener('touchmove', drag);
-    //             window.addEventListener('mouseup', stopDrag);
-    //             window.addEventListener('touchend', stopDrag);
-    //         }
-
-    //         function drag(event) {
-    //             var x = event.clientX || event.touches[0].clientX;
-    //             var trackRect = track.getBoundingClientRect();
-
-    //             var thumbLeft = x - trackRect.left;
-    //             var maxWidth = track.clientWidth - thumb.clientWidth;
-    //             var newPosition = Math.min(Math.max(thumbLeft, 0), maxWidth);
-
-    //             thumb.style.left = newPosition + 'px';
-    //             // track.style.width = (newPosition * 100) / 500 + '%';
-    //             // console.log((newPosition * 100) / 500);
-    //         }
-
-    //         function stopDrag() {
-    //             window.removeEventListener('mousemove', drag);
-    //             window.removeEventListener('touchmove', drag);
-    //             window.removeEventListener('mouseup', stopDrag);
-    //             window.removeEventListener('touchend', stopDrag);
-    //         }
-    //     }
-    // }, [currSong]);
 
     return (
         <>
@@ -376,28 +335,6 @@ function Footer({ data, isPlaying, currAudio }) {
                                             className={`${cx('slider__track')}`}
                                         ></div>
                                     </div>
-                                    {/* <input
-                                        className={`${cx('duration')}`}
-                                        type="range"
-                                        min={0}
-                                        max={100}
-                                        value={
-                                            (currTimeSong * 100) /
-                                            currAudio.duration
-                                                ? Math.ceil(
-                                                      (currTimeSong * 100) /
-                                                          currAudio.duration,
-                                                  )
-                                                : 0
-                                        }
-                                        readOnly={true}
-                                        onChange={(e) =>
-                                            (currAudio.currentTime =
-                                                (e.target.value *
-                                                    currAudio.duration) /
-                                                100)
-                                        }
-                                    /> */}
                                     <span>{data.time}</span>
                                 </div>
                             </div>
@@ -468,19 +405,6 @@ function Footer({ data, isPlaying, currAudio }) {
                                             className={`${cx('slider__track')}`}
                                         ></div>
                                     </div>
-                                    {/* <input
-                                        className={`${cx('duration', 'sound')}`}
-                                        type="range"
-                                        min={0}
-                                        max={100}
-                                        value={currAudio.volume * 100}
-                                        onChange={(e) => {
-                                            currAudio.volume =
-                                                e.target.value / 100;
-                                            setVolume(e.target.value / 100);
-                                        }}
-                                        readOnly={true}
-                                    /> */}
                                 </div>
                             </div>
                         </div>

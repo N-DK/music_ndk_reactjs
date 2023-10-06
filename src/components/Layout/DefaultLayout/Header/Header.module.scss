@@ -23,4 +23,16 @@
             background-color: transparent;
         }
     }
+
+    .is_disable {
+        color: #c7c7c9;
+
+        &:hover {
+            color: #c7c7c9;
+        }
+    }
+
+    .is_active {
+        cursor: pointer;
+    }
 }

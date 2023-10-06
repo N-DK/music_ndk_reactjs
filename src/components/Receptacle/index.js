@@ -28,7 +28,7 @@ const setting_3item = {
     slidesToShow: 3,
 };
 
-function Receptacle({ title, control, limit = 10, video = false }) {
+function Receptacle({ title, control, limit = 5, video = false }) {
     const slider = useRef();
 
     const next = () => {
@@ -78,11 +78,11 @@ function Receptacle({ title, control, limit = 10, video = false }) {
                             className={`${cx('')} pt-3 pb-3`}
                             {...setting_3item}
                         >
-                            {Array(limit)
-                                .fill(limit)
+                            {Array(10)
+                                .fill(10)
                                 .map((element, index) => (
-                                    <div className="ps-2 pe-2">
-                                        <CardVideoSongItem key={index} />
+                                    <div key={index} className="ps-2 pe-2">
+                                        <CardVideoSongItem isSlider={true} />
                                     </div>
                                 ))}
                         </Slider>
@@ -92,26 +92,28 @@ function Receptacle({ title, control, limit = 10, video = false }) {
                             className={`${cx('')} pt-3 pb-3`}
                             {...settings}
                         >
-                            {Array(limit)
-                                .fill(limit)
+                            {Array(10)
+                                .fill(10)
                                 .map((element, index) => (
-                                    <div className="ps-2 pe-2">
-                                        <CardSongItem
-                                            key={index}
-                                            isSlider={true}
-                                        />
+                                    <div key={index} className="ps-2 pe-2">
+                                        <CardSongItem isSlider={true} />
                                     </div>
                                 ))}
                         </Slider>
                     )
                 ) : (
                     <div className={`row pt-3 pb-3`}>
-                        {!video &&
-                            Array(limit)
-                                .fill(limit)
-                                .map((element, index) => (
-                                    <CardSongItem key={index} />
-                                ))}
+                        {video
+                            ? Array(3)
+                                  .fill(3)
+                                  .map((element, index) => (
+                                      <CardVideoSongItem key={index} />
+                                  ))
+                            : Array(limit)
+                                  .fill(limit)
+                                  .map((element, index) => (
+                                      <CardSongItem key={index} />
+                                  ))}
                     </div>
                 )}
             </div>

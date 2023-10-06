@@ -25,7 +25,7 @@ function ListSong({ data }) {
                 </div>
             </div>
             {data.map((song, index) => (
-                <ListSongItem song={song} />
+                <ListSongItem key={index} song={song} />
             ))}
         </div>
     );

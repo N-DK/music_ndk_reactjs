@@ -72,7 +72,7 @@ function Home() {
         <div className={`${cx('wrapper')} pt-3`}>
             <Slider className={`${cx('slider')} mb-5`} {...settings}>
                 {banners.map((banner, index) => (
-                    <div className="pe-2 ps-2">
+                    <div key={index} className="pe-2 ps-2">
                         <div className={`${cx('')} rounded-3 overflow-hidden`}>
                             <a>
                                 <img src={banner.url} className="w-100 h-100" />
