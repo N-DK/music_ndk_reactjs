@@ -8,7 +8,7 @@ import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ListSongItem from '~/components/ListSongItem';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 const cx = classNames.bind(styles);
 
@@ -45,51 +45,34 @@ const songs = [
 
 function Header() {
     const [search, setSearch] = useState('');
-    const [count, setCount] = useState(0);
-    const [max, setMax] = useState(0);
-    const [isDisablePrev, setIsDisablePrev] = useState(true);
-    const [isDisableNext, setIsDisableNext] = useState(true);
-    const [isEnter, setIsEnter] = useState(false);
+    const [current, setCurrent] = useState(window.location.href);
+    const [back, setBack] = useState([]);
+    const [forward, setForward] = useState([]);
+    const [isEnter, setIsEnter] = useState(true);
     const history = useNavigate();
 
     const goToPreviousPage = () => {
-        if (count > 1) {
-            // Lui về trang lịch sử
-            history(-1);
-            // Ta set khi thay đổi theo mã url nên như vậy tới hay lui thì biến count đều count thêm một đơn vị nên để tránh trường hợp nó sẽ về rồi thoát ra luôn nên t phải - 2 đơn vị
-            setCount(count - 2);
-            // Ta set biến next có thể ấn được
-            setIsDisableNext(false);
-            // Tượng tự như biến count nhưng lần này là trừ 1 thì max sẽ đứng yên
-            setMax(max - 1);
-            // ta kiểm tra là có nhấn vào nút Prev hay không
-            setIsEnter(true);
-        }
+        var lastItemBack = back.pop();
+        history(-1);
+        setForward((prev) => [...prev, current]);
+        setIsEnter(true);
+        setCurrent(lastItemBack);
     };
 
     const goToNextPage = () => {
-        // ta kiểm tra có nhân vào nút next hay không
-        setIsEnter(true);
-        // Chuyển tới kế tế nếu có
+        var lastItemForward = forward.pop();
         history(1);
-        // Nếu như ấn nút tới thì max mới giữ nguyên giá trị còn ấn không được thì không làm gì cả để tránh trường hợp người dùng spam xảy ra lỗi
-        if (!isDisableNext) setMax(max - 1);
+        setBack((prev) => [...prev, current]);
+        setIsEnter(true);
+        setCurrent(lastItemForward);
     };
 
     useEffect(() => {
-        // Ta set prev để ấn được
-        setIsDisablePrev(count <= 0);
-        // Ta set next ấn được
-        setIsDisableNext(max == count || !isEnter);
-        // Nếu như url thay đổi thì count sẽ tăng lên 1 đơn vị
-        setCount(count + 1);
-        // Kiểm tra có ấn nút prev hay next gì không. Nếu có thì thì cứ set để tìm max còn nếu không thì set max là count + 1
-        if (isEnter) {
-            setMax(max + 1);
-        } else {
-            setMax(count + 1);
+        if (!isEnter) {
+            setBack([...back, current]);
+            setCurrent(window.location.href);
+            setForward([]);
         }
-        // Ta set lại để xem khi thay đổi url thì user có ấn vào nút prev hay next hay không
         setIsEnter(false);
     }, [window.location.href]);
 
@@ -105,17 +88,29 @@ function Header() {
                     <div className={`d-flex align-items-center`}>
                         <div className={`d-flex align-content-center me-3`}>
                             <a
-                                onClick={goToPreviousPage}
+                                onClick={
+                                    !(back.length < 1)
+                                        ? goToPreviousPage
+                                        : () => {}
+                                }
                                 className={`${cx(
-                                    isDisablePrev ? 'is_disable' : 'is_active',
+                                    back.length < 1
+                                        ? 'is_disable'
+                                        : 'is_active',
                                 )} me-4 text-decoration-none me-2 text--primary`}
                             >
                                 <FontAwesomeIcon icon={faArrowLeft} />
                             </a>
                             <a
-                                onClick={goToNextPage}
+                                onClick={
+                                    !(forward.length < 1)
+                                        ? goToNextPage
+                                        : () => {}
+                                }
                                 className={`${cx(
-                                    isDisableNext ? 'is_disable' : 'is_active',
+                                    forward.length < 1
+                                        ? 'is_disable'
+                                        : 'is_active',
                                 )} text-decoration-none me-2 text--primary`}
                             >
                                 <FontAwesomeIcon icon={faArrowRight} />

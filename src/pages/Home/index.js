@@ -35,6 +35,7 @@ const songs = [
         time: '04:51',
         prevSong: 0,
         nextSong: 2,
+        album: 'Âm thầm bên em (Single)',
     },
     {
         id: 2,

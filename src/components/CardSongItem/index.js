@@ -3,6 +3,7 @@ import styles from './CardSongItem.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -35,12 +36,12 @@ function CardSongItem({ isSlider }) {
                         >
                             <FontAwesomeIcon icon={faHeart} />
                         </a>
-                        <a
-                            href=""
+                        <Link
+                            to="/album/lofi"
                             className="fs-1 ms-4 me-4 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
                         >
                             <FontAwesomeIcon icon={faCirclePlay} />
-                        </a>
+                        </Link>
                         <a
                             href=""
                             className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"

@@ -116,13 +116,13 @@ function ListSongItem({
                 </div>
                 {!isSearchItem && (
                     <>
-                        <div className="col-5">
-                            <a
-                                href="#"
+                        <div className="col-5 fs-13 f-family">
+                            <Link
+                                to={`album/${song.album}`}
                                 className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
                             >
                                 {song.album}
-                            </a>
+                            </Link>
                         </div>
                         <div className="col-2">
                             <div
