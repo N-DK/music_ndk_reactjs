@@ -49,11 +49,12 @@ function Header() {
     const [back, setBack] = useState([]);
     const [forward, setForward] = useState([]);
     const [isEnter, setIsEnter] = useState(true);
-    const history = useNavigate();
+    const [isPopstate, setIsPopstate] = useState(false);
+    const navigate = useNavigate();
 
     const goToPreviousPage = () => {
         var lastItemBack = back.pop();
-        history(-1);
+        navigate(-1);
         setForward((prev) => [...prev, current]);
         setIsEnter(true);
         setCurrent(lastItemBack);
@@ -61,7 +62,7 @@ function Header() {
 
     const goToNextPage = () => {
         var lastItemForward = forward.pop();
-        history(1);
+        navigate(1);
         setBack((prev) => [...prev, current]);
         setIsEnter(true);
         setCurrent(lastItemForward);
@@ -71,10 +72,50 @@ function Header() {
         if (!isEnter) {
             setBack([...back, current]);
             setCurrent(window.location.href);
-            setForward([]);
+            if (!isPopstate) {
+                setForward([]);
+            }
         }
         setIsEnter(false);
     }, [window.location.href]);
+
+    useEffect(() => {
+        const handlePopstate = () => {
+            setIsPopstate(true);
+        };
+
+        window.addEventListener('popstate', handlePopstate);
+
+        return () => {
+            window.removeEventListener('popstate', handlePopstate);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isPopstate && !isEnter) {
+            var length = back.length;
+            setBack((prev) => {
+                var lastItem = prev.pop();
+                if (prev.length == length) {
+                    return prev;
+                } else {
+                    return [...prev, lastItem];
+                }
+            });
+            if (window.location.href == back[back.length - 1]) {
+                var lastItemBack = back.pop();
+                setForward([...forward, current]);
+                setCurrent(lastItemBack);
+                setBack(back);
+            } else if (window.location.href == forward[forward.length - 1]) {
+                var lastItemForward = forward.pop();
+                setBack([...back, current]);
+                setCurrent(lastItemForward);
+                setForward(forward);
+            }
+        }
+        setIsPopstate(false);
+    }, [isPopstate]);
 
     // call api
     useEffect(() => {}, [search]);

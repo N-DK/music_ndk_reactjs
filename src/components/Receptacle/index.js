@@ -81,7 +81,7 @@ function Receptacle({ title, control, limit = 5, video = false }) {
                             {Array(10)
                                 .fill(10)
                                 .map((element, index) => (
-                                    <div key={index} className="ps-2 pe-2">
+                                    <div key={index} className="ps-1 pe-1">
                                         <CardVideoSongItem isSlider={true} />
                                     </div>
                                 ))}
@@ -95,7 +95,7 @@ function Receptacle({ title, control, limit = 5, video = false }) {
                             {Array(10)
                                 .fill(10)
                                 .map((element, index) => (
-                                    <div key={index} className="ps-2 pe-2">
+                                    <div key={index} className="">
                                         <CardSongItem isSlider={true} />
                                     </div>
                                 ))}
