@@ -173,6 +173,7 @@ function Header() {
                                 className={` border-0 bg-transparent f-family`}
                                 placeholder="Search song..."
                                 onChange={(e) => setSearch(e.target.value)}
+                                value={search}
                             />
                             {search && (
                                 <div
@@ -203,6 +204,8 @@ function Header() {
                             />
                         </a>
                         <a
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalLogin"
                             href="#"
                             className="rounded-circle square_40 d-block overflow-hidden"
                         >

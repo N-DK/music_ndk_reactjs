@@ -5,3 +5,29 @@
 .lyric::-webkit-scrollbar {
     background-color: transparent;
 }
+
+.input-form {
+    outline: none !important;
+
+    &:focus {
+        color: var(--bs-body-color);
+        background-color: var(--bs-body-bg);
+        border-color: var(--iq-dark) !important;
+        outline: 0;
+        box-shadow: none !important;
+    }
+}
+
+.is-disable {
+    cursor: inherit !important;
+}
+
+.is-active {
+    background-color: var(--iq-primary);
+    color: white;
+}
+
+.btn-login {
+    transition: 0.3s;
+    padding: 10px 0;
+}
