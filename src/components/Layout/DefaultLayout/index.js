@@ -97,9 +97,11 @@ function DefaultLayout({ children }) {
                 <Sidebar />
                 <div className="w-main float-end">
                     <Header />
-                    <div className="mt-header">
-                        <div className="container">
-                            <div className="content">{children}</div>
+                    <div className="w-100 h-100 position-relative">
+                        <div className="mt-header">
+                            <div className="container">
+                                <div className="content">{children}</div>
+                            </div>
                         </div>
                     </div>
                 </div>

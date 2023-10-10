@@ -138,3 +138,13 @@ body {
     background-color: var(--iq-primary);
     color: white;
 }
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+// body::-webkit-scrollbar-thumb {
+//     background-color: var(--iq-primary);
+//     outline: 1px solid slategrey;
+//     border-radius: 16px;
+// }

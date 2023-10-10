@@ -5,7 +5,7 @@ import Receptacle from '~/components/Receptacle';
 import ListSongItem from '~/components/ListSongItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import Slider from 'react-slick';
 import Loading from '~/components/Loading';
 
@@ -70,78 +70,91 @@ const banners = [
 ];
 
 function Home() {
+    const [loading, setLoading] = useState(true);
+
+    const handleLoading = () => {
+        setTimeout(() => {
+            setLoading(false);
+        }, 3000);
+    };
+
+    handleLoading();
+
     return (
         <>
-            <div className={`${cx('wrapper')} pt-3`}>
-                <Slider className={`${cx('slider')} mb-5`} {...settings}>
-                    {banners.map((banner, index) => (
-                        <div key={index} className="pe-2 ps-2">
-                            <div
-                                className={`${cx(
-                                    '',
-                                )} rounded-3 overflow-hidden`}
-                            >
-                                <a>
-                                    <img
-                                        src={banner.url}
-                                        className="w-100 h-100"
-                                    />
-                                </a>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className={`${cx('wrapper')} pt-3`}>
+                    <Slider className={`${cx('slider')} mb-5`} {...settings}>
+                        {banners.map((banner, index) => (
+                            <div key={index} className="pe-2 ps-2">
+                                <div
+                                    className={`${cx(
+                                        '',
+                                    )} rounded-3 overflow-hidden`}
+                                >
+                                    <a>
+                                        <img
+                                            src={banner.url}
+                                            className="w-100 h-100"
+                                        />
+                                    </a>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </Slider>
-                <div
-                    className={`${cx(
-                        'new-realeases__container',
-                    )} rounded-4 p-3 mb-5`}
-                >
+                        ))}
+                    </Slider>
                     <div
                         className={`${cx(
-                            '',
-                        )} d-flex align-items-center justify-content-between f-family mb-2 pb-4 pt-2`}
+                            'new-realeases__container',
+                        )} rounded-4 p-3 mb-5`}
                     >
-                        <h4 className={`mb-0 f-family`}>New Realeases</h4>
-                        <a
-                            href="#"
-                            className="f-family text--primary d-flex align-items-center text-decoration-none"
+                        <div
+                            className={`${cx(
+                                '',
+                            )} d-flex align-items-center justify-content-between f-family mb-2 pb-4 pt-2`}
                         >
-                            <span className="me-2">View more</span>
-                            <FontAwesomeIcon icon={faChevronRight} />
-                        </a>
-                    </div>
-                    <div className={`${cx('')} row `}>
-                        <div className="col-6">
-                            {songs.map((song, index) => (
-                                <ListSongItem
-                                    key={index}
-                                    song={song}
-                                    songs={songs}
-                                />
-                            ))}
+                            <h4 className={`mb-0 f-family`}>New Realeases</h4>
+                            <a
+                                href="#"
+                                className="f-family text--primary d-flex align-items-center text-decoration-none"
+                            >
+                                <span className="me-2">View more</span>
+                                <FontAwesomeIcon icon={faChevronRight} />
+                            </a>
                         </div>
-                        <div className="col-6">
-                            {songs.map((song, index) => (
-                                <ListSongItem
-                                    key={index}
-                                    song={song}
-                                    songs={songs}
-                                />
-                            ))}
+                        <div className={`${cx('')} row `}>
+                            <div className="col-6">
+                                {songs.map((song, index) => (
+                                    <ListSongItem
+                                        key={index}
+                                        song={song}
+                                        songs={songs}
+                                    />
+                                ))}
+                            </div>
+                            <div className="col-6">
+                                {songs.map((song, index) => (
+                                    <ListSongItem
+                                        key={index}
+                                        song={song}
+                                        songs={songs}
+                                    />
+                                ))}
+                            </div>
                         </div>
                     </div>
+                    <Receptacle title="Featured Albums" control={true} />
+                    <Receptacle title="Trending Songs" limit={10} />
+                    <Receptacle title="Popular Hindi Songs" limit={10} />
+                    <Receptacle title="Hot songs" control={true} />
+                    <Receptacle
+                        title="Hot Video Songs"
+                        control={true}
+                        video={true}
+                    />
                 </div>
-                <Receptacle title="Featured Albums" control={true} />
-                <Receptacle title="Trending Songs" limit={10} />
-                <Receptacle title="Popular Hindi Songs" limit={10} />
-                <Receptacle title="Hot songs" control={true} />
-                <Receptacle
-                    title="Hot Video Songs"
-                    control={true}
-                    video={true}
-                />
-            </div>
-            {/* <Loading /> */}
+            )}
         </>
     );
 }

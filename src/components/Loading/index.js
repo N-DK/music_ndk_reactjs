@@ -1,6 +1,5 @@
 import styles from './Loading.module.scss';
 import classNames from 'classnames/bind';
-import loading from '~/img/loading.gif';
 
 const cx = classNames.bind(styles);
 
