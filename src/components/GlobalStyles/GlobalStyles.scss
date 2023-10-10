@@ -133,3 +133,8 @@ body {
 .is_repeat {
     color: var(--iq-primary);
 }
+
+.bg--primary {
+    background-color: var(--iq-primary);
+    color: white;
+}

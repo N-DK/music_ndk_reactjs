@@ -1,0 +1,58 @@
+.wrapper {
+    box-shadow: 0px 0px 20px 0px rgba(44, 101, 144, 0.2);
+}
+
+.thumbnail {
+    width: 100px;
+    height: 100px;
+}
+
+.action {
+    width: 30px;
+    height: 30px;
+}
+
+td,
+tfoot,
+th,
+thead,
+tr {
+    vertical-align: initial;
+}
+
+.overlay {
+    overflow-y: overlay;
+    overflow-x: hidden;
+}
+
+.overlay::-webkit-scrollbar {
+    background-color: transparent;
+}
+
+.pagination-item {
+    border: 1px solid;
+    width: 35px;
+    height: 35px;
+    color: var(--iq-primary);
+    cursor: pointer;
+}
+
+.pagination-item.active {
+    background-color: var(--iq-primary);
+    color: white;
+    border-color: var(--iq-primary);
+}
+
+input {
+    outline: none;
+    caret-color: var(--iq-primary);
+}
+
+select {
+    width: 70px !important;
+    &:focus {
+        box-shadow: none !important;
+        background-color: transparent !important;
+        border-color: var(--iq-primary) !important;
+    }
+}

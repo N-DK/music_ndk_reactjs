@@ -1,0 +1,16 @@
+.nav-item {
+    background-color: rgba(147, 127, 127, 0.1);
+    transition: 0.3s;
+    min-width: 94px;
+    border: none !important;
+
+    &:hover {
+        background-color: var(--iq-primary);
+        color: #fff !important;
+    }
+}
+
+.nav-item.active {
+    background-color: var(--iq-primary);
+    color: #fff !important;
+}

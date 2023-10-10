@@ -1,3 +1,5 @@
+import Admin from '~/pages/Admin';
+import AdminItems from '~/pages/Admin/AdminItems';
 import Album from '~/pages/Album';
 import Artist from '~/pages/Artist';
 import Home from '~/pages/Home';
@@ -13,6 +15,8 @@ const publicRoutes = [
     { path: '/artist/:slug', component: Artist },
     { path: '/album/:slug', component: Album },
     { path: '/search', component: Search },
+    { path: '/admin', component: Admin },
+    { path: '/admin/:item', component: AdminItems },
 ];
 
 // need login
