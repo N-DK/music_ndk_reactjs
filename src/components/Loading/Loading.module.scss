@@ -1,0 +1,11 @@
+.wrapper {
+    z-index: 100000;
+}
+
+.img-container {
+    img {
+        width: 55%;
+        object-fit: contain;
+        object-position: center;
+    }
+}

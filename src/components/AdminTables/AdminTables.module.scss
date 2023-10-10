@@ -48,7 +48,7 @@ input {
     caret-color: var(--iq-primary);
 }
 
-select {
+.entries {
     width: 70px !important;
     &:focus {
         box-shadow: none !important;

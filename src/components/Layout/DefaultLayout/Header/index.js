@@ -50,6 +50,7 @@ function Header() {
     const [forward, setForward] = useState([]);
     const [isEnter, setIsEnter] = useState(true);
     const [isPopstate, setIsPopstate] = useState(false);
+    const [isBlur, setIsBlur] = useState(false);
     const navigate = useNavigate();
 
     const goToPreviousPage = () => {
@@ -174,8 +175,10 @@ function Header() {
                                 placeholder="Search song..."
                                 onChange={(e) => setSearch(e.target.value)}
                                 value={search}
+                                onBlur={() => setIsBlur(true)}
+                                onFocus={() => setIsBlur(false)}
                             />
-                            {search && (
+                            {search && !isBlur && (
                                 <div
                                     className={` bg-white ${cx(
                                         'result',

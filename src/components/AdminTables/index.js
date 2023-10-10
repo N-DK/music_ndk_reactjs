@@ -36,7 +36,9 @@ function AdminTables({ category }) {
             <div className="d-flex align-items-center justify-content-between p-3 ">
                 <div className="d-flex align-items-center justify-content-center">
                     Show{' '}
-                    <select className="form-control ms-1 me-1">
+                    <select
+                        className={`${cx('entries')} form-control ms-1 me-1`}
+                    >
                         <option value={10}>10</option>
                         <option value={15}>15</option>
                         <option value={20}>20</option>
