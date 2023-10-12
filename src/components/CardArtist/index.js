@@ -24,7 +24,11 @@ function CardArtist() {
     };
 
     return (
-        <div className={`${cx('wrapper')} col-2-4`}>
+        <div
+            className={`${cx(
+                'wrapper',
+            )} col-2-4 col-md-3 col-sm-4 col-xs-6 mb-3`}
+        >
             <div className="text-center f-family">
                 <div className={`${cx('')} rounded-circle overflow-hidden`}>
                     <img
@@ -50,7 +54,7 @@ function CardArtist() {
                         }}
                         className={`${cx(
                             'interested',
-                        )} border fs-13 rounded-5 w-75 m-auto p-1 ps-3 pe-3`}
+                        )} border fs-13 rounded-5 w-75 m-auto p-1 `}
                     >
                         <FontAwesomeIcon icon={faUserPlus} className="me-2 " />
                         <span className=" text-uppercase">quan tâm</span>
@@ -63,7 +67,7 @@ function CardArtist() {
                         }}
                         className={`${cx(
                             'interested',
-                        )} border fs-13 rounded-5 w-75 m-auto p-1 ps-3 pe-3 `}
+                        )} border fs-13 rounded-5 w-75 m-auto p-1  `}
                     >
                         <FontAwesomeIcon icon={faCheck} className="me-2 " />
                         <span className=" text-uppercase">đã quan tâm</span>

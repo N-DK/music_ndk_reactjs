@@ -5,7 +5,11 @@ const cx = classNames.bind(styles);
 
 function CardVideoSongItem({ isSlider }) {
     return (
-        <div className={`${isSlider ? '' : 'col-xl-4'} ${cx('')} mb-1 mt-1`}>
+        <div
+            className={`${isSlider ? '' : 'col-xl-4 col-md-4 col-sm-6'} ${cx(
+                '',
+            )} mb-1 mt-1`}
+        >
             <div className={`${cx('wrapper')} overflow-hidden rounded-3`}>
                 <div>
                     {/* <video className="w-100 h-100" controls>

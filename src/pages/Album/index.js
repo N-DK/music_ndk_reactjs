@@ -39,8 +39,8 @@ function Album() {
     return (
         <div className={`${cx('wrapper')} pt-5`}>
             <div className={`${cx('')} row`}>
-                <div className="col-4">
-                    <div className={`${cx('')} text-center f-family`}>
+                <div className="col-xl-4 col-md-4">
+                    <div className={`${cx('')} text-center f-family mb-3`}>
                         <div className={`${cx('')} rounded-4 overflow-hidden`}>
                             <img
                                 className="w-100 h-100"
@@ -75,7 +75,7 @@ function Album() {
                         </div>
                     </div>
                 </div>
-                <div className="col-8">
+                <div className="col-xl-8 col-md-8">
                     <div className={`${cx('list-song__container')} f-family`}>
                         <p>
                             <span className="subtitle_color">Preface</span> Thả

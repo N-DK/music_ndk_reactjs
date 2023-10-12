@@ -132,8 +132,8 @@ function Header() {
 
     useEffect(() => {
         document.body.style.overflow =
-            isTurnOnMenu || isTurnOnSearch ? 'hidden' : 'scroll';
-    }, [isTurnOnMenu, isTurnOnSearch]);
+            isTurnOnMenu || (isTurnOnSearch && isMobile) ? 'hidden' : 'scroll';
+    }, [isTurnOnMenu, isTurnOnSearch, isMobile]);
 
     // call api
     useEffect(() => {}, [search]);
@@ -188,7 +188,22 @@ function Header() {
                                     </a>
                                 </div>
                             ) : (
-                                <></>
+                                <>
+                                    <a
+                                        onClick={() =>
+                                            setIsTurrOnMenu(!isTurnOnMenu)
+                                        }
+                                        href="#"
+                                        style={{ width: '40px' }}
+                                        className={`${cx('')} me-2`}
+                                    >
+                                        <img
+                                            className="w-100 h-100"
+                                            src={bar}
+                                            alt=""
+                                        />
+                                    </a>
+                                </>
                             )}
                             <div
                                 className={` position-relative ${cx(
@@ -214,7 +229,7 @@ function Header() {
                                     <div
                                         className={` bg-white ${cx(
                                             'result',
-                                        )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-4`}
+                                        )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-3 pb-3`}
                                     >
                                         {songs.map((song, index) => (
                                             <ListSongItem
@@ -290,49 +305,53 @@ function Header() {
                         </div>
                     </div>
                 </div>
-                <div
-                    className={`${cx(
-                        !isTurnOnSearch ? 'not-is-search' : 'is-search',
-                    )}`}
-                >
-                    <div
-                        className={` position-relative ${cx(
-                            'search',
-                        )} d-flex align-items-center`}
-                    >
-                        <a
-                            href="#"
-                            className={` text-decoration-none me-2 text--primary`}
+                {isMobile && (
+                    <div className="container">
+                        <div
+                            className={`${cx(
+                                !isTurnOnSearch ? 'not-is-search' : 'is-search',
+                            )}`}
                         >
-                            <FontAwesomeIcon icon={faMagnifyingGlass} />
-                        </a>
-                        <input
-                            type="text"
-                            className={` border-0 bg-transparent f-family`}
-                            placeholder="Search song..."
-                            onChange={(e) => setSearch(e.target.value)}
-                            value={search}
-                            onBlur={() => setIsBlur(true)}
-                            onFocus={() => setIsBlur(false)}
-                        />
-                        {search && (
                             <div
-                                className={` bg-white ${cx(
-                                    'result',
-                                )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-3 pb-3`}
+                                className={` position-relative ${cx(
+                                    'search',
+                                )} d-flex align-items-center`}
                             >
-                                {songs.map((song, index) => (
-                                    <ListSongItem
-                                        key={index}
-                                        song={song}
-                                        songs={songs}
-                                        isSearchItem={true}
-                                    />
-                                ))}
+                                <a
+                                    href="#"
+                                    className={` text-decoration-none me-2 text--primary`}
+                                >
+                                    <FontAwesomeIcon icon={faMagnifyingGlass} />
+                                </a>
+                                <input
+                                    type="text"
+                                    className={` border-0 bg-transparent f-family`}
+                                    placeholder="Search song..."
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    value={search}
+                                    onBlur={() => setIsBlur(true)}
+                                    onFocus={() => setIsBlur(false)}
+                                />
+                                {search && (
+                                    <div
+                                        className={` bg-white ${cx(
+                                            'result',
+                                        )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-3 pb-3`}
+                                    >
+                                        {songs.map((song, index) => (
+                                            <ListSongItem
+                                                key={index}
+                                                song={song}
+                                                songs={songs}
+                                                isSearchItem={true}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             <div
