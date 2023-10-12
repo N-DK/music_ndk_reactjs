@@ -11,6 +11,7 @@ import SongItem from '~/components/SongItem';
 import Receptacle from '~/components/Receptacle';
 import zing from '~/img/zing_music.png';
 import ListSongItem from '~/components/ListSongItem';
+import { useMediaQuery } from 'react-responsive';
 
 const cx = classNames.bind(styles);
 
@@ -49,6 +50,7 @@ const songs = [
 function Artist() {
     const [numberInterested, setNumberInterested] = useState(2447764);
     const [isInterested, setIsInterested] = useState(false);
+    const isTabletMobile = useMediaQuery({ maxWidth: 900 });
 
     // 111111 -> 111.111
     const convertNumber = (number) => {
@@ -56,16 +58,20 @@ function Artist() {
     };
 
     return (
-        <div className={`${cx('wrapper')}`}>
+        <div
+            className={`${cx('wrapper', `${isTabletMobile && 'is-mobile'}`)} `}
+        >
             <div
                 className={`${cx(
                     'banner__artist',
-                )} h-100 position-absolute end-0`}
+                )} h-100 position-absolute end-0 ${isTabletMobile && 'w-100'}`}
             >
                 <div
                     className={`${cx(
                         'banner__artist--item',
-                    )} d-flex align-items-center container position-absolute`}
+                    )} d-flex align-items-center container position-absolute ${
+                        isTabletMobile && 'w-100'
+                    }`}
                 >
                     <div
                         className={`${cx(
@@ -79,11 +85,15 @@ function Artist() {
                         />
                     </div>
                     <div className={`${cx('')} f-family`}>
-                        <h1 className={cx('artist__name')}>Sơn Tùng M-TP</h1>
+                        <h1 className={`${cx('artist__name')} mb-0`}>
+                            Sơn Tùng M-TP
+                        </h1>
                         <div
-                            className={`${cx(
+                            className={` ${cx(
                                 '',
-                            )} d-flex align-items-center mt-3`}
+                            )} d-flex align-items-center mt-3 ${
+                                isTabletMobile && 'flex-column'
+                            }`}
                         >
                             <p className="mb-0">
                                 <span>
@@ -100,7 +110,7 @@ function Artist() {
                                         setIsInterested(true);
                                     }}
                                     className={`${cx(
-                                        '',
+                                        'btn-interested',
                                     )} border border-dark fs-13 rounded-5 ms-4 p-1 ps-3 pe-3`}
                                 >
                                     <FontAwesomeIcon
@@ -118,7 +128,7 @@ function Artist() {
                                         setIsInterested(false);
                                     }}
                                     className={` border-dark ${cx(
-                                        '',
+                                        'btn-interested',
                                     )} border fs-13 rounded-5 ms-4 p-1 ps-3 pe-3`}
                                 >
                                     <FontAwesomeIcon
@@ -155,7 +165,7 @@ function Artist() {
                         </a>
                     </div>
                     <div className={`${cx('')} row `}>
-                        <div className="col-6">
+                        <div className="col-xl-6 col-md-12">
                             {songs.map((song, index) => (
                                 <ListSongItem
                                     key={index}
@@ -164,69 +174,81 @@ function Artist() {
                                 />
                             ))}
                         </div>
-                        <div className="col-6"></div>
+                        <div className="col-xl-6 col-md-12"></div>
                     </div>
                 </div>
                 <Receptacle title="Single & EP" />
                 <Receptacle title="Album" />
-                <Receptacle title="MV" video={true} />
+                <Receptacle title="MV" video={true} control={true} />
                 <div className={`${cx('about__artist')} f-family mt-5`}>
                     <h4 className={`${cx('')}`}>About Sơn Tùng M-TP</h4>
-                    <div className={`${cx('')} d-flex align-items-start mt-4`}>
-                        <div
-                            className={`${cx(
-                                'about__artist--img',
-                            )} overflow-hidden rounded-2`}
-                        >
-                            <img
-                                className="w-100 h-100"
-                                src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/avatars/f/b/f/1/fbf16d7352a3eea6be8cf5d4b217516d.jpg"
-                                alt=""
-                            />
-                        </div>
-                        <div className={`${cx('content')} ms-4`}>
-                            <p className="mb-5">
-                                Thanh Tùng bắt đầu chơi nhạc từ cấp ba với nghệ
-                                danh M-TP và được biết đến với "Cơn Mưa Ngang
-                                Qua". Năm 2012, anh đậu thủ khoa Nhạc viện TPHCM
-                                và ký hợp đồng với Văn Production, đổi nghệ danh
-                                sang Sơn Tùng M-TP. Từ 2013 đến 2015, anh có
-                                nhiều bản hit như "Em Của Ngày Hôm Qua", "Nắng
-                                Ấm Xa Dần"... Năm 2015, anh rời khỏi công ty cũ
-                                và gia nhập WePro, tổ chức minishow đầu tiên
-                                "M-TP and Friends". Năm 2017, anh rời khỏi WePro
-                                để thành lập M-TP Entertainment, ra mắt "Lạc
-                                Trôi" và "Nơi Này Có Anh". Anh ra mắt album đầu
-                                tay "m-tp M-TP". Năm 2018 anh ra mắt "Chạy Ngay
-                                Đi" và "Hãy Trao Cho Anh" năm 2019. Cả hai bài
-                                hát đều trở thành hit. Đặc biệt "Hãy Trao Cho
-                                Anh" kết hợp với Snopp Dogg đã đưa tên tuổi anh
-                                ra thế giới.
-                            </p>
-                            <div
-                                className={`${cx(
-                                    '',
-                                )} d-flex align-items-center`}
-                            >
-                                <div className="me-5">
-                                    <span className="d-block fs-5 fw-bold">
-                                        {convertNumber(
-                                            numberInterested.toLocaleString(),
-                                        )}
-                                    </span>
-                                    <span>Người quan tâm</span>
-                                </div>
-                                <div className="me-5">
-                                    <span className="d-block fs-5 fw-bold">
-                                        3
-                                    </span>
-                                    <span>Giải thưởng</span>
-                                </div>
-                                <div>
+                    <div className={`${cx('')} mt-4`}>
+                        <div className="row">
+                            <div className="col-12 col-xl-4 col-md-4">
+                                <div
+                                    className={`${cx(
+                                        'about__artist--img',
+                                    )} overflow-hidden rounded-2 mb-3`}
+                                >
                                     <img
-                                        style={{ width: 40, height: 40 }}
-                                        src={zing}
+                                        className="w-100 h-100"
+                                        src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/avatars/f/b/f/1/fbf16d7352a3eea6be8cf5d4b217516d.jpg"
+                                        alt=""
                                     />
+                                </div>
+                            </div>
+                            <div className="col-12 col-xl-8 col-md-8">
+                                <div className={`${cx('content')}`}>
+                                    <p className="mb-5">
+                                        Thanh Tùng bắt đầu chơi nhạc từ cấp ba
+                                        với nghệ danh M-TP và được biết đến với
+                                        "Cơn Mưa Ngang Qua". Năm 2012, anh đậu
+                                        thủ khoa Nhạc viện TPHCM và ký hợp đồng
+                                        với Văn Production, đổi nghệ danh sang
+                                        Sơn Tùng M-TP. Từ 2013 đến 2015, anh có
+                                        nhiều bản hit như "Em Của Ngày Hôm Qua",
+                                        "Nắng Ấm Xa Dần"... Năm 2015, anh rời
+                                        khỏi công ty cũ và gia nhập WePro, tổ
+                                        chức minishow đầu tiên "M-TP and
+                                        Friends". Năm 2017, anh rời khỏi WePro
+                                        để thành lập M-TP Entertainment, ra mắt
+                                        "Lạc Trôi" và "Nơi Này Có Anh". Anh ra
+                                        mắt album đầu tay "m-tp M-TP". Năm 2018
+                                        anh ra mắt "Chạy Ngay Đi" và "Hãy Trao
+                                        Cho Anh" năm 2019. Cả hai bài hát đều
+                                        trở thành hit. Đặc biệt "Hãy Trao Cho
+                                        Anh" kết hợp với Snopp Dogg đã đưa tên
+                                        tuổi anh ra thế giới.
+                                    </p>
+                                    <div
+                                        className={`${cx(
+                                            '',
+                                        )} d-flex align-items-center`}
+                                    >
+                                        <div className="me-5">
+                                            <span className="d-block fs-5 fw-bold">
+                                                {convertNumber(
+                                                    numberInterested.toLocaleString(),
+                                                )}
+                                            </span>
+                                            <span>Người quan tâm</span>
+                                        </div>
+                                        <div className="me-5">
+                                            <span className="d-block fs-5 fw-bold">
+                                                3
+                                            </span>
+                                            <span>Giải thưởng</span>
+                                        </div>
+                                        <div>
+                                            <img
+                                                style={{
+                                                    width: 40,
+                                                    height: 40,
+                                                }}
+                                                src={zing}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
