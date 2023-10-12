@@ -54,6 +54,7 @@
     --iq-color8: #fde117;
     --iq-width-sidebar: 250px;
     --iq-height-header: 74px;
+    --iq-alpha-bg: rgba(0, 0, 0, 0.05);
 }
 
 * {
@@ -143,8 +144,23 @@ body::-webkit-scrollbar {
     display: none;
 }
 
-// body::-webkit-scrollbar-thumb {
-//     background-color: var(--iq-primary);
-//     outline: 1px solid slategrey;
-//     border-radius: 16px;
-// }
+// col-md-3 col-sm-4 col-xs-6
+@media only screen and (max-width: 75em) {
+    .col-md-3 {
+        flex: 0 0 auto;
+        width: 25% !important;
+    }
+}
+/* For tablets: */
+@media only screen and (min-width: 31.25em) and (max-width: 63.9375em) {
+    .col-sm-4 {
+        flex: 0 0 auto;
+        width: 33.33% !important;
+    }
+}
+@media only screen and (max-width: 47.875em) {
+    .col-xs-6 {
+        flex: 0 0 auto;
+        width: 50% !important;
+    }
+}

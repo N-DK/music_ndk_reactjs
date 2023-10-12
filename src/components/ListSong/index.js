@@ -4,7 +4,7 @@ import ListSongItem from '../ListSongItem';
 
 const cx = classNames.bind(styles);
 
-function ListSong({ data }) {
+function ListSong({ isShowAlbums, data }) {
     // call api data
 
     return (
@@ -25,7 +25,12 @@ function ListSong({ data }) {
                 </div>
             </div>
             {data.map((song, index) => (
-                <ListSongItem key={index} song={song} songs={data} />
+                <ListSongItem
+                    isShowAlbum={isShowAlbums}
+                    key={index}
+                    song={song}
+                    songs={data}
+                />
             ))}
         </div>
     );

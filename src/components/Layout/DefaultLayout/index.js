@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import styles from './DefaultLayout.module.scss';
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 const cx = classNames.bind(styles);
 
@@ -17,6 +18,9 @@ function DefaultLayout({ children }) {
     const [date, setDate] = useState('');
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
+    // const isPcLow = useMediaQuery({ minWidth: 1100 });
+    const isTabletMobile = useMediaQuery({ maxWidth: 900 });
+    // const isTablet = useMediaQuery({ minWidth: 767, maxWidth: 989 });
 
     const handleLogin = () => {
         console.log('Handling log in');
@@ -94,14 +98,16 @@ function DefaultLayout({ children }) {
     return (
         <>
             <div className="overflow-hidden">
-                <Sidebar />
-                <div className="w-main float-end">
+                {/* if như mobile thì cút Sidebar */}
+                {!isTabletMobile && <Sidebar />}
+                {/* nếu như mobile thì thêm w-100 */}
+                <div
+                    className={`w-main float-end ${isTabletMobile && 'w-100'}`}
+                >
                     <Header />
-                    <div className="w-100 h-100 position-relative">
-                        <div className="mt-header">
-                            <div className="container">
-                                <div className="content">{children}</div>
-                            </div>
+                    <div className="mt-header">
+                        <div className="container">
+                            <div className="content">{children}</div>
                         </div>
                     </div>
                 </div>
@@ -142,7 +148,7 @@ function DefaultLayout({ children }) {
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-body">
-                            <div className="p-5 pt-4">
+                            <div className="p-2 pt-4">
                                 {isLogin ? (
                                     <div className="border-bottom pb-4 mb-4">
                                         <h3 className="text-center mb-4">

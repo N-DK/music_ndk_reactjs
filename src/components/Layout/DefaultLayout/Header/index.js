@@ -1,15 +1,23 @@
 import {
     faArrowLeft,
     faArrowRight,
+    faCompactDisc,
     faGear,
+    faHouse,
+    faIcons,
     faMagnifyingGlass,
+    faPlus,
+    faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import logo from '~/img/logo.png';
+import bar from '~/img/bar.png';
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ListSongItem from '~/components/ListSongItem';
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
 const cx = classNames.bind(styles);
 
 const songs = [
@@ -52,6 +60,10 @@ function Header() {
     const [isPopstate, setIsPopstate] = useState(false);
     const [isBlur, setIsBlur] = useState(false);
     const navigate = useNavigate();
+    const [isTurnOnMenu, setIsTurrOnMenu] = useState(false);
+    const [isTurnOnSearch, setIsTurnOnSearch] = useState(false);
+    const isTabletMobile = useMediaQuery({ maxWidth: 900 });
+    const isMobile = useMediaQuery({ maxWidth: 768 });
 
     const goToPreviousPage = () => {
         var lastItemBack = back.pop();
@@ -118,112 +130,283 @@ function Header() {
         setIsPopstate(false);
     }, [isPopstate]);
 
+    useEffect(() => {
+        document.body.style.overflow =
+            isTurnOnMenu || isTurnOnSearch ? 'hidden' : 'scroll';
+    }, [isTurnOnMenu, isTurnOnSearch]);
+
     // call api
     useEffect(() => {}, [search]);
 
     return (
-        <div className={`${cx('wrapper')}  position-fixed top-0 end-0`}>
-            <div className="container">
-                <div
-                    className={` d-flex align-items-center justify-content-between pt-3 pb-3`}
-                >
-                    <div className={`d-flex align-items-center`}>
-                        <div className={`d-flex align-content-center me-3`}>
-                            <a
-                                onClick={
-                                    !(back.length < 1)
-                                        ? goToPreviousPage
-                                        : () => {}
-                                }
-                                className={`${cx(
-                                    back.length < 1
-                                        ? 'is_disable'
-                                        : 'is_active',
-                                )} me-4 text-decoration-none me-2 text--primary`}
-                            >
-                                <FontAwesomeIcon icon={faArrowLeft} />
-                            </a>
-                            <a
-                                onClick={
-                                    !(forward.length < 1)
-                                        ? goToNextPage
-                                        : () => {}
-                                }
-                                className={`${cx(
-                                    forward.length < 1
-                                        ? 'is_disable'
-                                        : 'is_active',
-                                )} text-decoration-none me-2 text--primary`}
-                            >
-                                <FontAwesomeIcon icon={faArrowRight} />
-                            </a>
-                        </div>
+        <>
+            <div
+                className={`${cx('wrapper')}  position-fixed top-0 end-0 ${
+                    isTabletMobile && 'w-100'
+                }`}
+            >
+                <div className="container">
+                    <div
+                        className={` d-flex align-items-center justify-content-between pt-3 pb-3 `}
+                    >
                         <div
-                            className={` position-relative ${cx(
-                                'search',
-                            )} d-flex align-items-center`}
+                            className={`d-flex align-items-center ${
+                                isMobile && 'd-none'
+                            }`}
                         >
-                            <a
-                                href="#"
-                                className={` text-decoration-none me-2 text--primary`}
-                            >
-                                <FontAwesomeIcon icon={faMagnifyingGlass} />
-                            </a>
-                            <input
-                                type="text"
-                                className={` border-0 bg-transparent f-family`}
-                                placeholder="Search song..."
-                                onChange={(e) => setSearch(e.target.value)}
-                                value={search}
-                                onBlur={() => setIsBlur(true)}
-                                onFocus={() => setIsBlur(false)}
-                            />
-                            {search && !isBlur && (
+                            {!isTabletMobile ? (
                                 <div
-                                    className={` bg-white ${cx(
-                                        'result',
-                                    )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-4`}
+                                    className={`d-flex align-content-center me-3`}
                                 >
-                                    {songs.map((song, index) => (
-                                        <ListSongItem
-                                            key={index}
-                                            song={song}
-                                            songs={songs}
-                                            isSearchItem={true}
-                                        />
-                                    ))}
+                                    <a
+                                        onClick={
+                                            !(back.length < 1)
+                                                ? goToPreviousPage
+                                                : () => {}
+                                        }
+                                        className={`${cx(
+                                            back.length < 1
+                                                ? 'is_disable'
+                                                : 'is_active',
+                                        )} me-4 text-decoration-none me-2 text--primary`}
+                                    >
+                                        <FontAwesomeIcon icon={faArrowLeft} />
+                                    </a>
+                                    <a
+                                        onClick={
+                                            !(forward.length < 1)
+                                                ? goToNextPage
+                                                : () => {}
+                                        }
+                                        className={`${cx(
+                                            forward.length < 1
+                                                ? 'is_disable'
+                                                : 'is_active',
+                                        )} text-decoration-none me-2 text--primary`}
+                                    >
+                                        <FontAwesomeIcon icon={faArrowRight} />
+                                    </a>
                                 </div>
+                            ) : (
+                                <></>
                             )}
+                            <div
+                                className={` position-relative ${cx(
+                                    'search',
+                                )} d-flex align-items-center`}
+                            >
+                                <a
+                                    href="#"
+                                    className={` text-decoration-none me-2 text--primary`}
+                                >
+                                    <FontAwesomeIcon icon={faMagnifyingGlass} />
+                                </a>
+                                <input
+                                    type="text"
+                                    className={` border-0 bg-transparent f-family`}
+                                    placeholder="Search song..."
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    value={search}
+                                    onBlur={() => setIsBlur(true)}
+                                    onFocus={() => setIsBlur(false)}
+                                />
+                                {search && !isBlur && (
+                                    <div
+                                        className={` bg-white ${cx(
+                                            'result',
+                                        )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-4`}
+                                    >
+                                        {songs.map((song, index) => (
+                                            <ListSongItem
+                                                key={index}
+                                                song={song}
+                                                songs={songs}
+                                                isSearchItem={true}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        {isMobile && (
+                            <>
+                                <a
+                                    onClick={() =>
+                                        setIsTurrOnMenu(!isTurnOnMenu)
+                                    }
+                                    href="#"
+                                    className={`${cx('logo')}`}
+                                >
+                                    <img
+                                        className="w-50 h-100"
+                                        src={bar}
+                                        alt=""
+                                    />
+                                </a>
+                                <div className={`${cx('logo')}`}>
+                                    <img
+                                        className="w-100 h-100"
+                                        src={logo}
+                                        alt=""
+                                    />
+                                </div>
+                            </>
+                        )}
+                        <div className={`${cx('')} d-flex align-items-center`}>
+                            <a
+                                onClick={() => {
+                                    if (isMobile) {
+                                        setIsTurnOnSearch(!isTurnOnSearch);
+                                    }
+                                }}
+                                href="#"
+                                className="me-3 text-white rounded-circle d-flex align-items-center is_circle justify-content-center square_40"
+                            >
+                                <FontAwesomeIcon
+                                    icon={
+                                        isMobile
+                                            ? !isTurnOnSearch
+                                                ? faMagnifyingGlass
+                                                : faXmark
+                                            : faGear
+                                    }
+                                    className={`text-dark`}
+                                />
+                            </a>
+                            <a
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalLogin"
+                                href="#"
+                                className="rounded-circle square_40 d-block overflow-hidden"
+                            >
+                                <figure>
+                                    <img
+                                        src="https://zjs.zmdcdn.me/zmp3-desktop/releases/v1.9.67/static/media/user-default.3ff115bb.png"
+                                        alt=""
+                                        className="w-100 h-100"
+                                    />
+                                </figure>
+                            </a>
                         </div>
                     </div>
-                    <div className={`${cx('')} d-flex align-items-center`}>
+                </div>
+                <div
+                    className={`${cx(
+                        !isTurnOnSearch ? 'not-is-search' : 'is-search',
+                    )}`}
+                >
+                    <div
+                        className={` position-relative ${cx(
+                            'search',
+                        )} d-flex align-items-center`}
+                    >
                         <a
-                            href=""
-                            className="me-3 text-white rounded-circle d-flex align-items-center is_circle justify-content-center square_40"
-                        >
-                            <FontAwesomeIcon
-                                icon={faGear}
-                                className={`text-dark`}
-                            />
-                        </a>
-                        <a
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalLogin"
                             href="#"
-                            className="rounded-circle square_40 d-block overflow-hidden"
+                            className={` text-decoration-none me-2 text--primary`}
                         >
-                            <figure>
-                                <img
-                                    src="https://zjs.zmdcdn.me/zmp3-desktop/releases/v1.9.67/static/media/user-default.3ff115bb.png"
-                                    alt=""
-                                    className="w-100 h-100"
-                                />
-                            </figure>
+                            <FontAwesomeIcon icon={faMagnifyingGlass} />
                         </a>
+                        <input
+                            type="text"
+                            className={` border-0 bg-transparent f-family`}
+                            placeholder="Search song..."
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={search}
+                            onBlur={() => setIsBlur(true)}
+                            onFocus={() => setIsBlur(false)}
+                        />
+                        {search && (
+                            <div
+                                className={` bg-white ${cx(
+                                    'result',
+                                )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-3 pb-3`}
+                            >
+                                {songs.map((song, index) => (
+                                    <ListSongItem
+                                        key={index}
+                                        song={song}
+                                        songs={songs}
+                                        isSearchItem={true}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
-        </div>
+
+            <div
+                onClick={() => setIsTurrOnMenu(false)}
+                className={` ${cx(
+                    'menu-mobi',
+                    `${isTurnOnMenu && 'active'}`,
+                )} position-fixed top-0 start-0 bottom-0 end-0`}
+            >
+                <div
+                    className={` position-absolute top-0 start-0 bottom-0 p-3 ${cx(
+                        'menu__container',
+                        `${isTurnOnMenu && 'active'}`,
+                    )}`}
+                >
+                    <div className="float-end">
+                        <p
+                            onClick={() => setIsTurrOnMenu(!isTurnOnMenu)}
+                            className="fs-3 text--primary text-decoration-none"
+                        >
+                            <FontAwesomeIcon icon={faXmark} />
+                        </p>
+                    </div>
+                    <div className="pt-3">
+                        <ul className={` m-0 p-0 list-unstyled mt-4`}>
+                            <li>
+                                <Link
+                                    to="/"
+                                    className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
+                                >
+                                    <FontAwesomeIcon icon={faHouse} />
+                                    <span className={`${cx('')} ms-2`}>
+                                        Home
+                                    </span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to="/mymusic"
+                                    className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
+                                >
+                                    <FontAwesomeIcon icon={faCompactDisc} />
+                                    <span className={`${cx('')} ms-2 `}>
+                                        My space music
+                                    </span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    to="/hub"
+                                    className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
+                                >
+                                    <FontAwesomeIcon icon={faIcons} />
+                                    <span className={`${cx('')} ms-2`}>
+                                        Topic and Genre
+                                    </span>
+                                </Link>
+                            </li>
+                            <li>
+                                <a
+                                    href="#"
+                                    className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
+                                >
+                                    <FontAwesomeIcon icon={faPlus} />
+                                    <span className="ms-2">
+                                        Create new playlist
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </>
     );
 }
 

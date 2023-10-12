@@ -11,6 +11,7 @@ import {
     faEllipsis,
     faForwardStep,
     faMicrophone,
+    faPlus,
     faRepeat,
     faShuffle,
     faVolumeHigh,
@@ -27,6 +28,7 @@ import {
     setData,
     setPlaying,
 } from '~/redux_';
+import { useMediaQuery } from 'react-responsive';
 
 const cx = classNames.bind(styles);
 
@@ -71,6 +73,9 @@ function Footer({ data, isPlaying, currAudio }) {
     const [isRepeat, setIsRepeat] = useState(false);
     const [volume, setVolume] = useState(1);
     const [isMute, setIsMute] = useState(false);
+    const [isExpandControls, setIsExpandControls] = useState(false);
+    const isTabletMobile = useMediaQuery({ maxWidth: 900 });
+    const isMobile = useMediaQuery({ maxWidth: 766 });
 
     useSelector(() => reducer);
     const dispatch = useDispatch();
@@ -170,6 +175,12 @@ function Footer({ data, isPlaying, currAudio }) {
                     <div
                         className={`${cx(
                             'wrapper',
+                            `${
+                                isTabletMobile &&
+                                (isExpandControls
+                                    ? 'is-expand'
+                                    : 'is-not-expand')
+                            }`,
                         )} position-fixed bottom-0 end-0 bg-dark start-0 p-4 pt-3 pb-3`}
                     >
                         <div
@@ -177,7 +188,11 @@ function Footer({ data, isPlaying, currAudio }) {
                                 '',
                             )} d-flex align-items-center justify-content-between`}
                         >
-                            <div className={`${cx('song__container')}`}>
+                            <div
+                                className={`${cx('song__container')} ${
+                                    isTabletMobile && 'w-100'
+                                }`}
+                            >
                                 <div className="d-flex align-items-center">
                                     <div
                                         className={`${cx(
@@ -214,27 +229,253 @@ function Footer({ data, isPlaying, currAudio }) {
                                                 )}
                                             </div>
                                         </div>
-                                        <a
-                                            href=""
-                                            className="ms-4 me-2 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                                        >
-                                            <FontAwesomeIcon icon={faHeart} />
-                                        </a>
-                                        <a
-                                            href="#"
-                                            className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                                        >
-                                            <FontAwesomeIcon
-                                                icon={faEllipsis}
-                                            />
-                                        </a>
+                                        {!isMobile && (
+                                            <>
+                                                <a
+                                                    href=""
+                                                    className="ms-4 me-2 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faHeart}
+                                                    />
+                                                </a>
+                                                <a
+                                                    href="#"
+                                                    className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faEllipsis}
+                                                    />
+                                                </a>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>
+                            {isTabletMobile && (
+                                <div>
+                                    <a
+                                        onClick={() =>
+                                            setIsExpandControls(
+                                                !isExpandControls,
+                                            )
+                                        }
+                                        className="text-white fs-2"
+                                    >
+                                        <FontAwesomeIcon icon={faPlus} />
+                                    </a>
+                                </div>
+                            )}
+                            {!isTabletMobile && (
+                                <>
+                                    <div
+                                        className={`${cx(
+                                            'control__container',
+                                        )} d-flex justify-content-center align-items-center flex-column flex-1`}
+                                    >
+                                        <div
+                                            className={` d-flex justify-content-center align-items-center`}
+                                        >
+                                            <a
+                                                href=""
+                                                className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faShuffle}
+                                                />
+                                            </a>
+                                            <a
+                                                onClick={() =>
+                                                    handleNavigationSong(PREV)
+                                                }
+                                                href="#"
+                                                className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faBackwardStep}
+                                                />
+                                            </a>
+                                            <a
+                                                onClick={() => {
+                                                    if (isPlaying) {
+                                                        handlePause();
+                                                    } else {
+                                                        handlePlay();
+                                                    }
+                                                }}
+                                                href="#"
+                                                className="fs-1 ms-3 me-3 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
+                                            >
+                                                {isPlaying ? (
+                                                    <FontAwesomeIcon
+                                                        icon={faCirclePause}
+                                                    />
+                                                ) : (
+                                                    <FontAwesomeIcon
+                                                        icon={faCirclePlay}
+                                                    />
+                                                )}
+                                            </a>
+                                            <a
+                                                onClick={() =>
+                                                    handleNavigationSong(NEXT)
+                                                }
+                                                href="#"
+                                                className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faForwardStep}
+                                                />
+                                            </a>
+                                            <a
+                                                onClick={() => {
+                                                    setIsRepeat(!isRepeat);
+                                                }}
+                                                href="#"
+                                                className={`${
+                                                    isRepeat
+                                                        ? 'is_repeat'
+                                                        : 'text-white'
+                                                } fs-5 ms-3 me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faRepeat}
+                                                />
+                                            </a>
+                                        </div>
+                                        <div
+                                            className={`${cx(
+                                                'duration__container',
+                                            )} subtitle_color d-flex align-items-center mt-2 f-family`}
+                                        >
+                                            <span>
+                                                {formatTime(currTimeSong) ||
+                                                    '00:00'}
+                                            </span>
+                                            <div
+                                                onClick={(e) => {
+                                                    var widthCurrent =
+                                                        ((e.clientX -
+                                                            e.target
+                                                                .offsetLeft) *
+                                                            100) /
+                                                        500;
+                                                    currAudio.currentTime =
+                                                        (widthCurrent *
+                                                            currAudio.duration) /
+                                                        100;
+                                                }}
+                                                className={`${cx('slider')}`}
+                                            >
+                                                <div
+                                                    style={{
+                                                        width: `${
+                                                            (currTimeSong *
+                                                                100) /
+                                                            currAudio.duration
+                                                                ? (currTimeSong *
+                                                                      100) /
+                                                                  currAudio.duration
+                                                                : 0
+                                                        }%`,
+                                                    }}
+                                                    className={`${cx(
+                                                        'slider__track',
+                                                    )}`}
+                                                ></div>
+                                            </div>
+                                            <span>{data.time}</span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={`${cx(
+                                            'control-right__container',
+                                        )} d-flex align-items-center justify-content-end`}
+                                    >
+                                        <a
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalId"
+                                            data-bs-lyric={`${currSong.lyric}`}
+                                            href=""
+                                            className="ms-3 me-2 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faMicrophone}
+                                            />
+                                        </a>
+                                        <div
+                                            className={`${cx(
+                                                '',
+                                            )} d-flex align-items-center `}
+                                        >
+                                            <a
+                                                onClick={() => {
+                                                    if (!isMute) {
+                                                        currAudio.volume = 0;
+                                                    } else {
+                                                        currAudio.volume =
+                                                            volume;
+                                                    }
+                                                    setIsMute(!isMute);
+                                                }}
+                                                href="#"
+                                                className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                            >
+                                                {currAudio.volume === 0 ? (
+                                                    <FontAwesomeIcon
+                                                        icon={faVolumeXmark}
+                                                    />
+                                                ) : currAudio.volume <= 0.5 ? (
+                                                    <FontAwesomeIcon
+                                                        icon={faVolumeLow}
+                                                    />
+                                                ) : (
+                                                    <FontAwesomeIcon
+                                                        icon={faVolumeHigh}
+                                                    />
+                                                )}
+                                            </a>
+                                            <div
+                                                onClick={(e) => {
+                                                    var widthCurrent =
+                                                        ((e.clientX -
+                                                            e.target
+                                                                .offsetLeft) *
+                                                            100) /
+                                                        100;
+                                                    currAudio.volume =
+                                                        widthCurrent / 100;
+                                                    setVolume(
+                                                        widthCurrent / 100,
+                                                    );
+                                                }}
+                                                className={`${cx(
+                                                    'slider',
+                                                    'sound',
+                                                )}`}
+                                            >
+                                                <div
+                                                    style={{
+                                                        width: `${
+                                                            currAudio.volume *
+                                                            100
+                                                        }%`,
+                                                    }}
+                                                    className={`${cx(
+                                                        'slider__track',
+                                                    )}`}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                        {isTabletMobile && (
                             <div
                                 className={`${cx(
                                     'control__container',
-                                )} d-flex justify-content-center align-items-center flex-column flex-1`}
+                                )} d-flex justify-content-center align-items-center flex-column flex-1 mt-3`}
                             >
                                 <div
                                     className={` d-flex justify-content-center align-items-center`}
@@ -303,7 +544,7 @@ function Footer({ data, isPlaying, currAudio }) {
                                 <div
                                     className={`${cx(
                                         'duration__container',
-                                    )} subtitle_color d-flex align-items-center mt-2 f-family`}
+                                    )} subtitle_color d-flex align-items-center mt-2 f-family w-100`}
                                 >
                                     <span>
                                         {formatTime(currTimeSong) || '00:00'}
@@ -320,7 +561,7 @@ function Footer({ data, isPlaying, currAudio }) {
                                                     currAudio.duration) /
                                                 100;
                                         }}
-                                        className={`${cx('slider')}`}
+                                        className={`${cx('slider')} w-100`}
                                     >
                                         <div
                                             style={{
@@ -338,76 +579,7 @@ function Footer({ data, isPlaying, currAudio }) {
                                     <span>{data.time}</span>
                                 </div>
                             </div>
-                            <div
-                                className={`${cx(
-                                    'control-right__container',
-                                )} d-flex align-items-center justify-content-end`}
-                            >
-                                <a
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalId"
-                                    data-bs-lyric={`${currSong.lyric}`}
-                                    href=""
-                                    className="ms-3 me-2 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                                >
-                                    <FontAwesomeIcon icon={faMicrophone} />
-                                </a>
-                                <div
-                                    className={`${cx(
-                                        '',
-                                    )} d-flex align-items-center `}
-                                >
-                                    <a
-                                        onClick={() => {
-                                            if (!isMute) {
-                                                currAudio.volume = 0;
-                                            } else {
-                                                currAudio.volume = volume;
-                                            }
-                                            setIsMute(!isMute);
-                                        }}
-                                        href="#"
-                                        className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                                    >
-                                        {currAudio.volume === 0 ? (
-                                            <FontAwesomeIcon
-                                                icon={faVolumeXmark}
-                                            />
-                                        ) : currAudio.volume <= 0.5 ? (
-                                            <FontAwesomeIcon
-                                                icon={faVolumeLow}
-                                            />
-                                        ) : (
-                                            <FontAwesomeIcon
-                                                icon={faVolumeHigh}
-                                            />
-                                        )}
-                                    </a>
-                                    <div
-                                        onClick={(e) => {
-                                            var widthCurrent =
-                                                ((e.clientX -
-                                                    e.target.offsetLeft) *
-                                                    100) /
-                                                100;
-                                            currAudio.volume =
-                                                widthCurrent / 100;
-                                            setVolume(widthCurrent / 100);
-                                        }}
-                                        className={`${cx('slider', 'sound')}`}
-                                    >
-                                        <div
-                                            style={{
-                                                width: `${
-                                                    currAudio.volume * 100
-                                                }%`,
-                                            }}
-                                            className={`${cx('slider__track')}`}
-                                        ></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}

@@ -106,7 +106,11 @@ function MyMusic() {
                     ))}
                 </div>
                 <div className="">
-                    {item == 1 ? <ListSong data={songs} /> : <MyAlbum />}
+                    {item == 1 ? (
+                        <ListSong isShowAlbums={true} data={songs} />
+                    ) : (
+                        <MyAlbum />
+                    )}
                 </div>
             </div>
         </div>

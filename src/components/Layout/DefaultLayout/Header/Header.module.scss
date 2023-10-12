@@ -35,4 +35,55 @@
     .is_active {
         cursor: pointer;
     }
+
+    .logo {
+        width: 100px;
+    }
+}
+
+.menu-mobi {
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: 0.3s;
+    visibility: hidden;
+
+    .menu__container {
+        transition: 0.3s;
+        width: 300px;
+        transform: translateX(-100%);
+        background: #fff;
+    }
+
+    .menu__container.active {
+        transform: translateX(0);
+    }
+}
+
+.menu-mobi.active {
+    opacity: 1;
+    visibility: visible;
+
+    body {
+        overflow: hidden !important;
+    }
+}
+
+.not-is-search {
+    height: 0;
+    opacity: 0;
+    transition: 0.3s;
+    transform: translateY(-100px);
+}
+
+.is-search {
+    height: 100vh;
+    opacity: 1;
+    transform: translateY(0);
+    transition: 0.3s;
+
+    .search {
+        width: 90%;
+        margin: 0 auto;
+    }
 }

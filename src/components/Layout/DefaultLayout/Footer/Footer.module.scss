@@ -92,4 +92,13 @@
     .slider.sound {
         width: 100px;
     }
+    transition: 0.3s;
+}
+
+.is-not-expand {
+    transform: translateY(80px);
+}
+
+.is-expand {
+    transform: translateY(0);
 }

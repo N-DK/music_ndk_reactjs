@@ -81,7 +81,7 @@ function Album() {
                             <span className="subtitle_color">Preface</span> Thả
                             mình vào những giai điệu Lofi Chill nghe là nghiện
                         </p>
-                        <ListSong data={songs} />
+                        <ListSong isShowAlbums={true} data={songs} />
                     </div>
                 </div>
             </div>

@@ -19,6 +19,31 @@ const settings = {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    responsive: [
+        {
+            breakpoint: 1024,
+            settings: {
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                infinite: true,
+            },
+        },
+        {
+            breakpoint: 768,
+            settings: {
+                slidesToShow: 2,
+                slidesToScroll: 2,
+                initialSlide: 2,
+            },
+        },
+        {
+            breakpoint: 480,
+            settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+            },
+        },
+    ],
 };
 
 // aip res => return
@@ -124,7 +149,7 @@ function Home() {
                             </a>
                         </div>
                         <div className={`${cx('')} row `}>
-                            <div className="col-6">
+                            <div className="col-xl-6 col-md-12">
                                 {songs.map((song, index) => (
                                     <ListSongItem
                                         key={index}
@@ -133,7 +158,7 @@ function Home() {
                                     />
                                 ))}
                             </div>
-                            <div className="col-6">
+                            <div className="col-xl-6 col-md-12">
                                 {songs.map((song, index) => (
                                     <ListSongItem
                                         key={index}

@@ -9,7 +9,11 @@ const cx = classNames.bind(styles);
 
 function CardSongItem({ isSlider }) {
     return (
-        <div className={`${isSlider ? '' : 'col-2-4'}`}>
+        <div
+            className={`${
+                isSlider ? '' : 'col-2-4 col-md-3 col-sm-4 col-xs-6'
+            }`}
+        >
             <div
                 className={`${cx(
                     'wrapper',
