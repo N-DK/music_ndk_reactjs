@@ -16,17 +16,17 @@ const listNav = [
         content: 'artist',
     },
     {
-        content: 'albums',
+        content: 'album',
     },
 ];
 
 function Admin() {
-    const [navActive, setNavActive] = useState('genres');
-    const handleFindCate = () => {
-        listNav.filter((nav) => {
-            if (nav.id == navActive) return nav.content;
-        });
-    };
+    const [navActive, setNavActive] = useState('song');
+    // const handleFindCate = () => {
+    //     listNav.filter((nav) => {
+    //         if (nav.id == navActive) return nav.content;
+    //     });
+    // };
 
     return (
         <>
