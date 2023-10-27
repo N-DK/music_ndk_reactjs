@@ -18,6 +18,9 @@ function AdminTables({ category }) {
     const [cate, setCate] = useState(category);
     const [data, setData] = useState();
     const [loading, setLoading] = useState(true);
+    const [totalPage, setTotalPage] = useState(0);
+    const [page, setPage] = useState(1);
+
     useEffect(() => {
         setLoading(true);
         setCate(category);
@@ -25,12 +28,60 @@ function AdminTables({ category }) {
             .get(`http://localhost:8080/api/${category}`)
             .then((res) => {
                 setData(res.data.results);
+                setTotalPage(res.data.totalPage);
                 setLoading(false);
             })
             .catch((err) => {
                 console.log(err);
             });
     }, [category]);
+
+    const renderPage = (page) => {
+        var pages = new Array(totalPage + 1);
+        const handleRenderPage = (page) => {
+            setPage(page);
+        };
+
+        if (page > 1) {
+            pages[0] = (
+                <a
+                    onClick={() => handleRenderPage(page - 1)}
+                    className={`${cx(
+                        'pagination-item',
+                    )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
+                >
+                    <FontAwesomeIcon icon={faAngleLeft} />
+                </a>
+            );
+        }
+
+        for (let i = 1; i <= (totalPage > 5 ? 5 : totalPage); i++) {
+            pages[i] = (
+                <span
+                    onClick={() => handleRenderPage(i)}
+                    className={`${cx(
+                        'pagination-item',
+                        `${i === page && 'active'}`,
+                    )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
+                >
+                    {i}
+                </span>
+            );
+        }
+        if (page < totalPage) {
+            pages.push(
+                <a
+                    onClick={() => handleRenderPage(page + 1)}
+                    className={`${cx(
+                        'pagination-item',
+                    )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
+                >
+                    <FontAwesomeIcon icon={faAngleRight} />
+                </a>,
+            );
+        }
+        return pages;
+    };
 
     return (
         <>
@@ -185,7 +236,7 @@ function AdminTables({ category }) {
                                     {data.map((item, index) => (
                                         <tr key={item.id}>
                                             <th className="border" scope="row">
-                                                1
+                                                {item.id}
                                             </th>
                                             <td className="border">
                                                 <div
@@ -194,7 +245,7 @@ function AdminTables({ category }) {
                                                     )} rounded-3 overflow-hidden`}
                                                 >
                                                     <img
-                                                        src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/a/3/1/c/a31cdf3a266dfa3fcbc586613c70ed52.jpg"
+                                                        src={item.thumbnail}
                                                         alt=""
                                                         className="w-100 h-100"
                                                     />
@@ -207,7 +258,7 @@ function AdminTables({ category }) {
                                             </td>
                                             <td className="border">
                                                 <p className="mb-0 d-flex align-items-center h-100">
-                                                    Pop, R&B, Indie Pop
+                                                    {item.genresCode}
                                                 </p>
                                             </td>
                                             <td className="border">
@@ -278,7 +329,7 @@ function AdminTables({ category }) {
                                     {data.map((item) => (
                                         <tr key={item.id}>
                                             <th className="border" scope="row">
-                                                1
+                                                {item.id}
                                             </th>
                                             <td className="border">
                                                 <div
@@ -287,7 +338,7 @@ function AdminTables({ category }) {
                                                     )} rounded-3 overflow-hidden`}
                                                 >
                                                     <img
-                                                        src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/avatars/f/b/f/1/fbf16d7352a3eea6be8cf5d4b217516d.jpg"
+                                                        src={item.profilePath}
                                                         alt=""
                                                         className="w-100 h-100"
                                                     />
@@ -368,7 +419,7 @@ function AdminTables({ category }) {
                                                     )} rounded-3 overflow-hidden`}
                                                 >
                                                     <img
-                                                        src="https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_jpeg/cover/f/0/c/6/f0c6b74652e9ed643f3183c7617aaa30.jpg"
+                                                        src={item.thumbnail}
                                                         alt=""
                                                         className="w-100 h-100"
                                                     />
@@ -411,58 +462,7 @@ function AdminTables({ category }) {
                     </div>
                     <div className="">
                         <div className="d-flex algin-items-center justify-content-center">
-                            <a
-                                className={`${cx(
-                                    'pagination-item',
-                                )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
-                                href="#"
-                            >
-                                <FontAwesomeIcon icon={faAngleLeft} />
-                            </a>
-                            <span
-                                className={`${cx(
-                                    'pagination-item',
-                                    'active',
-                                )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
-                            >
-                                1
-                            </span>
-                            <span
-                                className={`${cx(
-                                    'pagination-item',
-                                )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
-                            >
-                                2
-                            </span>
-                            <span
-                                className={`${cx(
-                                    'pagination-item',
-                                )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
-                            >
-                                3
-                            </span>
-                            <span
-                                className={`${cx(
-                                    'pagination-item',
-                                )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
-                            >
-                                4
-                            </span>
-                            <span
-                                className={`${cx(
-                                    'pagination-item',
-                                )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
-                            >
-                                5
-                            </span>
-                            <a
-                                className={`${cx(
-                                    'pagination-item',
-                                )} rounded-1 ms-1 me-1 d-flex align-items-center justify-content-center`}
-                                href="#"
-                            >
-                                <FontAwesomeIcon icon={faAngleRight} />
-                            </a>
+                            {totalPage > 0 && renderPage(page)}
                         </div>
                     </div>
                 </div>

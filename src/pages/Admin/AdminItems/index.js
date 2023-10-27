@@ -4,6 +4,9 @@ import classNames from 'classnames/bind';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Loading from '~/components/Loading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { Editor } from '@tinymce/tinymce-react';
 
 const cx = classNames.bind(styles);
 
@@ -54,19 +57,278 @@ const CreateGenres = ({ handleCreate, type }) => {
 };
 
 const CreateSong = ({ handleCreate, type }) => {
+    const [genres, setGenres] = useState([]);
+    const [listArtist, setListArtist] = useState([]);
+    const [listAlbum, setListAlbum] = useState([]);
+    const [data, setData] = useState({
+        title: '',
+        audioUrl: '',
+        thumbnail: '',
+        timePlay: '',
+        lyric: '',
+        genresCode: '',
+        artists: [],
+        albums: [],
+    });
+    const [title, setTitle] = useState('');
+    const [audioUrl, setAudioUrl] = useState('');
+    const [thumbnail, setThumbnail] = useState('');
+    const [timePlay, setTimePlay] = useState('');
+    const [lyric, setLyric] = useState('');
+    const [genresCode, setGenresCode] = useState('');
+    const [artists, setArtists] = useState([]);
+    const [albums, setAlbums] = useState([]);
+
+    const handleExists = (artist) => {
+        return artists.indexOf(artist) !== -1;
+    };
+
+    const handleExistsAlbum = (album) => {
+        return albums.indexOf(album) !== -1;
+    };
+
+    const handleEditorChange = (content, editor) => {
+        setLyric(editor.getContent());
+    };
+
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+
+        return seconds ? `${formattedMinutes}:${formattedSeconds}` : NaN;
+    };
+
+    useEffect(() => {
+        const getTimePlay = (audio) => {
+            setTimePlay(formatTime(audio.duration));
+        };
+
+        var audio = new Audio(audioUrl);
+
+        audio.addEventListener('loadeddata', () => getTimePlay(audio));
+
+        return () => {
+            audio.removeEventListener('loadedmetadata', getTimePlay);
+        };
+    }, [audioUrl]);
+
+    useEffect(() => {
+        setData(() => {
+            return {
+                title,
+                audioUrl,
+                thumbnail,
+                timePlay,
+                lyric,
+                genresCode,
+                artists,
+                albums,
+            };
+        });
+    }, [
+        title,
+        audioUrl,
+        thumbnail,
+        lyric,
+        genresCode,
+        artists,
+        albums,
+        timePlay,
+    ]);
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8080/api/genres')
+            .then((res) => setGenres(res.data.results))
+            .catch((err) => console.log(err));
+    }, []);
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8080/api/artist')
+            .then((res) => setListArtist(res.data.results))
+            .catch((err) => console.log(err));
+    }, []);
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8080/api/album')
+            .then((res) => setListAlbum(res.data.results))
+            .catch((err) => console.log(err));
+    }, []);
+
     return (
         <div className="p-3">
             <div className="mb-3">
-                <label className="d-block mb-1">Name:</label>
-                <input type="text" className="form-control" />
+                <label className="d-block mb-1">Title:</label>
+                <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    type="text"
+                    className="form-control"
+                />
             </div>
             <div className="mb-3">
-                <label className="d-block mb-1">Image:</label>
-                <input type="file" className="form-control" />
+                <label className="d-block mb-1">Audio url:</label>
+                <input
+                    type="text"
+                    onChange={(e) => setAudioUrl(e.target.value)}
+                    className="form-control"
+                />
+            </div>
+            <div className="mb-3">
+                <label className="d-block mb-1">Thumbnail:</label>
+                <input
+                    type="text"
+                    onChange={(e) => setThumbnail(e.target.value)}
+                    className="form-control"
+                />
+            </div>
+            <div className="mb-3">
+                <label className="d-block mb-1">Lyric:</label>
+                <Editor
+                    apiKey="4a4w5wva37x67iujqkgi67o68zzwjj26p18xeqvwkilhp33e"
+                    init={{
+                        plugins: [
+                            'advlist',
+                            'autolink',
+                            'link',
+                            'image',
+                            'lists',
+                            'charmap',
+                            'anchor',
+                            'pagebreak',
+                            'searchreplace',
+                            'wordcount',
+                            'visualblocks',
+                            'code',
+                            'fullscreen',
+                            'insertdatetime',
+                            'media',
+                            'table',
+                            'emoticons',
+                            'codesample',
+                        ],
+                        toolbar:
+                            'undo redo | styles | bold italic underline | alignleft aligncenter alignright alignjustify |' +
+                            'bullist numlist outdent indent | link image | print preview media fullscreen | ' +
+                            'forecolor backcolor emoticons',
+                        tinycomments_mode: 'embedded',
+                        tinycomments_author: 'Author name',
+                        mergetags_list: [
+                            { value: 'First.Name', title: 'First Name' },
+                            { value: 'Email', title: 'Email' },
+                        ],
+                        ai_request: (request, respondWith) =>
+                            respondWith.string(() =>
+                                Promise.reject(
+                                    'See docs to implement AI Assistant',
+                                ),
+                            ),
+                    }}
+                    // onInit={(e, editor) => (editorRef.current = editor)}
+                    onChange={handleEditorChange}
+                />
+            </div>
+            <div className="mb-3">
+                <label className="d-block mb-1">Genres:</label>
+                <select
+                    value={genresCode}
+                    onChange={(e) => setGenresCode(e.target.value)}
+                    className="form-control"
+                >
+                    <option value={''}>--Genres--</option>
+                    {genres.map((item) => (
+                        <option value={item.code} key={item.id}>
+                            {item.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <label className="d-block mb-1">Artist:</label>
+            <select
+                onChange={(e) => {
+                    if (e.target.value !== '') {
+                        setArtists(() => [...artists, e.target.value]);
+                    }
+                }}
+                value={''}
+                className="form-control"
+            >
+                <option value={''}>--Artists--</option>
+                {listArtist.map((artist) => (
+                    <option
+                        key={artist.id}
+                        value={artist.artistName}
+                        disabled={handleExists(artist.artistName)}
+                    >
+                        {artist.artistName}
+                    </option>
+                ))}
+            </select>
+            <div className="mt-3">
+                {artists.map((artist, index) => (
+                    <span className="border rounded-2 p-2 me-2" key={index}>
+                        {artist}
+                        <FontAwesomeIcon
+                            onClick={() => {
+                                setArtists(() => {
+                                    let arr = [...artists];
+                                    arr.splice(index, 1);
+                                    return arr;
+                                });
+                            }}
+                            className="ms-2"
+                            icon={faXmark}
+                        />
+                    </span>
+                ))}
+            </div>
+            <label className="d-block mb-1 mt-4">Album:</label>
+            <select
+                onChange={(e) => {
+                    if (e.target.value !== '') {
+                        setAlbums(() => [...albums, e.target.value]);
+                    }
+                }}
+                value={''}
+                className="form-control"
+            >
+                <option value={''}>--Albums--</option>
+                {listAlbum.map((album) => (
+                    <option
+                        key={album.id}
+                        value={album.name}
+                        disabled={handleExistsAlbum(album.name)}
+                    >
+                        {album.name}
+                    </option>
+                ))}
+            </select>
+            <div className="mt-3">
+                {albums.map((album, index) => (
+                    <span className="border rounded-2 p-2 me-2" key={index}>
+                        {album}
+                        <FontAwesomeIcon
+                            onClick={() => {
+                                setAlbums(() => {
+                                    let arr = [...albums];
+                                    arr.splice(index, 1);
+                                    return arr;
+                                });
+                            }}
+                            className="ms-2"
+                            icon={faXmark}
+                        />
+                    </span>
+                ))}
             </div>
             <button
                 className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
-                onClick={() => handleCreate(type)}
+                onClick={() => handleCreate(type, data)}
             >
                 Add new {type}
             </button>
@@ -146,7 +408,7 @@ const CreateArtist = ({ handleCreate, type }) => {
             </div>
             <div className="mb-3">
                 <label className="d-block mb-1">Biography:</label>
-                <input
+                <textarea
                     onChange={(e) => setBiography(e.target.value)}
                     type="text"
                     className="form-control"
@@ -204,7 +466,7 @@ const CreateAlbums = ({ handleCreate, type }) => {
     }, [name, thumbnail, genresCode, artists]);
 
     const handleExists = (artist) => {
-        return artists.indexOf(artist) != -1;
+        return artists.indexOf(artist) !== -1;
     };
 
     useEffect(() => {
@@ -261,9 +523,10 @@ const CreateAlbums = ({ handleCreate, type }) => {
                 <select
                     onChange={(e) => {
                         if (e.target.value !== '') {
-                            setArtists((prev) => [...prev, e.target.value]);
+                            setArtists(() => [...artists, e.target.value]);
                         }
                     }}
+                    value={''}
                     className="form-control"
                 >
                     <option value={''}>--Artists--</option>
@@ -277,9 +540,22 @@ const CreateAlbums = ({ handleCreate, type }) => {
                         </option>
                     ))}
                 </select>
-                <div>
+                <div className="mt-3">
                     {artists.map((artist, index) => (
-                        <span key={index}>{artist}</span>
+                        <span className="border rounded-2 p-2 me-2" key={index}>
+                            {artist}
+                            <FontAwesomeIcon
+                                onClick={() => {
+                                    setArtists(() => {
+                                        let arr = [...artists];
+                                        arr.splice(index, 1);
+                                        return arr;
+                                    });
+                                }}
+                                className="ms-2"
+                                icon={faXmark}
+                            />
+                        </span>
                     ))}
                 </div>
             </div>
@@ -319,20 +595,19 @@ function AdminItems() {
     const [success, setSuccess] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    const handleCrateSong = () => {
+    const handleCrateSong = (data) => {
         setLoading(true);
         axios
             .post('http://localhost:8080/api/song', {
-                title: 'Âm thầm bên em (Lofi)',
-                audioUrl:
-                    'https://vnso-zn-10-tf-a320-zmp3.zmdcdn.me/523fb2bef2f3b3c8497c6efe228c737c?authen=exp=1698159902~acl=/523fb2bef2f3b3c8497c6efe228c737c/*~hmac=3320b29fdece2da30f616fe8f7115a7d',
-                thumbnail: '/son-tung-m-tp.png',
-                timePlay: '4:03',
-                lyric: 'Chúng ta của hiện tại',
-                totalListen: 1000000,
-                genresCode: 'chill-lofi',
-                artists: ['Sơn Tùng M-TP'],
-                albums: [],
+                title: data.title,
+                audioUrl: data.audioUrl,
+                thumbnail: data.thumbnail,
+                timePlay: data.timePlay,
+                lyric: data.lyric,
+                totalListen: 0,
+                genresCode: data.genresCode,
+                artists: data.artists,
+                albums: data.albums,
                 playLists: null,
             })
             .then(() => {
@@ -421,7 +696,7 @@ function AdminItems() {
                 handleCreateGenres(data);
                 break;
             case SONG:
-                handleCrateSong();
+                handleCrateSong(data);
                 break;
             case ARTIST:
                 handleCreateArtist(data);
@@ -460,7 +735,7 @@ function AdminItems() {
                             <div>
                                 {listNav.map((nav, index) => {
                                     var Page = nav.component;
-                                    if (nav.content == item)
+                                    if (nav.content === item)
                                         return (
                                             <Page
                                                 key={index}
