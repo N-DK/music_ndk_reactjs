@@ -1,3 +1,9 @@
+.wrapper {
+    img {
+        object-fit: cover;
+    }
+}
+
 .banner__artist {
     width: calc(100% - var(--iq-width-sidebar));
     max-height: 250px;

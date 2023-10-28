@@ -56,7 +56,7 @@ function ListSongItem({
             <div className={`row ${isSearchItem ? '' : 'border-bottom pb-3'}`}>
                 <div
                     className={`${
-                        !isSearchItem ? 'col-xl-5 col-sm-9 col-9' : 'col-12'
+                        !isSearchItem ? 'col-xl-8 col-sm-9 col-9' : 'col-12'
                     }`}
                 >
                     <div className={` d-flex align-items-center `}>
@@ -77,7 +77,7 @@ function ListSongItem({
                                     if (isPlaying && song.id == activeSong) {
                                         handlePause();
                                     } else {
-                                        handlePlay(song.audio, song.id);
+                                        handlePlay(song.audioUrl, song.id);
                                     }
                                 }}
                                 className={` align-items-center justify-content-center ${cx(
@@ -105,16 +105,16 @@ function ListSongItem({
                         </div>
                         <div className="ms-3">
                             <p className={`${cx('')} m-0 f-family`}>
-                                {song.name}
+                                {song.title}
                             </p>
                             <div className="fs-13 f-family subtitle_color">
                                 {song.artists.map((artist, index) => (
                                     <Link
-                                        key={index}
-                                        to={`/artist/${artist}`}
+                                        key={artist.id}
+                                        to={`/artist/${artist.name}`}
                                         className={` subtitle_color is_truncate`}
                                     >
-                                        {artist}
+                                        {artist.name}
                                     </Link>
                                 ))}
                             </div>
@@ -123,19 +123,20 @@ function ListSongItem({
                 </div>
                 {!isSearchItem && (
                     <>
-                        {!isTabletMobile && (
-                            <div className="col-xl-4 col-md-0 fs-13 f-family">
-                                {isShowAlbum && (
+                        {!isTabletMobile && isShowAlbum && (
+                            <div className="col-xl-1 col-md-0 fs-13 f-family">
+                                {song.albums.map((album, index) => (
                                     <Link
-                                        to={`/album/${song.album}`}
+                                        key={album.id}
+                                        to={`/album/${album.name}`}
                                         className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
                                     >
-                                        {song.album}
+                                        {album.name}
                                     </Link>
-                                )}
+                                ))}
                             </div>
                         )}
-                        <div className="col-xl-3 col-md-3 col-3">
+                        <div className="col-xl-4 col-md-3 col-3">
                             <div
                                 className={` position-relative ${cx(
                                     '',
@@ -146,7 +147,7 @@ function ListSongItem({
                                         'time',
                                     )} ms-1 mb-0 f-family`}
                                 >
-                                    {song.time}
+                                    {song.timePlay}
                                 </p>
                                 <div
                                     className={` position-absolute d-flex algin-items-center end-0 ${cx(

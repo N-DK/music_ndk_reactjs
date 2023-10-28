@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function CardSongItem({ isSlider }) {
+function CardSongItem({ data, isSlider }) {
     return (
         <div
             className={`${
@@ -24,11 +24,7 @@ function CardSongItem({ isSlider }) {
                         'thumbnail__container',
                     )} overflow-hidden position-relative`}
                 >
-                    <img
-                        src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/d/5/8/a/d58aa48a38c0a8dc89c95277b456bc75.jpg"
-                        alt=""
-                        className="w-100 h-100"
-                    />
+                    <img src={data.thumbnail} alt="" className="w-100 h-100" />
                     <div
                         className={`${cx(
                             'action__container',
@@ -61,10 +57,12 @@ function CardSongItem({ isSlider }) {
                         href="#"
                         className="mb-1 d-block text-decoration-none text-black"
                     >
-                        Cheese (Single)
+                        {data.name}
                     </a>
                     <a href="#" className="subtitle_color  is_truncate">
-                        Cravity
+                        {data.artists.map((artist) => (
+                            <span key={artist.id}>{artist.name}</span>
+                        ))}
                     </a>
                 </div>
             </div>

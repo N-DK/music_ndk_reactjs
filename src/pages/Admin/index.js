@@ -54,40 +54,6 @@ function Admin() {
                     <AdminTables category={navActive} />
                 </div>
             </div>
-            <div className="modal fade f-family" id="modalDelete">
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                        <div className="modal-body">
-                            <div>
-                                <h4
-                                    className="modal-title text-center mb-4"
-                                    id="modalTitleId"
-                                >
-                                    Do you want to delete?
-                                </h4>
-                                <div>
-                                    <button
-                                        style={{ borderRadius: 9999999 }}
-                                        type="button"
-                                        className="btn btn-secondary float-end border bg-transparent text-dark pe-4 ps-4"
-                                        data-bs-dismiss="modal"
-                                    >
-                                        Delete
-                                    </button>
-                                    <button
-                                        style={{ borderRadius: 9999999 }}
-                                        type="button"
-                                        className="btn btn-secondary float-end border bg-transparent text-dark pe-4 ps-4 me-2"
-                                        data-bs-dismiss="modal"
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </>
     );
 }

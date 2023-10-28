@@ -12,7 +12,7 @@ const publicRoutes = [
     { path: '/', component: Home },
     { path: '/mymusic', component: MyMusic },
     { path: '/hub', component: Topic },
-    { path: '/artist/:slug', component: Artist },
+    { path: '/artist/:id', component: Artist },
     { path: '/album/:slug', component: Album },
     { path: '/search', component: Search },
     { path: '/admin', component: Admin },

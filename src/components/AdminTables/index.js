@@ -16,10 +16,12 @@ const cx = classNames.bind(styles);
 
 function AdminTables({ category }) {
     const [cate, setCate] = useState(category);
-    const [data, setData] = useState();
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalPage, setTotalPage] = useState(0);
     const [page, setPage] = useState(1);
+    const [ids, setIds] = useState([]);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         setLoading(true);
@@ -36,6 +38,16 @@ function AdminTables({ category }) {
             });
     }, [category]);
 
+    const handleDelete = () => {
+        for (const id of ids) {
+            var _data = [...data];
+            const item = _data.find((item) => item.id === id);
+            _data.splice(_data.indexOf(item), 1);
+            setData(_data);
+        }
+        console.log(_data);
+    };
+
     const renderPage = (page) => {
         var pages = new Array(totalPage + 1);
         const handleRenderPage = (page) => {
@@ -45,6 +57,7 @@ function AdminTables({ category }) {
         if (page > 1) {
             pages[0] = (
                 <a
+                    key={0}
                     onClick={() => handleRenderPage(page - 1)}
                     className={`${cx(
                         'pagination-item',
@@ -55,9 +68,19 @@ function AdminTables({ category }) {
             );
         }
 
-        for (let i = 1; i <= (totalPage > 5 ? 5 : totalPage); i++) {
+        for (
+            let i = totalPage > 5 ? page : 1;
+            i <=
+            (totalPage > 5
+                ? page + 4 > totalPage
+                    ? totalPage
+                    : page + 4
+                : totalPage);
+            i++
+        ) {
             pages[i] = (
                 <span
+                    key={i}
                     onClick={() => handleRenderPage(i)}
                     className={`${cx(
                         'pagination-item',
@@ -71,6 +94,7 @@ function AdminTables({ category }) {
         if (page < totalPage) {
             pages.push(
                 <a
+                    key={totalPage + 10}
                     onClick={() => handleRenderPage(page + 1)}
                     className={`${cx(
                         'pagination-item',
@@ -126,9 +150,11 @@ function AdminTables({ category }) {
                         <div>
                             <label>Search: </label>
                             <input
+                                value={search}
                                 type="text"
                                 placeholder=""
                                 className="border rounded-1 ms-1"
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
                     </div>
@@ -153,57 +179,78 @@ function AdminTables({ category }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {data.map((item) => (
-                                        <tr key={item.id}>
-                                            <th className="border" scope="row">
-                                                {item.id}
-                                            </th>
-                                            <td className="border">
-                                                <div
-                                                    className={`${cx(
-                                                        'thumbnail',
-                                                    )} rounded-3 overflow-hidden`}
-                                                >
-                                                    <img
-                                                        src="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_jpeg/cover/2/b/2/d/2b2d855c92cb396bead07ed70c33a00b.jpg"
-                                                        alt=""
-                                                        className="w-100 h-100"
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="border">
-                                                <p className="mb-0 d-flex align-items-center h-100">
-                                                    {item.name}
-                                                </p>
-                                            </td>
-                                            <td className="border">
-                                                <div className="d-flex align-items-center">
-                                                    <a
-                                                        className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center me-2 ${cx(
-                                                            'action',
-                                                        )}`}
-                                                        href="#"
+                                    {data.map((item) => {
+                                        if (
+                                            item.id == search ||
+                                            item.name
+                                                .toLowerCase()
+                                                .includes(
+                                                    search.toLocaleLowerCase(),
+                                                )
+                                        ) {
+                                            return (
+                                                <tr key={item.id}>
+                                                    <th
+                                                        className="border"
+                                                        scope="row"
                                                     >
-                                                        <FontAwesomeIcon
-                                                            icon={faPen}
-                                                        />
-                                                    </a>
-                                                    <a
-                                                        className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center ${cx(
-                                                            'action',
-                                                        )}`}
-                                                        href="#"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modalDelete"
-                                                    >
-                                                        <FontAwesomeIcon
-                                                            icon={faTrash}
-                                                        />
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                                        {item.id}
+                                                    </th>
+                                                    <td className="border">
+                                                        <div
+                                                            className={`${cx(
+                                                                'thumbnail',
+                                                            )} rounded-3 overflow-hidden`}
+                                                        >
+                                                            <img
+                                                                src="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_jpeg/cover/2/b/2/d/2b2d855c92cb396bead07ed70c33a00b.jpg"
+                                                                alt=""
+                                                                className="w-100 h-100"
+                                                            />
+                                                        </div>
+                                                    </td>
+                                                    <td className="border">
+                                                        <p className="mb-0 d-flex align-items-center h-100">
+                                                            {item.name}
+                                                        </p>
+                                                    </td>
+                                                    <td className="border">
+                                                        <div className="d-flex align-items-center">
+                                                            <a
+                                                                className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center me-2 ${cx(
+                                                                    'action',
+                                                                )}`}
+                                                                href="#"
+                                                            >
+                                                                <FontAwesomeIcon
+                                                                    icon={faPen}
+                                                                />
+                                                            </a>
+                                                            <a
+                                                                className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center ${cx(
+                                                                    'action',
+                                                                )}`}
+                                                                href="#"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modalDelete"
+                                                                onClick={() =>
+                                                                    setIds([
+                                                                        item.id,
+                                                                    ])
+                                                                }
+                                                            >
+                                                                <FontAwesomeIcon
+                                                                    icon={
+                                                                        faTrash
+                                                                    }
+                                                                />
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        }
+                                    })}
                                 </tbody>
                             </table>
                         )}
@@ -291,6 +338,9 @@ function AdminTables({ category }) {
                                                             'action',
                                                         )}`}
                                                         href="#"
+                                                        onClick={() =>
+                                                            setIds([item.id])
+                                                        }
                                                     >
                                                         <FontAwesomeIcon
                                                             icon={faTrash}
@@ -467,6 +517,41 @@ function AdminTables({ category }) {
                     </div>
                 </div>
             )}
+            <div className="modal fade f-family" id="modalDelete">
+                <div className="modal-dialog modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-body">
+                            <div>
+                                <h4
+                                    className="modal-title text-center mb-4"
+                                    id="modalTitleId"
+                                >
+                                    Do you want to delete?
+                                </h4>
+                                <div>
+                                    <button
+                                        onClick={handleDelete}
+                                        style={{ borderRadius: 9999999 }}
+                                        type="button"
+                                        className="btn btn-secondary float-end border bg-transparent text-dark pe-4 ps-4"
+                                        data-bs-dismiss="modal"
+                                    >
+                                        Delete
+                                    </button>
+                                    <button
+                                        style={{ borderRadius: 9999999 }}
+                                        type="button"
+                                        className="btn btn-secondary float-end border bg-transparent text-dark pe-4 ps-4 me-2"
+                                        data-bs-dismiss="modal"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }

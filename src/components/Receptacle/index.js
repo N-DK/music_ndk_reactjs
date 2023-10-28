@@ -77,13 +77,11 @@ const setting_3item = {
     ],
 };
 
-function Receptacle({ title, control, limit = 5, video = false }) {
+function Receptacle({ title, control, limit = 5, video = false, data }) {
     const slider = useRef();
-
     const next = () => {
         slider.current.slickNext();
     };
-
     const prev = () => {
         slider.current.slickPrev();
     };
@@ -141,9 +139,8 @@ function Receptacle({ title, control, limit = 5, video = false }) {
                             className={`${cx('')} pt-3 pb-3`}
                             {...settings}
                         >
-                            {Array(10)
-                                .fill(10)
-                                .map((element, index) => (
+                            {data &&
+                                data.map((element, index) => (
                                     <div key={index} className="">
                                         <CardSongItem isSlider={true} />
                                     </div>
@@ -158,11 +155,10 @@ function Receptacle({ title, control, limit = 5, video = false }) {
                                   .map((element, index) => (
                                       <CardVideoSongItem key={index} />
                                   ))
-                            : Array(limit)
-                                  .fill(limit)
-                                  .map((element, index) => (
-                                      <CardSongItem key={index} />
-                                  ))}
+                            : data &&
+                              data.map((element, index) => (
+                                  <CardSongItem data={element} key={index} />
+                              ))}
                     </div>
                 )}
             </div>
