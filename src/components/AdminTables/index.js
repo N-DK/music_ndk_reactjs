@@ -20,14 +20,19 @@ function AdminTables({ category }) {
     const [loading, setLoading] = useState(true);
     const [totalPage, setTotalPage] = useState(0);
     const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
     const [ids, setIds] = useState([]);
     const [search, setSearch] = useState('');
 
     useEffect(() => {
         setLoading(true);
         setCate(category);
+        setSearch('');
+        setLimit(10);
         axios
-            .get(`http://localhost:8080/api/${category}`)
+            .get(
+                `http://localhost:8080/api/${category}?page=${page}&limit=${limit}`,
+            )
             .then((res) => {
                 setData(res.data.results);
                 setTotalPage(res.data.totalPage);
@@ -39,13 +44,18 @@ function AdminTables({ category }) {
     }, [category]);
 
     const handleDelete = () => {
+        setLoading(true);
+        axios
+            .delete(`http://localhost:8080/api/${category}`, { data: ids })
+            .then(() => setLoading(false))
+            .then(() => setLoading(false));
         for (const id of ids) {
             var _data = [...data];
             const item = _data.find((item) => item.id === id);
             _data.splice(_data.indexOf(item), 1);
             setData(_data);
+            setTotalPage(data.length - ids.length <= 0 ? 0 : totalPage);
         }
-        console.log(_data);
     };
 
     const renderPage = (page) => {
@@ -136,6 +146,8 @@ function AdminTables({ category }) {
                         <div className="d-flex align-items-center justify-content-center">
                             Show{' '}
                             <select
+                                value={limit}
+                                onChange={(e) => setLimit(e.target.value)}
                                 className={`${cx(
                                     'entries',
                                 )} form-control ms-1 me-1`}
