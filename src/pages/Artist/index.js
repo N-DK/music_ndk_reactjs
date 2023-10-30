@@ -27,7 +27,6 @@ function Artist() {
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     let { id } = useParams();
 
-    // 111111 -> 111.111
     const convertNumber = (number) => {
         return number.replace(/,/g, '.');
     };

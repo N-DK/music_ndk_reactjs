@@ -16,7 +16,8 @@ const publicRoutes = [
     { path: '/album/:slug', component: Album },
     { path: '/search', component: Search },
     { path: '/admin', component: Admin },
-    { path: '/admin/:item', component: AdminItems },
+    { path: '/admin/:item/', component: AdminItems },
+    { path: '/admin/:item/:id', component: AdminItems },
 ];
 
 // need login

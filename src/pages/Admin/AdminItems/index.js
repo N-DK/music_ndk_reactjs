@@ -15,12 +15,29 @@ const SONG = 'song';
 const ARTIST = 'artist';
 const ALBUMS = 'album';
 
-const CreateGenres = ({ handleCreate, type }) => {
+const CreateGenres = ({ handleCreate, type, id }) => {
     const [data, setData] = useState({
         name: '',
         code: '',
     });
+
     const [name, setName] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            axios
+                .get(`http://localhost:8080/api/${type}/${id}`)
+                .then((res) => {
+                    setName(res.data.results[0].name);
+                    setLoading(false);
+                })
+                .catch((err) => console.log(err));
+        } else {
+            setLoading(false);
+        }
+    }, [id]);
 
     const convertToCode = (name) => {
         return name.toLowerCase().replace(/ /g, '-');
@@ -36,27 +53,35 @@ const CreateGenres = ({ handleCreate, type }) => {
     }, [name]);
 
     return (
-        <div className="p-3">
-            <div className="mb-3">
-                <label className="d-block mb-1">Name:</label>
-                <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    type="text"
-                    className="form-control"
-                />
-            </div>
-            <button
-                className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
-                onClick={() => handleCreate(type, data)}
-            >
-                Add new {type}
-            </button>
-        </div>
+        <>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="p-3">
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Name:</label>
+                        <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <button
+                        className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
+                        onClick={() =>
+                            handleCreate(type, data, id ? 'PUT' : 'POST')
+                        }
+                    >
+                        {id ? 'Edit' : 'Add new'} {type}
+                    </button>
+                </div>
+            )}
+        </>
     );
 };
 
-const CreateSong = ({ handleCreate, type }) => {
+const CreateSong = ({ handleCreate, type, id }) => {
     const [genres, setGenres] = useState([]);
     const [listArtist, setListArtist] = useState([]);
     const [listAlbum, setListAlbum] = useState([]);
@@ -229,7 +254,6 @@ const CreateSong = ({ handleCreate, type }) => {
                                 ),
                             ),
                     }}
-                    // onInit={(e, editor) => (editorRef.current = editor)}
                     onChange={handleEditorChange}
                 />
             </div>
@@ -336,7 +360,7 @@ const CreateSong = ({ handleCreate, type }) => {
     );
 };
 
-const CreateArtist = ({ handleCreate, type }) => {
+const CreateArtist = ({ handleCreate, type, id }) => {
     const [data, setData] = useState({
         artistName: '',
         gender: 3,
@@ -352,6 +376,32 @@ const CreateArtist = ({ handleCreate, type }) => {
     const [biography, setBiography] = useState('');
     const [placeOfBirth, setPlaceOfBirth] = useState('');
     const [profilePath, setProfilePath] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    const convertToDate = (inputDate) => {
+        return inputDate.slice(0, inputDate.indexOf('T'));
+    };
+
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            axios
+                .get(`http://localhost:8080/api/artist/${id}`)
+                .then((res) => {
+                    var data = res.data.results[0];
+                    setLoading(false);
+                    setArtistName(data.artistName);
+                    setBirthday(convertToDate(data.birthday));
+                    setBiography(data.biography);
+                    setPlaceOfBirth(data.placeOfBirth);
+                    setProfilePath(data.profilePath);
+                    setGender(data.gender);
+                })
+                .catch((err) => console.log(err));
+        } else {
+            setLoading(false);
+        }
+    }, [id]);
 
     useEffect(() => {
         setData(() => {
@@ -367,80 +417,99 @@ const CreateArtist = ({ handleCreate, type }) => {
     }, [artistName, gender, birthday, biography, placeOfBirth, profilePath]);
 
     return (
-        <div className="p-3">
-            <div className="mb-3">
-                <label className="d-block mb-1">Name:</label>
-                <input
-                    value={artistName}
-                    onChange={(e) => setArtistName(e.target.value)}
-                    type="text"
-                    className="form-control"
-                />
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Gender:</label>
-                <div className="d-flex">
-                    <span className="me-1">Female</span>
-                    <input
-                        value={0}
-                        type="radio"
-                        name="gender"
-                        className="me-2"
-                        onClick={(e) => setGender(Number(e.target.value))}
-                    />
-                    <span className="me-1">male</span>
-                    <input
-                        value={1}
-                        type="radio"
-                        name="gender"
-                        onClick={(e) => setGender(Number(e.target.value))}
-                    />
+        <>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="p-3">
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Name:</label>
+                        <input
+                            value={artistName}
+                            onChange={(e) => setArtistName(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Gender:</label>
+                        <div className="d-flex">
+                            <span className="me-1">Female</span>
+                            <input
+                                value={0}
+                                checked={0 === gender}
+                                type="radio"
+                                name="gender"
+                                className="me-2"
+                                onClick={(e) =>
+                                    setGender(Number(e.target.value))
+                                }
+                                readOnly={true}
+                            />
+                            <span className="me-1">male</span>
+                            <input
+                                value={1}
+                                checked={1 === gender}
+                                type="radio"
+                                name="gender"
+                                onClick={(e) =>
+                                    setGender(Number(e.target.value))
+                                }
+                                readOnly={true}
+                            />
+                        </div>
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Birthday:</label>
+                        <input
+                            value={birthday}
+                            onChange={(e) => setBirthday(e.target.value)}
+                            type="date"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Biography:</label>
+                        <textarea
+                            onChange={(e) => setBiography(e.target.value)}
+                            type="text"
+                            className="form-control"
+                            value={biography}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Place of birth:</label>
+                        <input
+                            onChange={(e) => setPlaceOfBirth(e.target.value)}
+                            type="text"
+                            className="form-control"
+                            value={placeOfBirth}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Profile path:</label>
+                        <input
+                            type="text"
+                            onChange={(e) => setProfilePath(e.target.value)}
+                            className="form-control"
+                            value={profilePath}
+                        />
+                    </div>
+                    <button
+                        className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
+                        onClick={() =>
+                            handleCreate(type, data, id ? 'PUT' : 'POST')
+                        }
+                    >
+                        {id ? 'Edit' : 'Add'} new {type}
+                    </button>
                 </div>
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Birthday:</label>
-                <input
-                    value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
-                    type="date"
-                    className="form-control"
-                />
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Biography:</label>
-                <textarea
-                    onChange={(e) => setBiography(e.target.value)}
-                    type="text"
-                    className="form-control"
-                />
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Place of birth:</label>
-                <input
-                    onChange={(e) => setPlaceOfBirth(e.target.value)}
-                    type="text"
-                    className="form-control"
-                />
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Profile path:</label>
-                <input
-                    type="text"
-                    onChange={(e) => setProfilePath(e.target.value)}
-                    className="form-control"
-                />
-            </div>
-            <button
-                className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
-                onClick={() => handleCreate(type, data)}
-            >
-                Add new {type}
-            </button>
-        </div>
+            )}
+        </>
     );
 };
 
-const CreateAlbums = ({ handleCreate, type }) => {
+const CreateAlbums = ({ handleCreate, type, id }) => {
     const [genres, setGenres] = useState([]);
     const [listArtist, setListArtist] = useState([]);
     const [data, setData] = useState({
@@ -589,16 +658,18 @@ const listNav = [
 ];
 
 function AdminItems() {
-    let { item } = useParams();
+    let { item, id } = useParams();
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
-    const handleCrateSong = (data) => {
+    const handleCrateSong = (data, method) => {
         setLoading(true);
-        axios
-            .post('http://localhost:8080/api/song', {
+        axios({
+            method,
+            url: 'http://localhost:8080/api/song',
+            data: {
                 title: data.title,
                 audioUrl: data.audioUrl,
                 thumbnail: data.thumbnail,
@@ -609,7 +680,8 @@ function AdminItems() {
                 artists: data.artists,
                 albums: data.albums,
                 playLists: null,
-            })
+            },
+        })
             .then(() => {
                 setLoading(false);
                 setShowModal(true);
@@ -620,15 +692,32 @@ function AdminItems() {
                 setShowModal(true);
                 setSuccess(false);
             });
+        // axios.post('http://localhost:8080/api/song', {
+        //     title: data.title,
+        //     audioUrl: data.audioUrl,
+        //     thumbnail: data.thumbnail,
+        //     timePlay: data.timePlay,
+        //     lyric: data.lyric,
+        //     totalListen: 0,
+        //     genresCode: data.genresCode,
+        //     artists: data.artists,
+        //     albums: data.albums,
+        //     playLists: null,
+        // });
     };
 
-    const handleCreateGenres = (data) => {
+    const handleCreateGenres = (data, method) => {
         setLoading(true);
-        axios
-            .post('http://localhost:8080/api/genres', {
+        axios({
+            method,
+            url: `http://localhost:8080/api/genres${
+                method === 'PUT' ? `/${id}` : ''
+            }`,
+            data: {
                 name: data.name,
                 code: data.code,
-            })
+            },
+        })
             .then(() => {
                 setLoading(false);
                 setShowModal(true);
@@ -641,22 +730,21 @@ function AdminItems() {
             });
     };
 
-    const handleCreateArtist = (data) => {
+    const handleCreateArtist = (data, method = 'POST') => {
         setLoading(true);
-        axios
-            .post(
-                'http://localhost:8080/api/artist',
-                {
-                    artistName: data.artistName,
-                    gender: data.gender,
-                    birthday: data.birthday,
-                    biography: data.biography,
-                    placeOfBirth: data.placeOfBirth,
-                    profilePath: data.profilePath,
-                },
-                // Thời gian tối đa
-                { timeout: 5000 },
-            )
+        axios({
+            method,
+            url: `http://localhost:8080/api/artist${id ? `/${id}` : ''}`,
+            data: {
+                artistName: data.artistName,
+                gender: data.gender,
+                birthday: data.birthday,
+                biography: data.biography,
+                placeOfBirth: data.placeOfBirth,
+                profilePath: data.profilePath,
+            },
+            timeout: 5000,
+        })
             .then(() => {
                 setLoading(false);
                 setShowModal(true);
@@ -667,17 +755,33 @@ function AdminItems() {
                 setShowModal(true);
                 setSuccess(false);
             });
+        // axios.post(
+        //     'http://localhost:8080/api/artist',
+        //     {
+        //         artistName: data.artistName,
+        //         gender: data.gender,
+        //         birthday: data.birthday,
+        //         biography: data.biography,
+        //         placeOfBirth: data.placeOfBirth,
+        //         profilePath: data.profilePath,
+        //     },
+        //     // Thời gian tối đa
+        //     { timeout: 5000 },
+        // );
     };
 
-    const handleCreateAlbum = (data) => {
+    const handleCreateAlbum = (data, method) => {
         setLoading(true);
-        axios
-            .post('http://localhost:8080/api/album', {
+        axios({
+            method,
+            url: 'http://localhost:8080/api/album',
+            data: {
                 name: data.name,
                 thumbnail: data.thumbnail,
                 genresCode: data.genresCode,
                 artists: data.artists,
-            })
+            },
+        })
             .then(() => {
                 setLoading(false);
                 setShowModal(true);
@@ -690,19 +794,19 @@ function AdminItems() {
             });
     };
 
-    const handleCreate = (type, data) => {
+    const handleCreate = (type, data, method) => {
         switch (type) {
             case GENRES:
-                handleCreateGenres(data);
+                handleCreateGenres(data, method);
                 break;
             case SONG:
-                handleCrateSong(data);
+                handleCrateSong(data, method);
                 break;
             case ARTIST:
-                handleCreateArtist(data);
+                handleCreateArtist(data, method);
                 break;
             case ALBUMS:
-                handleCreateAlbum(data);
+                handleCreateAlbum(data, method);
                 break;
             default:
                 break;
@@ -729,7 +833,7 @@ function AdminItems() {
                                 <h3
                                     className={`${cx('')} mb-0 text-capitalize`}
                                 >
-                                    Add {item}
+                                    {id ? 'Edit' : 'Add'} {item}
                                 </h3>
                             </div>
                             <div>
@@ -741,6 +845,7 @@ function AdminItems() {
                                                 key={index}
                                                 handleCreate={handleCreate}
                                                 type={nav.content}
+                                                id={id}
                                             />
                                         );
                                 })}
@@ -766,8 +871,12 @@ function AdminItems() {
                                 <div className="border-bottom p-3">
                                     <p className="mb-0">
                                         {success
-                                            ? 'Create new successfully'
-                                            : 'Fail create new'}
+                                            ? `${
+                                                  id ? 'Edit' : 'Create'
+                                              } new successfully`
+                                            : `Fail ${
+                                                  id ? 'edit' : 'create'
+                                              } new`}
                                     </p>
                                 </div>
                                 <button
