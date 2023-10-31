@@ -339,7 +339,7 @@ function AdminTables({ category }) {
                                                         className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center me-2 ${cx(
                                                             'action',
                                                         )}`}
-                                                        to={`#`}
+                                                        to={`song/${item.id}`}
                                                     >
                                                         <FontAwesomeIcon
                                                             icon={faPen}
