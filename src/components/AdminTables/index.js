@@ -494,16 +494,16 @@ function AdminTables({ category }) {
                                             </td>
                                             <td className="border">
                                                 <div className="d-flex align-items-center">
-                                                    <a
+                                                    <Link
                                                         className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center me-2 ${cx(
                                                             'action',
                                                         )}`}
-                                                        href="#"
+                                                        to={`album/${item.id}`}
                                                     >
                                                         <FontAwesomeIcon
                                                             icon={faPen}
                                                         />
-                                                    </a>
+                                                    </Link>
                                                     <a
                                                         className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center ${cx(
                                                             'action',

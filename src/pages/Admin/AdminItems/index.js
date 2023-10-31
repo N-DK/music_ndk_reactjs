@@ -522,6 +522,7 @@ const CreateAlbums = ({ handleCreate, type, id }) => {
     const [thumbnail, setThumbnail] = useState('');
     const [genresCode, setGenresCode] = useState('');
     const [artists, setArtists] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setData(() => {
@@ -552,89 +553,122 @@ const CreateAlbums = ({ handleCreate, type, id }) => {
             .catch((err) => console.log(err));
     }, []);
 
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            axios
+                .get(`http://localhost:8080/api/${type}/${id}`)
+                .then((res) => {
+                    var data = res.data.results[0];
+                    setName(data.name);
+                    setThumbnail(data.thumbnail);
+                    setGenresCode(data.genresCode);
+                    setArtists(data.artists);
+                    setLoading(false);
+                })
+                .catch((err) => console.log(err));
+        } else {
+            setLoading(false);
+        }
+    }, [id]);
+
     return (
-        <div className="p-3">
-            <div className="mb-3">
-                <label className="d-block mb-1">Name:</label>
-                <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    type="text"
-                    className="form-control"
-                />
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Thumbnail:</label>
-                <input
-                    value={thumbnail}
-                    onChange={(e) => setThumbnail(e.target.value)}
-                    type="text"
-                    className="form-control"
-                />
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Genres:</label>
-                <select
-                    value={genresCode}
-                    onChange={(e) => setGenresCode(e.target.value)}
-                    className="form-control"
-                >
-                    <option value={''}>--Genres--</option>
-                    {genres.map((item) => (
-                        <option value={item.code} key={item.id}>
-                            {item.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="mb-3">
-                <label className="d-block mb-1">Artist:</label>
-                <select
-                    onChange={(e) => {
-                        if (e.target.value !== '') {
-                            setArtists(() => [...artists, e.target.value]);
-                        }
-                    }}
-                    value={''}
-                    className="form-control"
-                >
-                    <option value={''}>--Artists--</option>
-                    {listArtist.map((artist) => (
-                        <option
-                            key={artist.id}
-                            value={artist.artistName}
-                            disabled={handleExists(artist.artistName)}
+        <>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="p-3">
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Name:</label>
+                        <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Thumbnail:</label>
+                        <input
+                            value={thumbnail}
+                            onChange={(e) => setThumbnail(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Genres:</label>
+                        <select
+                            value={genresCode}
+                            onChange={(e) => setGenresCode(e.target.value)}
+                            className="form-control"
                         >
-                            {artist.artistName}
-                        </option>
-                    ))}
-                </select>
-                <div className="mt-3">
-                    {artists.map((artist, index) => (
-                        <span className="border rounded-2 p-2 me-2" key={index}>
-                            {artist}
-                            <FontAwesomeIcon
-                                onClick={() => {
-                                    setArtists(() => {
-                                        let arr = [...artists];
-                                        arr.splice(index, 1);
-                                        return arr;
-                                    });
-                                }}
-                                className="ms-2"
-                                icon={faXmark}
-                            />
-                        </span>
-                    ))}
+                            <option value={''}>--Genres--</option>
+                            {genres.map((item) => (
+                                <option value={item.code} key={item.id}>
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Artist:</label>
+                        <select
+                            onChange={(e) => {
+                                if (e.target.value !== '') {
+                                    setArtists(() => [
+                                        ...artists,
+                                        e.target.value,
+                                    ]);
+                                }
+                            }}
+                            value={''}
+                            className="form-control"
+                        >
+                            <option value={''}>--Artists--</option>
+                            {listArtist.map((artist) => (
+                                <option
+                                    key={artist.id}
+                                    value={artist.artistName}
+                                    disabled={handleExists(artist.artistName)}
+                                >
+                                    {artist.artistName}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="mt-3">
+                            {artists.map((artist, index) => (
+                                <span
+                                    className="border rounded-2 p-2 me-2"
+                                    key={index}
+                                >
+                                    {artist}
+                                    <FontAwesomeIcon
+                                        onClick={() => {
+                                            setArtists(() => {
+                                                let arr = [...artists];
+                                                arr.splice(index, 1);
+                                                return arr;
+                                            });
+                                        }}
+                                        className="ms-2"
+                                        icon={faXmark}
+                                    />
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    <button
+                        className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
+                        onClick={() =>
+                            handleCreate(type, data, id ? 'PUT' : 'POST')
+                        }
+                    >
+                        {id ? 'Edit' : 'Add new'} {type}
+                    </button>
                 </div>
-            </div>
-            <button
-                className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
-                onClick={() => handleCreate(type, data)}
-            >
-                Add new {type}
-            </button>
-        </div>
+            )}
+        </>
     );
 };
 
@@ -730,7 +764,7 @@ function AdminItems() {
             });
     };
 
-    const handleCreateArtist = (data, method = 'POST') => {
+    const handleCreateArtist = (data, method) => {
         setLoading(true);
         axios({
             method,
@@ -755,26 +789,13 @@ function AdminItems() {
                 setShowModal(true);
                 setSuccess(false);
             });
-        // axios.post(
-        //     'http://localhost:8080/api/artist',
-        //     {
-        //         artistName: data.artistName,
-        //         gender: data.gender,
-        //         birthday: data.birthday,
-        //         biography: data.biography,
-        //         placeOfBirth: data.placeOfBirth,
-        //         profilePath: data.profilePath,
-        //     },
-        //     // Thời gian tối đa
-        //     { timeout: 5000 },
-        // );
     };
 
     const handleCreateAlbum = (data, method) => {
         setLoading(true);
         axios({
             method,
-            url: 'http://localhost:8080/api/album',
+            url: `http://localhost:8080/api/album${id ? `/${id}` : ''}`,
             data: {
                 name: data.name,
                 thumbnail: data.thumbnail,
@@ -872,11 +893,11 @@ function AdminItems() {
                                     <p className="mb-0">
                                         {success
                                             ? `${
-                                                  id ? 'Edit' : 'Create'
-                                              } new successfully`
+                                                  id ? 'Edit' : 'Create new'
+                                              }  successfully`
                                             : `Fail ${
-                                                  id ? 'edit' : 'create'
-                                              } new`}
+                                                  id ? 'edit' : 'create new'
+                                              } `}
                                     </p>
                                 </div>
                                 <button
