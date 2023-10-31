@@ -350,6 +350,8 @@ function AdminTables({ category }) {
                                                             'action',
                                                         )}`}
                                                         href="#"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalDelete"
                                                         onClick={() =>
                                                             setIds([item.id])
                                                         }
@@ -437,6 +439,11 @@ function AdminTables({ category }) {
                                                             'action',
                                                         )}`}
                                                         href="#"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalDelete"
+                                                        onClick={() =>
+                                                            setIds([item.id])
+                                                        }
                                                     >
                                                         <FontAwesomeIcon
                                                             icon={faTrash}
@@ -509,6 +516,11 @@ function AdminTables({ category }) {
                                                             'action',
                                                         )}`}
                                                         href="#"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalDelete"
+                                                        onClick={() =>
+                                                            setIds([item.id])
+                                                        }
                                                     >
                                                         <FontAwesomeIcon
                                                             icon={faTrash}
