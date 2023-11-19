@@ -17,6 +17,13 @@ function Album() {
     const param = new URLSearchParams(search);
     const type = param.get('type');
 
+    const formatDate = (date) => {
+        const dateTime = new Date(date);
+        return `${dateTime.getDate()}/${
+            dateTime.getMonth() + 1
+        }/${dateTime.getFullYear()}`;
+    };
+
     const handleAddArtists = (data) => {
         let artists = [];
 
@@ -48,7 +55,7 @@ function Album() {
             .then((res) => {
                 if (type === 'playlist') {
                     setData(handleAddArtists(res.data.results));
-                } else if (type === 'song') {
+                } else if (type === 'song' || 'thumbnail') {
                     setData(res.data.results);
                 }
                 if (res.data.results[0].songs) {
@@ -93,7 +100,8 @@ function Album() {
                                     {data[0].title || data[0].name}
                                 </p>
                                 <p className={`${cx('')} mb-1`}>
-                                    Update date: 20/09/2023
+                                    <span>Update date: </span>
+                                    {formatDate(data[0].modifiedDate)}
                                 </p>
                                 <div className="fs-13 f-family subtitle_color">
                                     {data[0].artists.map((artist, index) => (

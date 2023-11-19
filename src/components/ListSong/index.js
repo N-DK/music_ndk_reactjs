@@ -1,10 +1,17 @@
 import styles from './ListSong.module.scss';
 import classNames from 'classnames/bind';
 import ListSongItem from '../ListSongItem';
+import { useDispatch, useSelector } from 'react-redux';
+import { reducer, setListSongs } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
 function ListSong({ isShowAlbums, data }) {
+    useSelector(() => reducer);
+    const dispatch = useDispatch();
+
+    dispatch(setListSongs(data));
+
     return (
         <div className={`${cx('wrapper')} mt-4`}>
             <div className="container">

@@ -3,12 +3,14 @@ const initialState = {
     isPlaying: false,
     isActive: -1,
     currSong: '',
+    songs: [],
 };
 
 const SET_DATA = 'set_data';
 const SET_PLAYING = 'set_playing';
 const SET_CURRSONG = 'set_currSong';
 const SET_ACTIVE = 'set_active';
+const SET_SONGS = 'set_songs';
 
 const setData = (payload) => {
     return {
@@ -34,6 +36,13 @@ const setCurrAudio = (payload) => {
 const setActive = (payload) => {
     return {
         type: SET_ACTIVE,
+        payload,
+    };
+};
+
+const setListSongs = (payload) => {
+    return {
+        type: SET_SONGS,
         payload,
     };
 };
@@ -65,6 +74,12 @@ const reducer = (state = initialState, action) => {
                 isActive: action.payload,
             };
             break;
+        case SET_SONGS:
+            newState = {
+                ...state,
+                songs: action.payload,
+            };
+            break;
         default:
             newState = state;
             break;
@@ -72,4 +87,4 @@ const reducer = (state = initialState, action) => {
     return newState;
 };
 
-export { reducer, setData, setPlaying, setCurrAudio, setActive };
+export { reducer, setData, setPlaying, setCurrAudio, setActive, setListSongs };
