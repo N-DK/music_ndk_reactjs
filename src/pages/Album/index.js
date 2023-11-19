@@ -83,7 +83,7 @@ function Album() {
                             >
                                 <div
                                     className={`${cx(
-                                        '',
+                                        'thumbnail',
                                     )} rounded-4 overflow-hidden w-75`}
                                 >
                                     <img

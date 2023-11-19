@@ -182,10 +182,10 @@ function Home() {
                             </div>
                         </div>
                     </div>
-                    <Receptacle title="Featured Albums" control={true} />
-                    <Receptacle title="Trending Songs" limit={10} />
-                    <Receptacle title="Popular Hindi Songs" limit={10} />
-                    <Receptacle title="Hot songs" control={true} />
+                    <Receptacle title="Chill" control={true} />
+                    <Receptacle title="Một Chút Yêu Đời" limit={10} />
+                    <Receptacle title="Remix Là Dance Luôn" limit={10} />
+                    <Receptacle title="Tâm Trạng Tan Chậm" control={true} />
                     <Receptacle
                         title="Hot Video Songs"
                         control={true}

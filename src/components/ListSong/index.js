@@ -10,10 +10,12 @@ function ListSong({ isShowAlbums, data }) {
     useSelector(() => reducer);
     const dispatch = useDispatch();
 
-    dispatch(setListSongs(data));
+    const handleListSongClick = () => {
+        dispatch(setListSongs(data));
+    };
 
     return (
-        <div className={`${cx('wrapper')} mt-4`}>
+        <div className={`${cx('wrapper')} mt-4`} onClick={handleListSongClick}>
             <div className="container">
                 <div className={`row border-bottom`}>
                     <div className="col-5">

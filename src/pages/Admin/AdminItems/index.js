@@ -795,12 +795,14 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
         favoriteSong: [],
         email: 'ndk@gmail.com',
         topicCode: '',
+        preface: '',
     });
     const [name, setName] = useState('');
     const [thumbnail, setThumbnail] = useState('');
     const [favoriteSong, setFavoriteSong] = useState([]);
     const [topicCode, setTopicCode] = useState('');
     const [loading, setLoading] = useState(true);
+    const [preface, setPreface] = useState('');
 
     const convertToCode = (name) => {
         return name.toLowerCase().replace(/ /g, '-');
@@ -814,9 +816,10 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                 thumbnail,
                 favoriteSong,
                 topicCode,
+                preface,
             };
         });
-    }, [name, thumbnail, favoriteSong, topicCode]);
+    }, [name, thumbnail, favoriteSong, topicCode, preface]);
 
     const handleExists = (song) => {
         return favoriteSong.indexOf(song) !== -1;
@@ -866,6 +869,15 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                         <input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Preface:</label>
+                        <input
+                            value={preface}
+                            onChange={(e) => setPreface(e.target.value)}
                             type="text"
                             className="form-control"
                         />
@@ -1108,6 +1120,7 @@ function AdminItems() {
                 emailUser: data.email,
                 thumbnail: data.thumbnail,
                 topicCode: data.topicCode,
+                preface: data.preface,
             },
         })
             .then(() => {
