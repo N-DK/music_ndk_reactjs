@@ -56,7 +56,9 @@ function ListSongItem({
             <div className={`row ${isSearchItem ? '' : 'border-bottom pb-3'}`}>
                 <div
                     className={`${
-                        !isSearchItem ? 'col-xl-8 col-sm-9 col-9' : 'col-12'
+                        !isSearchItem
+                            ? `col-xl-${isShowAlbum ? 5 : 8} col-sm-9 col-9`
+                            : 'col-12'
                     }`}
                 >
                     <div className={` d-flex align-items-center `}>
@@ -111,7 +113,7 @@ function ListSongItem({
                                 {song.artists.map((artist, index) => (
                                     <Link
                                         key={artist.id}
-                                        to={`/artist/${artist.name}`}
+                                        to={`/artist/${artist.id}`}
                                         className={` subtitle_color is_truncate`}
                                     >
                                         {artist.name}
@@ -124,11 +126,11 @@ function ListSongItem({
                 {!isSearchItem && (
                     <>
                         {!isTabletMobile && isShowAlbum && (
-                            <div className="col-xl-1 col-md-0 fs-13 f-family">
+                            <div className="col-xl-4 col-md-0 fs-13 f-family">
                                 {song.albums.map((album, index) => (
                                     <Link
                                         key={album.id}
-                                        to={`/album/${album.name}`}
+                                        to={`/album/${album.id}?type=song`}
                                         className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
                                     >
                                         {album.name}
@@ -136,7 +138,11 @@ function ListSongItem({
                                 ))}
                             </div>
                         )}
-                        <div className="col-xl-4 col-md-3 col-3">
+                        <div
+                            className={`col-xl-${
+                                isShowAlbum ? 3 : 4
+                            } col-md-3 col-3`}
+                        >
                             <div
                                 className={` position-relative ${cx(
                                     '',

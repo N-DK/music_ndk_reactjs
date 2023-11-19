@@ -1,91 +1,141 @@
 import ListSong from '~/components/ListSong';
 import styles from './Album.module.scss';
 import classNames from 'classnames/bind';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Loading from '~/components/Loading';
 
 const cx = classNames.bind(styles);
 
-const songs = [
-    {
-        id: 1,
-        thumbnail:
-            'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/a/3/1/c/a31cdf3a266dfa3fcbc586613c70ed52.jpg',
-        name: 'Âm thầm bên em',
-        audio: 'https://vnso-zn-10-tf-a320-zmp3.zmdcdn.me/523fb2bef2f3b3c8497c6efe228c737c?authen=exp=1696090690~acl=/523fb2bef2f3b3c8497c6efe228c737c/*~hmac=4e53a75d8b5a2e1b3ac7fb4a785a65d6',
-        artists: ['Sơn Tùng M-TP'],
-        lyric: '<p>Khi b&ecirc;n anh em thấy điều chi</p><p>Khi b&ecirc;n anh em thấy điều g&igrave;</p><p>Nước mắt rơi</p><p>Gần kề l&agrave;n mi</p><p>Chẳng c&ograve;n những gi&acirc;y ph&uacute;t</p><p>Chẳng c&ograve;n những &acirc;n t&igrave;nh</p><p>Gi&oacute; mang em rời xa nơi đ&acirc;y</p><p>Khi xa anh em nhớ về ai</p><p>Khi xa anh em nhớ</p><p>Một người chắc kh&ocirc;ng phải</p><p>Một người như anh</p><p>Người từng l&agrave;m em kh&oacute;c</p><p>Người từng khiến em buồn</p><p>Bu&ocirc;ng b&agrave;n tay</p><p>Rời xa lặng thinh bước đi</p><p>Hạt mưa rơi bủa v&acirc;y</p><p>Tr&aacute;i tim hiu quạnh</p><p>Ng&agrave;n y&ecirc;u thương</p><p>Vụt tan bỗng xa</p><p>Người từng n&oacute;i ở b&ecirc;n</p><p>Cạnh anh mỗi khi anh buồn</p><p>Cớ sao giờ</p><p>Lời n&oacute;i kia như gi&oacute; bay</p><p>Đừng bỏ rơi</p><p>B&agrave;n tay ấy bơ vơ m&agrave;</p><p>Một m&igrave;nh anh lặng im chốn đ&acirc;y</p><p>Y&ecirc;u em &acirc;m thầm b&ecirc;n em</p><p>Y&ecirc;u thương kh&ocirc;ng c&ograve;n nơi đ&acirc;y</p><p>Em mang t&igrave;nh buồn theo m&acirc;y</p><p>Cơn mơ về mong manh c&acirc;u thề</p><p>Tan tr&ocirc;i qua mau</p><p>Qu&ecirc;n đi ph&uacute;t gi&acirc;y</p><p>Mưa rơi tr&ecirc;n đ&ocirc;i mi qua lối vắng</p><p>&Aacute;nh s&aacute;ng mờ</p><p>Bu&ocirc;ng lơi l&agrave;n kh&oacute;i trắng</p><p>B&oacute;ng d&aacute;ng em</p><p>Nụ cười ng&agrave;y h&ocirc;m qua</p><p>K&yacute; ức c&oacute; ngủ qu&ecirc;n</p><p>Ch&igrave;m trong m&agrave;n sương đắng</p><p>Anh nhớ giọt nước mắt s&acirc;u lắng</p><p>Anh nhớ nỗi buồn</p><p>Của em ng&agrave;y kh&ocirc;ng nắng</p><p>Bu&ocirc;ng b&agrave;n tay</p><p>Rời xa lặng thinh bước đi</p><p>Hạt mưa rơi bủa v&acirc;y</p><p>Tr&aacute;i tim hiu quạnh</p><p>Ng&agrave;n y&ecirc;u thương</p><p>Vụt tan bỗng xa</p><p>Người từng n&oacute;i ở b&ecirc;n</p><p>Cạnh anh mỗi khi anh buồn</p><p>Cớ sao giờ</p><p>Lời n&oacute;i kia như gi&oacute; bay</p><p>B&agrave;n tay bơ vơ m&agrave;</p><p>Cầm b&ocirc;ng hoa chờ mong nhớ thương</p><p>L&agrave;m sao qu&ecirc;n người ơi</p><p>T&igrave;nh anh m&atilde;i như h&ocirc;m n&agrave;o</p><p>Vẫn y&ecirc;u người</p><p>V&agrave; vẫn mong em về đ&acirc;y</p><p>Giọt nước mắt</p><p>Tại sao cứ lăn rơi ho&agrave;i</p><p>Ở b&ecirc;n anh chỉ c&oacute; đớn đau</p><p>Th&igrave; anh xin nhận hết</p><p>Ng&agrave;n đau đớn để thấy em cười</p><p>Dẫu biết rằng</p><p>Người đến kh&ocirc;ng như giấc mơ</p><p>Y&ecirc;u em &acirc;m thầm b&ecirc;n em</p><p>Y&ecirc;u em &acirc;m thầm b&ecirc;n em</p><p>Th&igrave; anh xin nhận hết</p><p>Ng&agrave;n đau đớn để thấy em cười</p><p>Dẫu biết rằng</p><p>Người đến kh&ocirc;ng như giấc mơ</p><p>Y&ecirc;u em &acirc;m thầm b&ecirc;n em</p>',
-        genre: [''],
-        album_id: '',
-        time: '04:51',
-        prevSong: 0,
-        nextSong: 2,
-    },
-    {
-        id: 2,
-        name: 'Có Chắc yêu là đây',
-        thumbnail:
-            'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/9/d/7/9/9d79ebd03bbb6482bab748d67bbe0afb.jpg',
-        audio: 'https://vnso-zn-10-tf-a320-zmp3.zmdcdn.me/82b05166a489d1b883ee28b63a0fcb8f?authen=exp=1695822415~acl=/82b05166a489d1b883ee28b63a0fcb8f/*~hmac=76dcf3a9ebf3f8783a2496eaa7861c3d',
-        artists: ['Sơn Tùng M-TP'],
-        lyric: 'Có Chắc yêu là đây',
-        genre: [''],
-        album_id: '',
-        time: '03:35',
-        nextSong: 3,
-        prevSong: 1,
-    },
-];
-
 function Album() {
+    const [data, setData] = useState([]);
+    const [songs, setSongs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    let { id } = useParams();
+    const { search } = useLocation();
+    const param = new URLSearchParams(search);
+    const type = param.get('type');
+
+    const handleAddArtists = (data) => {
+        let artists = [];
+
+        for (const item of data) {
+            item.songs.map((song) => {
+                let artist = [...song.artists];
+                for (let i = 0; i < artist.length; i++) {
+                    if (
+                        artists.length == 0 ||
+                        artists[i].name !== artist[i].name
+                    ) {
+                        artists.push(artist[i]);
+                    }
+                }
+            });
+        }
+
+        let results = data.map((item) => {
+            return { ...item, artists };
+        });
+
+        return results;
+    };
+
+    useEffect(() => {
+        setLoading(true);
+        axios
+            .get(`http://localhost:8080/api/${type}/${id}`)
+            .then((res) => {
+                if (type === 'playlist') {
+                    setData(handleAddArtists(res.data.results));
+                } else if (type === 'song') {
+                    setData(res.data.results);
+                }
+                if (res.data.results[0].songs) {
+                    setSongs(res.data.results[0].songs);
+                }
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.log(err);
+                setLoading(false);
+            });
+    }, [type, id]);
     return (
-        <div className={`${cx('wrapper')} pt-5`}>
-            <div className={`${cx('')} row`}>
-                <div className="col-xl-4 col-md-4">
-                    <div className={`${cx('')} text-center f-family mb-3`}>
-                        <div className={`${cx('')} rounded-4 overflow-hidden`}>
-                            <img
-                                className="w-100 h-100"
-                                src="https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_webp/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg"
-                                alt=""
-                            />
+        <>
+            {loading && data ? (
+                <Loading />
+            ) : (
+                <div className={`${cx('wrapper')} pt-5`}>
+                    <div className={`${cx('')} row`}>
+                        <div className="col-xl-4 col-md-4">
+                            <div
+                                className={` d-flex flex-column align-items-center justify-content-center ${cx(
+                                    '',
+                                )} text-center f-family mb-3`}
+                            >
+                                <div
+                                    className={`${cx(
+                                        '',
+                                    )} rounded-4 overflow-hidden w-75`}
+                                >
+                                    <img
+                                        className="w-100 h-100"
+                                        src={data[0].thumbnail}
+                                        alt=""
+                                    />
+                                </div>
+                                <p
+                                    className={`${cx(
+                                        '',
+                                    )} text-capitalize fs-5 mt-2 mb-1`}
+                                >
+                                    {data[0].title || data[0].name}
+                                </p>
+                                <p className={`${cx('')} mb-1`}>
+                                    Update date: 20/09/2023
+                                </p>
+                                <div className="fs-13 f-family subtitle_color">
+                                    {data[0].artists.map((artist, index) => (
+                                        <Link
+                                            key={index}
+                                            to={`/artist/${artist.id}`}
+                                            className={` subtitle_color is_truncate`}
+                                        >
+                                            {artist.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
-                        <p
-                            className={`${cx(
-                                '',
-                            )} text-capitalize fs-5 mt-2 mb-1`}
-                        >
-                            nhạc lofi chill gây nghiện
-                        </p>
-                        <p className={`${cx('')} mb-1`}>
-                            Update date: 20/09/2023
-                        </p>
-                        <div className="fs-13 f-family subtitle_color">
-                            <a
-                                href="#"
-                                className={` subtitle_color is_truncate`}
+                        <div className="col-xl-8 col-md-8">
+                            <div
+                                className={`${cx(
+                                    'list-song__container',
+                                )} f-family`}
                             >
-                                Da LAB
-                            </a>
-                            ,
-                            <a
-                                href="#"
-                                className={`ms-1 subtitle_color is_truncate`}
-                            >
-                                Miu Lê
-                            </a>
+                                <p>
+                                    <span className="subtitle_color">
+                                        Preface
+                                    </span>{' '}
+                                    Thả mình vào những giai điệu Lofi Chill nghe
+                                    là nghiện
+                                </p>
+                                <ListSong
+                                    isShowAlbums={false}
+                                    data={
+                                        (type === 'song' && data) ||
+                                        ((type === 'album' ||
+                                            type === 'playlist') &&
+                                            songs)
+                                    }
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="col-xl-8 col-md-8">
-                    <div className={`${cx('list-song__container')} f-family`}>
-                        <p>
-                            <span className="subtitle_color">Preface</span> Thả
-                            mình vào những giai điệu Lofi Chill nghe là nghiện
-                        </p>
-                        <ListSong isShowAlbums={true} data={songs} />
-                    </div>
-                </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 }
 

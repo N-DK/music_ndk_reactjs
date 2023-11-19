@@ -10,6 +10,7 @@ import {
 import CardVideoSongItem from '../CardVideoSongItem';
 import React, { useRef } from 'react';
 import Slider from 'react-slick';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -77,7 +78,15 @@ const setting_3item = {
     ],
 };
 
-function Receptacle({ title, control, limit = 5, video = false, data }) {
+function Receptacle({
+    title,
+    control,
+    limit = 5,
+    video = false,
+    data,
+    more,
+    type,
+}) {
     const slider = useRef();
     const next = () => {
         slider.current.slickNext();
@@ -108,13 +117,13 @@ function Receptacle({ title, control, limit = 5, video = false, data }) {
                         </a>
                     </div>
                 ) : (
-                    <a
-                        href="#"
+                    <Link
+                        to={more}
                         className="f-family text--primary d-flex align-items-center text-decoration-none"
                     >
                         <span className="me-2">View more</span>
                         <FontAwesomeIcon icon={faChevronRight} />
-                    </a>
+                    </Link>
                 )}
             </div>
             <div className={`p-3`}>
@@ -156,9 +165,15 @@ function Receptacle({ title, control, limit = 5, video = false, data }) {
                                       <CardVideoSongItem key={index} />
                                   ))
                             : data &&
-                              data.map((element, index) => (
-                                  <CardSongItem data={element} key={index} />
-                              ))}
+                              data
+                                  .slice(0, limit)
+                                  .map((element, index) => (
+                                      <CardSongItem
+                                          data={element}
+                                          key={index}
+                                          type={type}
+                                      />
+                                  ))}
                     </div>
                 )}
             </div>

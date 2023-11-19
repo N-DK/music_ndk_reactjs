@@ -19,3 +19,9 @@
     opacity: 0;
     visibility: hidden;
 }
+
+.text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

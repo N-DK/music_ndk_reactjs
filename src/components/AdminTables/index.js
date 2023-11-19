@@ -41,9 +41,10 @@ function AdminTables({ category }) {
             .catch((err) => {
                 console.log(err);
             });
-    }, [category]);
+    }, [category, page, limit]);
 
     const handleDelete = () => {
+        console.log(category);
         setLoading(true);
         axios
             .delete(`http://localhost:8080/api/${category}`, { data: ids })
@@ -180,10 +181,10 @@ function AdminTables({ category }) {
                                             No
                                         </th>
                                         <th className="border" scope="col">
-                                            Image
+                                            Name
                                         </th>
                                         <th className="border" scope="col">
-                                            Name
+                                            Code
                                         </th>
                                         <th className="border" scope="col">
                                             Action
@@ -209,21 +210,13 @@ function AdminTables({ category }) {
                                                         {item.id}
                                                     </th>
                                                     <td className="border">
-                                                        <div
-                                                            className={`${cx(
-                                                                'thumbnail',
-                                                            )} rounded-3 overflow-hidden`}
-                                                        >
-                                                            <img
-                                                                src="https://photo-resize-zmp3.zmdcdn.me/w320_r1x1_jpeg/cover/2/b/2/d/2b2d855c92cb396bead07ed70c33a00b.jpg"
-                                                                alt=""
-                                                                className="w-100 h-100"
-                                                            />
-                                                        </div>
+                                                        <p className="mb-0 d-flex align-items-center h-100">
+                                                            {item.name}
+                                                        </p>
                                                     </td>
                                                     <td className="border">
                                                         <p className="mb-0 d-flex align-items-center h-100">
-                                                            {item.name}
+                                                            {item.code}
                                                         </p>
                                                     </td>
                                                     <td className="border">
@@ -530,6 +523,170 @@ function AdminTables({ category }) {
                                             </td>
                                         </tr>
                                     ))}
+                                </tbody>
+                            </table>
+                        )}
+                        {/* Playlist */}
+                        {cate == 'playlist' && (
+                            <table className={`${cx()} table border`}>
+                                <thead className="border">
+                                    <tr>
+                                        <th className="border" scope="col">
+                                            No
+                                        </th>
+                                        <th className="border" scope="col">
+                                            Image
+                                        </th>
+                                        <th className="border" scope="col">
+                                            Playlist Name
+                                        </th>
+                                        <th className="border" scope="col">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.map((item) => (
+                                        <tr key={item.id}>
+                                            <th className="border" scope="row">
+                                                {item.id}
+                                            </th>
+                                            <td className="border">
+                                                <div
+                                                    className={`${cx(
+                                                        'thumbnail',
+                                                    )} rounded-3 overflow-hidden`}
+                                                >
+                                                    <img
+                                                        src={item.thumbnail}
+                                                        alt=""
+                                                        className="w-100 h-100"
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td className="border">
+                                                <p className="mb-0 d-flex align-items-center h-100">
+                                                    {item.name}
+                                                </p>
+                                            </td>
+                                            <td className="border">
+                                                <div className="d-flex align-items-center">
+                                                    <Link
+                                                        className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center me-2 ${cx(
+                                                            'action',
+                                                        )}`}
+                                                        to={`playlist/${item.id}`}
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faPen}
+                                                        />
+                                                    </Link>
+                                                    <a
+                                                        className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center ${cx(
+                                                            'action',
+                                                        )}`}
+                                                        href="#"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalDelete"
+                                                        onClick={() =>
+                                                            setIds([item.id])
+                                                        }
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faTrash}
+                                                        />
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                        {/* Topics */}
+                        {cate == 'topic' && (
+                            <table className={`${cx()} table border`}>
+                                <thead className="border">
+                                    <tr>
+                                        <th className="border" scope="col">
+                                            No
+                                        </th>
+                                        <th className="border" scope="col">
+                                            Name
+                                        </th>
+                                        <th className="border" scope="col">
+                                            Code
+                                        </th>
+                                        <th className="border" scope="col">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {data.map((item) => {
+                                        if (
+                                            item.id == search ||
+                                            item.name
+                                                .toLowerCase()
+                                                .includes(
+                                                    search.toLocaleLowerCase(),
+                                                )
+                                        ) {
+                                            return (
+                                                <tr key={item.id}>
+                                                    <th
+                                                        className="border"
+                                                        scope="row"
+                                                    >
+                                                        {item.id}
+                                                    </th>
+                                                    <td className="border">
+                                                        <p className="mb-0 d-flex align-items-center h-100">
+                                                            {item.name}
+                                                        </p>
+                                                    </td>
+                                                    <td className="border">
+                                                        <p className="mb-0 d-flex align-items-center h-100">
+                                                            {item.code}
+                                                        </p>
+                                                    </td>
+                                                    <td className="border">
+                                                        <div className="d-flex align-items-center">
+                                                            <Link
+                                                                className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center me-2 ${cx(
+                                                                    'action',
+                                                                )}`}
+                                                                to={`topic/${item.id}`}
+                                                            >
+                                                                <FontAwesomeIcon
+                                                                    icon={faPen}
+                                                                />
+                                                            </Link>
+                                                            <a
+                                                                className={`bg--primary text-decoration-none rounded-2 d-flex align-items-center justify-content-center ${cx(
+                                                                    'action',
+                                                                )}`}
+                                                                href="#"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#modalDelete"
+                                                                onClick={() =>
+                                                                    setIds([
+                                                                        item.id,
+                                                                    ])
+                                                                }
+                                                            >
+                                                                <FontAwesomeIcon
+                                                                    icon={
+                                                                        faTrash
+                                                                    }
+                                                                />
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        }
+                                    })}
                                 </tbody>
                             </table>
                         )}

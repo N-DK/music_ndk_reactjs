@@ -11,7 +11,7 @@ import Receptacle from '~/components/Receptacle';
 import zing from '~/img/zing_music.png';
 import ListSongItem from '~/components/ListSongItem';
 import { useMediaQuery } from 'react-responsive';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '~/components/Loading';
 
@@ -21,6 +21,7 @@ function Artist() {
     const [songs, setSongs] = useState([]);
     const [artist, setArtist] = useState();
     const [albums, setAlbums] = useState([]);
+    const [playlist, setPlaylist] = useState([]);
     const [loading, setLoading] = useState(true);
     const [numberInterested, setNumberInterested] = useState(2447764);
     const [isInterested, setIsInterested] = useState(false);
@@ -37,6 +38,36 @@ function Artist() {
         );
     };
 
+    const handleFilterAlbumsNotSingle = (albums) => {
+        return albums.filter(
+            (album) => !album.name.toLowerCase().includes('single'),
+        );
+    };
+
+    const handleAddArtists = (data) => {
+        let artists = [];
+
+        for (const item of data) {
+            item.songs.map((song) => {
+                let artist = [...song.artists];
+                for (let i = 0; i < artist.length; i++) {
+                    if (
+                        artists.length == 0 ||
+                        artists[i].name !== artist[i].name
+                    ) {
+                        artists.push(artist[i]);
+                    }
+                }
+            });
+        }
+
+        let results = data.map((item) => {
+            return { ...item, artists };
+        });
+
+        return results;
+    };
+
     useEffect(() => {
         if (artist) {
             setNumberInterested(artist.numberFollower);
@@ -46,19 +77,29 @@ function Artist() {
     useEffect(() => {
         setLoading(true);
         axios
+            .get(`http://localhost:8080/api/playlist?artist_id=${id}`)
+            .then((res) => {
+                setPlaylist(res.data.results);
+            })
+            .catch((error) => console.log(error));
+    }, [id]);
+
+    useEffect(() => {
+        setLoading(true);
+        axios
             .get(`http://localhost:8080/api/artist/${id}`)
             .then((res) => {
-                setLoading(false);
                 setSongs(res.data.songs);
                 setArtist(...res.data.results);
                 setAlbums(res.data.album);
+                setLoading(false);
             })
             .catch((err) => console.log(err));
     }, [id]);
 
     return (
         <>
-            {loading ? (
+            {loading && !artist ? (
                 <Loading />
             ) : (
                 <div
@@ -170,17 +211,17 @@ function Artist() {
                                 <h4 className={`${cx('')} mb-2 fs-4`}>
                                     Hot song
                                 </h4>
-                                <a
-                                    href="#"
+                                <Link
+                                    to={'song'}
                                     className="f-family text--primary d-flex align-items-center text-decoration-none"
                                 >
                                     <span className="me-2">View more</span>
                                     <FontAwesomeIcon icon={faChevronRight} />
-                                </a>
+                                </Link>
                             </div>
                             <div className={`${cx('')} row `}>
                                 <div className="col-xl-6 col-md-12">
-                                    {songs.map((song, index) => (
+                                    {songs.slice(0, 4).map((song, index) => (
                                         <ListSongItem
                                             key={index}
                                             song={song}
@@ -188,14 +229,35 @@ function Artist() {
                                         />
                                     ))}
                                 </div>
-                                <div className="col-xl-6 col-md-12"></div>
+                                <div className="col-xl-6 col-md-12">
+                                    {songs.slice(4, 8).map((song, index) => (
+                                        <ListSongItem
+                                            key={index}
+                                            song={song}
+                                            songs={songs}
+                                        />
+                                    ))}
+                                </div>
                             </div>
                         </div>
                         <Receptacle
                             title="Single & EP"
+                            more="single"
+                            type="song"
                             data={handleFilterAlbumsSingle(albums)}
                         />
-                        <Receptacle title="Album" />
+                        <Receptacle
+                            title="Album"
+                            type="album"
+                            data={handleFilterAlbumsNotSingle(albums)}
+                        />
+                        {playlist.length > 0 && (
+                            <Receptacle
+                                title="Playlist"
+                                type="playlist"
+                                data={handleAddArtists(playlist)}
+                            />
+                        )}
                         <Receptacle title="MV" video={true} control={true} />
                         <div className={`${cx('about__artist')} f-family mt-5`}>
                             <h4 className={`${cx('')}`}>

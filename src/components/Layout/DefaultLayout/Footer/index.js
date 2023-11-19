@@ -136,7 +136,7 @@ function Footer({ data, isPlaying, currAudio }) {
             dispatch(setActive(songs[indexNextSong].id));
             dispatch(setPlaying(true));
             currAudio.pause();
-            var audio = new Audio(songs[indexNextSong].audio);
+            var audio = new Audio(songs[indexNextSong].audioUrl);
             dispatch(setCurrAudio(audio));
             audio.play();
         }

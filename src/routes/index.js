@@ -2,6 +2,7 @@ import Admin from '~/pages/Admin';
 import AdminItems from '~/pages/Admin/AdminItems';
 import Album from '~/pages/Album';
 import Artist from '~/pages/Artist';
+import ArtistMore from '~/pages/Artist/ArtistMore';
 import Home from '~/pages/Home';
 import MyMusic from '~/pages/MyMusic';
 import Search from '~/pages/Search';
@@ -13,7 +14,8 @@ const publicRoutes = [
     { path: '/mymusic', component: MyMusic },
     { path: '/hub', component: Topic },
     { path: '/artist/:id', component: Artist },
-    { path: '/album/:slug', component: Album },
+    { path: '/artist/:id/:slug', component: ArtistMore },
+    { path: '/album/:id', component: Album },
     { path: '/search', component: Search },
     { path: '/admin', component: Admin },
     { path: '/admin/:item/', component: AdminItems },

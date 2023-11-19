@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function CardSongItem({ data, isSlider }) {
+function CardSongItem({ data, isSlider, type }) {
     return (
         <div
             className={`${
@@ -37,7 +37,7 @@ function CardSongItem({ data, isSlider }) {
                             <FontAwesomeIcon icon={faHeart} />
                         </a>
                         <Link
-                            to="/album/lofi"
+                            to={`/album/${data.id}?type=${type}`}
                             className="fs-1 ms-4 me-4 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
                         >
                             <FontAwesomeIcon icon={faCirclePlay} />
@@ -51,16 +51,18 @@ function CardSongItem({ data, isSlider }) {
                     </div>
                 </div>
                 <div
-                    className={` text-center pt-4 pb-4 border rounded-3 border-top-0 rounded-top-0 f-family`}
+                    className={` text-center pt-4 pb-4 p-2 border rounded-3 border-top-0 rounded-top-0 f-family`}
                 >
                     <a
                         href="#"
-                        className="mb-1 d-block text-decoration-none text-black"
+                        className={`${cx(
+                            'text',
+                        )} mb-1 d-block text-decoration-none text-black`}
                     >
                         {data.name}
                     </a>
                     <a href="#" className="subtitle_color  is_truncate">
-                        {data.artists.map((artist) => (
+                        {data.artists.map((artist, index) => (
                             <span key={artist.id}>{artist.name}</span>
                         ))}
                     </a>

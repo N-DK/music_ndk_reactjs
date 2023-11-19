@@ -14,6 +14,8 @@ const GENRES = 'genres';
 const SONG = 'song';
 const ARTIST = 'artist';
 const ALBUMS = 'album';
+const PLAYLIST = 'playlist';
+const TOPIC = 'topic';
 
 const CreateGenres = ({ handleCreate, type, id }) => {
     const [data, setData] = useState({
@@ -37,7 +39,73 @@ const CreateGenres = ({ handleCreate, type, id }) => {
         } else {
             setLoading(false);
         }
-    }, [id]);
+    }, [type, id]);
+
+    const convertToCode = (name) => {
+        return name.toLowerCase().replace(/ /g, '-');
+    };
+
+    useEffect(() => {
+        setData(() => {
+            return {
+                name,
+                code: convertToCode(name),
+            };
+        });
+    }, [name]);
+
+    return (
+        <>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="p-3">
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Name:</label>
+                        <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <button
+                        className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
+                        onClick={() =>
+                            handleCreate(type, data, id ? 'PUT' : 'POST')
+                        }
+                    >
+                        {id ? 'Edit' : 'Add new'} {type}
+                    </button>
+                </div>
+            )}
+        </>
+    );
+};
+
+const CreateTopic = ({ handleCreate, type, id }) => {
+    const [data, setData] = useState({
+        name: '',
+        code: '',
+    });
+
+    const [name, setName] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            axios
+                .get(`http://localhost:8080/api/${type}/${id}`)
+                .then((res) => {
+                    setName(res.data.results[0].name);
+                    setLoading(false);
+                })
+                .catch((err) => console.log(err));
+        } else {
+            setLoading(false);
+        }
+    }, [type, id]);
 
     const convertToCode = (name) => {
         return name.toLowerCase().replace(/ /g, '-');
@@ -148,7 +216,7 @@ const CreateSong = ({ handleCreate, type, id }) => {
         } else {
             setLoading(false);
         }
-    }, [id]);
+    }, [type, id]);
 
     useEffect(() => {
         const getTimePlay = (audio) => {
@@ -311,7 +379,6 @@ const CreateSong = ({ handleCreate, type, id }) => {
                         onChange={(e) => {
                             if (e.target.value !== '') {
                                 setArtists(() => {
-                                    console.log([...artists, e.target.value]);
                                     return [...artists, e.target.value];
                                 });
                             }
@@ -448,7 +515,7 @@ const CreateArtist = ({ handleCreate, type, id }) => {
         } else {
             setLoading(false);
         }
-    }, [id]);
+    }, [type, id]);
 
     useEffect(() => {
         setData(() => {
@@ -617,7 +684,7 @@ const CreateAlbums = ({ handleCreate, type, id }) => {
         } else {
             setLoading(false);
         }
-    }, [id]);
+    }, [type, id]);
 
     return (
         <>
@@ -719,10 +786,185 @@ const CreateAlbums = ({ handleCreate, type, id }) => {
     );
 };
 
+const CreatePlaylist = ({ handleCreate, type, id }) => {
+    const [topics, setTopics] = useState([]);
+    const [listSong, setListSong] = useState([]);
+    const [data, setData] = useState({
+        name: '',
+        thumbnail: '',
+        favoriteSong: [],
+        email: 'ndk@gmail.com',
+        topicCode: '',
+    });
+    const [name, setName] = useState('');
+    const [thumbnail, setThumbnail] = useState('');
+    const [favoriteSong, setFavoriteSong] = useState([]);
+    const [topicCode, setTopicCode] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    const convertToCode = (name) => {
+        return name.toLowerCase().replace(/ /g, '-');
+    };
+
+    useEffect(() => {
+        setData((data) => {
+            return {
+                ...data,
+                name,
+                thumbnail,
+                favoriteSong,
+                topicCode,
+            };
+        });
+    }, [name, thumbnail, favoriteSong, topicCode]);
+
+    const handleExists = (song) => {
+        return favoriteSong.indexOf(song) !== -1;
+    };
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8080/api/song')
+            .then((res) => setListSong(res.data.results))
+            .catch((err) => console.log(err));
+    }, []);
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8080/api/topic')
+            .then((res) => setTopics(res.data.results))
+            .catch((err) => console.log(err));
+    }, []);
+
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            axios
+                .get(`http://localhost:8080/api/${type}/${id}`)
+                .then((res) => {
+                    var data = res.data.results[0];
+                    setName(data.name);
+                    setThumbnail(data.thumbnail);
+                    setFavoriteSong(data.songs.map((song) => song.title));
+                    setTopicCode(convertToCode(data.topic));
+                    setLoading(false);
+                })
+                .catch((err) => console.log(err));
+        } else {
+            setLoading(false);
+        }
+    }, [type, id]);
+
+    return (
+        <>
+            {loading ? (
+                <Loading />
+            ) : (
+                <div className="p-3">
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Name:</label>
+                        <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Thumbnail:</label>
+                        <input
+                            value={thumbnail}
+                            onChange={(e) => setThumbnail(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Topic:</label>
+                        <select
+                            value={topicCode}
+                            onChange={(e) => setTopicCode(e.target.value)}
+                            className="form-control"
+                        >
+                            <option value={''}>--Topics--</option>
+                            {topics.map((item) => (
+                                <option value={item.code} key={item.id}>
+                                    {item.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Favorite Songs:</label>
+                        <select
+                            onChange={(e) => {
+                                if (e.target.value !== '') {
+                                    setFavoriteSong(() => [
+                                        ...favoriteSong,
+                                        e.target.value,
+                                    ]);
+                                }
+                            }}
+                            value={''}
+                            className="form-control"
+                        >
+                            <option value={''}>--Songs--</option>
+                            {listSong.map((song) => (
+                                <option
+                                    key={song.id}
+                                    value={song.title}
+                                    disabled={handleExists(song.title)}
+                                >
+                                    {song.title}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="mt-3">
+                            <div className=" d-flex flex-wrap d-grid gap-1">
+                                {favoriteSong.map((song, index) => (
+                                    <span
+                                        className="border rounded-2 p-2 me-2"
+                                        key={index}
+                                    >
+                                        {song}
+                                        <FontAwesomeIcon
+                                            onClick={() => {
+                                                setFavoriteSong(() => {
+                                                    let arr = [...favoriteSong];
+                                                    arr.splice(index, 1);
+                                                    return arr;
+                                                });
+                                            }}
+                                            className="ms-2"
+                                            icon={faXmark}
+                                        />
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        className="border-0 rounded-3 pt-2 pb-2 bg--primary p-2 mt-4"
+                        onClick={() =>
+                            handleCreate(type, data, id ? 'PUT' : 'POST')
+                        }
+                    >
+                        {id ? 'Edit' : 'Add new'} {type}
+                    </button>
+                </div>
+            )}
+        </>
+    );
+};
+
 const listNav = [
     {
         content: 'genres',
         component: CreateGenres,
+    },
+    {
+        content: 'topic',
+        component: CreateTopic,
     },
     {
         content: 'song',
@@ -735,6 +977,10 @@ const listNav = [
     {
         content: 'album',
         component: CreateAlbums,
+    },
+    {
+        content: 'playlist',
+        component: CreatePlaylist,
     },
 ];
 
@@ -773,18 +1019,6 @@ function AdminItems() {
                 setShowModal(true);
                 setSuccess(false);
             });
-        // axios.post('http://localhost:8080/api/song', {
-        //     title: data.title,
-        //     audioUrl: data.audioUrl,
-        //     thumbnail: data.thumbnail,
-        //     timePlay: data.timePlay,
-        //     lyric: data.lyric,
-        //     totalListen: 0,
-        //     genresCode: data.genresCode,
-        //     artists: data.artists,
-        //     albums: data.albums,
-        //     playLists: null,
-        // });
     };
 
     const handleCreateGenres = (data, method) => {
@@ -862,6 +1096,56 @@ function AdminItems() {
             });
     };
 
+    const handleCreatePlaylist = (data, method) => {
+        console.log(data);
+        setLoading(true);
+        axios({
+            method,
+            url: `http://localhost:8080/api/playlist${id ? `/${id}` : ''}`,
+            data: {
+                name: data.name,
+                favoriteSong: data.favoriteSong,
+                emailUser: data.email,
+                thumbnail: data.thumbnail,
+                topicCode: data.topicCode,
+            },
+        })
+            .then(() => {
+                setLoading(false);
+                setShowModal(true);
+                setSuccess(true);
+            })
+            .catch(() => {
+                setLoading(false);
+                setShowModal(true);
+                setSuccess(false);
+            });
+    };
+
+    const handleCreateTopic = (data, method) => {
+        setLoading(true);
+        axios({
+            method,
+            url: `http://localhost:8080/api/topic${
+                method === 'PUT' ? `/${id}` : ''
+            }`,
+            data: {
+                name: data.name,
+                code: data.code,
+            },
+        })
+            .then(() => {
+                setLoading(false);
+                setShowModal(true);
+                setSuccess(true);
+            })
+            .catch(() => {
+                setLoading(false);
+                setShowModal(true);
+                setSuccess(false);
+            });
+    };
+
     const handleCreate = (type, data, method) => {
         switch (type) {
             case GENRES:
@@ -875,6 +1159,12 @@ function AdminItems() {
                 break;
             case ALBUMS:
                 handleCreateAlbum(data, method);
+                break;
+            case PLAYLIST:
+                handleCreatePlaylist(data, method);
+                break;
+            case TOPIC:
+                handleCreateTopic(data, method);
                 break;
             default:
                 break;

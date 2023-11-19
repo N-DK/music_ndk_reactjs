@@ -5,11 +5,9 @@ import ListSongItem from '../ListSongItem';
 const cx = classNames.bind(styles);
 
 function ListSong({ isShowAlbums, data }) {
-    // call api data
-
     return (
         <div className={`${cx('wrapper')} mt-4`}>
-            <div className="container mb-3">
+            <div className="container">
                 <div className={`row border-bottom`}>
                     <div className="col-5">
                         <p className={` text-uppercase f-family`}>Song</p>

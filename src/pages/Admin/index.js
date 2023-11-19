@@ -18,16 +18,16 @@ const listNav = [
     {
         content: 'album',
     },
+    {
+        content: 'playlist',
+    },
+    {
+        content: 'topic',
+    },
 ];
 
 function Admin() {
     const [navActive, setNavActive] = useState('song');
-    // const handleFindCate = () => {
-    //     listNav.filter((nav) => {
-    //         if (nav.id == navActive) return nav.content;
-    //     });
-    // };
-
     return (
         <>
             <div className={`${cx('wrapper')}`}>

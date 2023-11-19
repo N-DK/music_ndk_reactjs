@@ -163,7 +163,7 @@ function Home() {
                         </div>
                         <div className={`${cx('')} row `}>
                             <div className="col-xl-6 col-md-12">
-                                {songs.map((song, index) => (
+                                {songs.slice(0, 4).map((song, index) => (
                                     <ListSongItem
                                         key={song.id}
                                         song={song}
@@ -172,7 +172,7 @@ function Home() {
                                 ))}
                             </div>
                             <div className="col-xl-6 col-md-12">
-                                {songs.map((song, index) => (
+                                {songs.slice(4, 8).map((song, index) => (
                                     <ListSongItem
                                         key={index}
                                         song={song}
