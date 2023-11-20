@@ -98,11 +98,30 @@ const banners = [
 function Home() {
     const [loading, setLoading] = useState(true);
     const [songs, setSongs] = useState([]);
+    const [chill, setChill] = useState([]);
 
-    const handleLoading = () => {
-        setTimeout(() => {
-            setLoading(false);
-        }, 3000);
+    const handleAddArtists = (data) => {
+        let artists = [];
+
+        for (const item of data) {
+            item.songs.map((song) => {
+                let artist = [...song.artists];
+                for (let i = 0; i < artist.length; i++) {
+                    if (
+                        artists.length == 0 ||
+                        artists[i].name !== artist[i].name
+                    ) {
+                        artists.push(artist[i]);
+                    }
+                }
+            });
+        }
+
+        let results = data.map((item) => {
+            return { ...item, artists };
+        });
+
+        return results;
     };
 
     useEffect(() => {
@@ -116,7 +135,16 @@ function Home() {
             .catch((err) => console.log(err));
     }, []);
 
-    handleLoading();
+    useEffect(() => {
+        setLoading(true);
+        axios
+            .get('http://localhost:8080/api/playlist/topic/chill')
+            .then((res) => {
+                setChill(res.data.results);
+                setLoading(false);
+            })
+            .catch((err) => console.log(err));
+    }, []);
 
     return (
         <>
@@ -182,7 +210,12 @@ function Home() {
                             </div>
                         </div>
                     </div>
-                    <Receptacle title="Chill" control={true} />
+                    <Receptacle
+                        title="Chill"
+                        control={false}
+                        type="playlist"
+                        data={chill}
+                    />
                     <Receptacle title="Một Chút Yêu Đời" limit={10} />
                     <Receptacle title="Remix Là Dance Luôn" limit={10} />
                     <Receptacle title="Tâm Trạng Tan Chậm" control={true} />

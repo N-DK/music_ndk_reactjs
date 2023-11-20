@@ -24,40 +24,12 @@ function Album() {
         }/${dateTime.getFullYear()}`;
     };
 
-    const handleAddArtists = (data) => {
-        let artists = [];
-
-        for (const item of data) {
-            item.songs.map((song) => {
-                let artist = [...song.artists];
-                for (let i = 0; i < artist.length; i++) {
-                    if (
-                        artists.length == 0 ||
-                        artists[i].name !== artist[i].name
-                    ) {
-                        artists.push(artist[i]);
-                    }
-                }
-            });
-        }
-
-        let results = data.map((item) => {
-            return { ...item, artists };
-        });
-
-        return results;
-    };
-
     useEffect(() => {
         setLoading(true);
         axios
             .get(`http://localhost:8080/api/${type}/${id}`)
             .then((res) => {
-                if (type === 'playlist') {
-                    setData(handleAddArtists(res.data.results));
-                } else if (type === 'song' || 'thumbnail') {
-                    setData(res.data.results);
-                }
+                setData(res.data.results);
                 if (res.data.results[0].songs) {
                     setSongs(res.data.results[0].songs);
                 }
@@ -70,7 +42,7 @@ function Album() {
     }, [type, id]);
     return (
         <>
-            {loading && data ? (
+            {loading ? (
                 <Loading />
             ) : (
                 <div className={`${cx('wrapper')} pt-5`}>
@@ -122,21 +94,17 @@ function Album() {
                                     'list-song__container',
                                 )} f-family`}
                             >
-                                <p>
-                                    <span className="subtitle_color">
-                                        Preface
-                                    </span>{' '}
-                                    Thả mình vào những giai điệu Lofi Chill nghe
-                                    là nghiện
-                                </p>
+                                {type === 'playlist' && (
+                                    <p>
+                                        <span className="subtitle_color pe-2">
+                                            Preface
+                                        </span>
+                                        {data[0].name}
+                                    </p>
+                                )}
                                 <ListSong
-                                    isShowAlbums={false}
-                                    data={
-                                        (type === 'song' && data) ||
-                                        ((type === 'album' ||
-                                            type === 'playlist') &&
-                                            songs)
-                                    }
+                                    isShowAlbums={type === 'playlist'}
+                                    data={songs}
                                 />
                             </div>
                         </div>

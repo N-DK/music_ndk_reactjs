@@ -151,7 +151,10 @@ function Receptacle({
                             {data &&
                                 data.map((element, index) => (
                                     <div key={index} className="">
-                                        <CardSongItem isSlider={true} />
+                                        <CardSongItem
+                                            data={element}
+                                            isSlider={true}
+                                        />
                                     </div>
                                 ))}
                         </Slider>

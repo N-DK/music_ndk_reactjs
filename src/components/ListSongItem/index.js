@@ -110,15 +110,24 @@ function ListSongItem({
                                 {song.title}
                             </p>
                             <div className="fs-13 f-family subtitle_color">
-                                {song.artists.map((artist, index) => (
-                                    <Link
-                                        key={artist.id}
-                                        to={`/artist/${artist.id}`}
-                                        className={` subtitle_color is_truncate`}
-                                    >
-                                        {artist.name}
-                                    </Link>
-                                ))}
+                                {song.artists.map((artist, index) => {
+                                    let artist_name = artist.name;
+                                    if (
+                                        artist !==
+                                        song.artists[song.artists.length - 1]
+                                    ) {
+                                        artist_name += ',';
+                                    }
+                                    return (
+                                        <Link
+                                            key={artist.id}
+                                            to={`/artist/${artist.id}`}
+                                            className={` subtitle_color is_truncate pe-1`}
+                                        >
+                                            {artist_name}
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -127,15 +136,16 @@ function ListSongItem({
                     <>
                         {!isTabletMobile && isShowAlbum && (
                             <div className="col-xl-4 col-md-0 fs-13 f-family">
-                                {song.albums.map((album, index) => (
-                                    <Link
-                                        key={album.id}
-                                        to={`/album/${album.id}?type=song`}
-                                        className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
-                                    >
-                                        {album.name}
-                                    </Link>
-                                ))}
+                                {song.albums &&
+                                    song.albums.map((album, index) => (
+                                        <Link
+                                            key={album.id}
+                                            to={`/album/${album.id}?type=album`}
+                                            className={`ms-1 subtitle_color is_truncate d-flex align-items-center h-100`}
+                                        >
+                                            {album.name}
+                                        </Link>
+                                    ))}
                             </div>
                         )}
                         <div

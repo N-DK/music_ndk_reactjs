@@ -316,13 +316,33 @@ function AdminTables({ category }) {
                                             <td className="border">
                                                 <p className="mb-0 d-flex align-items-center h-100">
                                                     {item.artists.map(
-                                                        (artist) => (
-                                                            <span
-                                                                key={artist.id}
-                                                            >
-                                                                {artist.name}
-                                                            </span>
-                                                        ),
+                                                        (artist) => {
+                                                            let artist_name =
+                                                                artist.name;
+                                                            if (
+                                                                artist !==
+                                                                item.artists[
+                                                                    item.artists
+                                                                        .length -
+                                                                        1
+                                                                ]
+                                                            ) {
+                                                                artist_name +=
+                                                                    ',';
+                                                            }
+                                                            return (
+                                                                <span
+                                                                    key={
+                                                                        artist.id
+                                                                    }
+                                                                    className="pe-2"
+                                                                >
+                                                                    {
+                                                                        artist_name
+                                                                    }
+                                                                </span>
+                                                            );
+                                                        },
                                                     )}
                                                 </p>
                                             </td>

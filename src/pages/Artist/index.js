@@ -243,7 +243,7 @@ function Artist() {
                         <Receptacle
                             title="Single & EP"
                             more="single"
-                            type="song"
+                            type="album"
                             data={handleFilterAlbumsSingle(albums)}
                         />
                         <Receptacle
@@ -255,7 +255,7 @@ function Artist() {
                             <Receptacle
                                 title="Playlist"
                                 type="playlist"
-                                data={handleAddArtists(playlist)}
+                                data={playlist}
                             />
                         )}
                         <Receptacle title="MV" video={true} control={true} />
