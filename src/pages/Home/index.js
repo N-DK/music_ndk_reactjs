@@ -1,4 +1,3 @@
-import SongItem from '~/components/SongItem';
 import styles from './Home.module.scss';
 import classNames from 'classnames/bind';
 import Receptacle from '~/components/Receptacle';

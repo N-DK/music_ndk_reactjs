@@ -7,7 +7,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import CardSongItem from '~/components/CardSongItem';
 import { useState } from 'react';
-import SongItem from '~/components/SongItem';
 import ListSong from '~/components/ListSong';
 import MyAlbum from '~/components/MyAlbum';
 
