@@ -62,6 +62,7 @@ function CardSongItem({ data, isSlider, type }) {
                         {data.name}
                     </a>
                     {type !== 'playlist' &&
+                        data.artists &&
                         data.artists.map((artist, index) => {
                             let artist_name = artist.name;
                             if (
@@ -71,6 +72,7 @@ function CardSongItem({ data, isSlider, type }) {
                             }
                             return (
                                 <Link
+                                    key={index}
                                     to={`/artist/${artist.id}`}
                                     className={`${cx(
                                         'text',

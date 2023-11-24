@@ -6,7 +6,7 @@ import { reducer, setListSongs } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
-function ListSong({ isShowAlbums, data }) {
+function ListSong({ isShowAlbums, data, album_id }) {
     useSelector(() => reducer);
     const dispatch = useDispatch();
 
@@ -37,6 +37,7 @@ function ListSong({ isShowAlbums, data }) {
                     key={index}
                     song={song}
                     songs={data}
+                    album_id={album_id}
                 />
             ))}
         </div>

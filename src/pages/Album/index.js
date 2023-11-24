@@ -110,6 +110,7 @@ function Album() {
                                 <ListSong
                                     isShowAlbums={type === 'playlist'}
                                     data={songs}
+                                    album_id={data[0].id}
                                 />
                             </div>
                         </div>

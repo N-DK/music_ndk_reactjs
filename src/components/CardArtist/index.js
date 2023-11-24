@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './CardArtist.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,11 +7,11 @@ import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function CardArtist() {
-    const [numberInterested, setNumberInterested] = useState(2447764);
+function CardArtist({ data }) {
+    const [numberInterested, setNumberInterested] = useState(0);
     const [isInterested, setIsInterested] = useState(false);
 
-    const convertNumber = (number) => {
+    const convertNumber = (number = 0) => {
         var suffixes = ['', 'K', 'M', 'B', 'T'];
         var suffixNum = 0;
 
@@ -20,8 +20,14 @@ function CardArtist() {
             suffixNum++;
         }
 
-        return number.toFixed(1) + suffixes[suffixNum];
+        return suffixNum > 0
+            ? number.toFixed(1) + suffixes[suffixNum]
+            : number.toFixed(0) + suffixes[suffixNum];
     };
+
+    useEffect(() => {
+        setNumberInterested(data.numberFollower);
+    }, [data]);
 
     return (
         <div
@@ -33,15 +39,15 @@ function CardArtist() {
                 <div className={`${cx('')} rounded-circle overflow-hidden`}>
                     <img
                         className="w-100 h-100"
-                        src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/avatars/f/b/f/1/fbf16d7352a3eea6be8cf5d4b217516d.jpg"
+                        src={data.profilePath}
                         alt=""
                     />
                 </div>
                 <Link
-                    to="/artist/son-tung-m-tp"
+                    to={`/artist/${data.id}`}
                     className="mt-2 d-inline-block text-decoration-none text-dark"
                 >
-                    Sơn Tùng M-TP
+                    {data.artistName}
                 </Link>
                 <p className="fs-13 subtitle_color">
                     <span>{convertNumber(numberInterested)}</span> quan tâm

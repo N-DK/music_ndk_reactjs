@@ -27,6 +27,8 @@ function ListSongItem({
     songs,
     isSearchItem,
     isShowAlbum,
+    onClick,
+    album_id,
 }) {
     useSelector(() => reducer);
     const dispatch = useDispatch();
@@ -52,8 +54,12 @@ function ListSongItem({
     };
 
     return (
-        <div className={`${cx('wrapper')} container pt-3`}>
-            <div className={`row ${isSearchItem ? '' : 'border-bottom pb-3'}`}>
+        <div onClick={onClick} className={`${cx('wrapper')} container pt-3`}>
+            <div
+                className={`row ${
+                    isSearchItem ? 'pb-3' : 'border-bottom pb-3'
+                }`}
+            >
                 <div
                     className={`${
                         !isSearchItem
@@ -106,28 +112,38 @@ function ListSongItem({
                             </div>
                         </div>
                         <div className="ms-3">
-                            <p className={`${cx('')} m-0 f-family`}>
+                            <Link
+                                to={`/album/${
+                                    song.albums ? song.albums[0].id : album_id
+                                }?type=album`}
+                                className={` text-decoration-none text-dark text--primary ${cx(
+                                    '',
+                                )} m-0 f-family`}
+                            >
                                 {song.title}
-                            </p>
+                            </Link>
                             <div className="fs-13 f-family subtitle_color">
-                                {song.artists.map((artist, index) => {
-                                    let artist_name = artist.name;
-                                    if (
-                                        artist !==
-                                        song.artists[song.artists.length - 1]
-                                    ) {
-                                        artist_name += ',';
-                                    }
-                                    return (
-                                        <Link
-                                            key={artist.id}
-                                            to={`/artist/${artist.id}`}
-                                            className={` subtitle_color is_truncate pe-1`}
-                                        >
-                                            {artist_name}
-                                        </Link>
-                                    );
-                                })}
+                                {song.artists &&
+                                    song.artists.map((artist, index) => {
+                                        let artist_name = artist.name;
+                                        if (
+                                            artist !==
+                                            song.artists[
+                                                song.artists.length - 1
+                                            ]
+                                        ) {
+                                            artist_name += ',';
+                                        }
+                                        return (
+                                            <Link
+                                                key={artist.id}
+                                                to={`/artist/${artist.id}`}
+                                                className={` subtitle_color is_truncate pe-1`}
+                                            >
+                                                {artist_name}
+                                            </Link>
+                                        );
+                                    })}
                             </div>
                         </div>
                     </div>
