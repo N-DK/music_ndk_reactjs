@@ -51,7 +51,7 @@ function Album() {
                             <div
                                 className={` d-flex flex-column align-items-center justify-content-center ${cx(
                                     '',
-                                )} text-center f-family mb-3`}
+                                )} text-center f-family`}
                             >
                                 <div
                                     className={`${cx(
@@ -65,22 +65,27 @@ function Album() {
                                     />
                                 </div>
                                 <p
+                                    style={{ fontWeight: 600 }}
                                     className={`${cx(
                                         '',
-                                    )} text-capitalize fs-5 mt-2 mb-1`}
+                                    )} text-capitalize fs-5 mt-2 mb-2 mt-4`}
                                 >
                                     {data[0].title || data[0].name}
                                 </p>
-                                <p className={`${cx('')} mb-1`}>
+                                <p className={`${cx('')} mb-2`}>
                                     <span>Update date: </span>
                                     {formatDate(data[0].modifiedDate)}
                                 </p>
-                                <div className="fs-13 f-family subtitle_color">
+                                <div
+                                    className={`${cx(
+                                        'text',
+                                    )} fs-13 f-family subtitle_color w-100`}
+                                >
                                     {data[0].artists.map((artist, index) => (
                                         <Link
                                             key={index}
                                             to={`/artist/${artist.id}`}
-                                            className={` subtitle_color is_truncate`}
+                                            className={` subtitle_color is_truncate pe-1`}
                                         >
                                             {artist.name}
                                         </Link>

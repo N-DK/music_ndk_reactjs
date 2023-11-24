@@ -210,20 +210,10 @@ function Home() {
                             </div>
                         </div>
                     </div>
-                    <Receptacle
-                        title="Chill"
-                        control={false}
-                        type="playlist"
-                        data={chill}
-                    />
+                    <Receptacle title="Chill" type="playlist" data={chill} />
                     <Receptacle title="Một Chút Yêu Đời" limit={10} />
                     <Receptacle title="Remix Là Dance Luôn" limit={10} />
-                    <Receptacle title="Tâm Trạng Tan Chậm" control={true} />
-                    <Receptacle
-                        title="Hot Video Songs"
-                        control={true}
-                        video={true}
-                    />
+                    <Receptacle title="Tâm Trạng Tan Chậm" />
                 </div>
             )}
         </>

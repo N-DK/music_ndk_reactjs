@@ -258,7 +258,6 @@ function Artist() {
                                 data={playlist}
                             />
                         )}
-                        <Receptacle title="MV" video={true} control={true} />
                         <div className={`${cx('about__artist')} f-family mt-5`}>
                             <h4 className={`${cx('')}`}>
                                 About {artist.artistName}
@@ -273,7 +272,7 @@ function Artist() {
                                         >
                                             <img
                                                 className="w-100 h-100"
-                                                src="https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/avatars/f/b/f/1/fbf16d7352a3eea6be8cf5d4b217516d.jpg"
+                                                src={artist.profilePath}
                                                 alt=""
                                             />
                                         </div>

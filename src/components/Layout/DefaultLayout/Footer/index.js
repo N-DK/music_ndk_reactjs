@@ -187,15 +187,28 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                             </a>
                                             <div className="fs-13 f-family subtitle_color">
                                                 {currSong.artists.map(
-                                                    (artist, index) => (
-                                                        <Link
-                                                            key={index}
-                                                            to={`/artist/${artist.id}`}
-                                                            className={` subtitle_color is_truncate`}
-                                                        >
-                                                            {artist.name}
-                                                        </Link>
-                                                    ),
+                                                    (artist, index) => {
+                                                        let artist_name =
+                                                            artist.name;
+                                                        if (
+                                                            artist !==
+                                                            currSong.artists[
+                                                                currSong.artists
+                                                                    .length - 1
+                                                            ]
+                                                        ) {
+                                                            artist_name += ',';
+                                                        }
+                                                        return (
+                                                            <Link
+                                                                key={index}
+                                                                to={`/artist/${artist.id}`}
+                                                                className={` subtitle_color is_truncate pe-1`}
+                                                            >
+                                                                {artist_name}
+                                                            </Link>
+                                                        );
+                                                    },
                                                 )}
                                             </div>
                                         </div>

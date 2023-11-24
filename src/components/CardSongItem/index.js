@@ -61,20 +61,25 @@ function CardSongItem({ data, isSlider, type }) {
                     >
                         {data.name}
                     </a>
-                    {type !== 'playlist' && (
-                        <a
-                            href="#"
-                            className={`${cx(
-                                'text',
-                            )} subtitle_color  is_truncate`}
-                        >
-                            {data.artists.map((artist, index) => (
-                                <span className="pe-1" key={artist.id}>
-                                    {artist.name}
-                                </span>
-                            ))}
-                        </a>
-                    )}
+                    {type !== 'playlist' &&
+                        data.artists.map((artist, index) => {
+                            let artist_name = artist.name;
+                            if (
+                                artist !== data.artists[data.artists.length - 1]
+                            ) {
+                                artist_name += ',';
+                            }
+                            return (
+                                <Link
+                                    to={`/artist/${artist.id}`}
+                                    className={`${cx(
+                                        'text',
+                                    )} subtitle_color  is_truncate pe-1`}
+                                >
+                                    {artist_name}
+                                </Link>
+                            );
+                        })}
                 </div>
             </div>
         </div>
