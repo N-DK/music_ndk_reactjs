@@ -5,6 +5,8 @@ import styles from './DefaultLayout.module.scss';
 import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const cx = classNames.bind(styles);
 
@@ -18,12 +20,25 @@ function DefaultLayout({ children }) {
     const [date, setDate] = useState('');
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
-    // const isPcLow = useMediaQuery({ minWidth: 1100 });
+    const [loading, setLoading] = useState(false);
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
-    // const isTablet = useMediaQuery({ minWidth: 767, maxWidth: 989 });
 
     const handleLogin = () => {
-        console.log('Handling log in');
+        setLoading(true);
+        axios
+            .post('http://localhost:8080/api/user/login', {
+                email: userNameLogin,
+                passwrord: passLogin,
+            })
+            .then((res) => {
+                Cookies.set('token', res.data.token, { expires: 7 });
+                setLoading(false);
+                window.location.reload();
+            })
+            .catch((error) => {
+                setLoading(false);
+                console.log(error);
+            });
     };
 
     const validEmail = new RegExp(
@@ -31,7 +46,25 @@ function DefaultLayout({ children }) {
     );
 
     const handleSignUp = () => {
-        console.log('Handling sign up');
+        setLoading(true);
+        axios
+            .post('http://localhost:8080/api/user', {
+                nickName: nickName,
+                email: emailSignUp,
+                birthday: `${date}-${month}-${year}`,
+                passwrord: passSignUp,
+                avatar: 'https://res.cloudinary.com/dmvyx3gwr/image/upload/v1701430647/1806152-removebg-preview_olcvfu.png',
+                roleCode: 'user',
+            })
+            .then((res) => {
+                Cookies.set('token', res.data.token, { expires: 7 });
+                setLoading(false);
+                window.location.reload();
+            })
+            .catch((error) => {
+                setLoading(false);
+                console.log(error);
+            });
     };
 
     const isCheckLeapYear = (year) => {
@@ -198,7 +231,15 @@ function DefaultLayout({ children }) {
                                                 'btn-login',
                                             )} w-100 rounded-5 mt-4 border-0`}
                                         >
-                                            Log In
+                                            {loading ? (
+                                                <img
+                                                    style={{ width: '15%' }}
+                                                    src="https://res.cloudinary.com/dmvyx3gwr/image/upload/v1701431805/loading-circle-5662747-4719071-unscreen_y4rshy.gif"
+                                                    alt=""
+                                                />
+                                            ) : (
+                                                'Log in'
+                                            )}
                                         </button>
                                         <div className="text-center mt-4">
                                             <a
@@ -377,7 +418,15 @@ function DefaultLayout({ children }) {
                                                 'btn-login',
                                             )} w-100 rounded-5 mt-4 border-0`}
                                         >
-                                            Sign up
+                                            {loading ? (
+                                                <img
+                                                    style={{ width: '15%' }}
+                                                    src="https://res.cloudinary.com/dmvyx3gwr/image/upload/v1701431805/loading-circle-5662747-4719071-unscreen_y4rshy.gif"
+                                                    alt=""
+                                                />
+                                            ) : (
+                                                'Sign up'
+                                            )}
                                         </button>
                                         <div className="text-center mt-4">
                                             <a

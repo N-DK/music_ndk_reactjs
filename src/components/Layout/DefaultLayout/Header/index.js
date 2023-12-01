@@ -19,9 +19,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 const cx = classNames.bind(styles);
 
 function Header() {
+    const token = Cookies.get('token');
     const [search, setSearch] = useState('');
     const [songs, setSongs] = useState([]);
     const [current, setCurrent] = useState(window.location.href);
@@ -30,9 +32,10 @@ function Header() {
     const [isEnter, setIsEnter] = useState(true);
     const [isPopstate, setIsPopstate] = useState(false);
     const [isBlur, setIsBlur] = useState(false);
-    const navigate = useNavigate();
     const [isTurnOnMenu, setIsTurnOnMenu] = useState(false);
     const [isTurnOnSearch, setIsTurnOnSearch] = useState(false);
+    const [user, setUser] = useState({});
+    const navigate = useNavigate();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -74,6 +77,17 @@ function Header() {
             window.removeEventListener('popstate', handlePopstate);
         };
     }, []);
+
+    useEffect(() => {
+        axios
+            .get('http://localhost:8080/api/user', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((res) => setUser(res.data))
+            .catch((err) => console.log(err));
+    }, [token]);
 
     useEffect(() => {
         if (isPopstate && !isEnter) {
@@ -284,14 +298,18 @@ function Header() {
                                 />
                             </a>
                             <a
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalLogin"
+                                data-bs-toggle={!token && 'modal'}
+                                data-bs-target={!token && '#modalLogin'}
                                 href="#"
                                 className="rounded-circle square_40 d-block overflow-hidden"
                             >
                                 <figure>
                                     <img
-                                        src="https://zjs.zmdcdn.me/zmp3-desktop/releases/v1.9.67/static/media/user-default.3ff115bb.png"
+                                        src={
+                                            user.avatar
+                                                ? user.avatar
+                                                : 'https://zjs.zmdcdn.me/zmp3-desktop/releases/v1.9.67/static/media/user-default.3ff115bb.png'
+                                        }
                                         alt=""
                                         className="w-100 h-100"
                                     />

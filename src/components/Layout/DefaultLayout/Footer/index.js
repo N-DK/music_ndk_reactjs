@@ -177,14 +177,14 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                 'song__container--name',
                                             )} pe-3`}
                                         >
-                                            <a
-                                                href="#"
+                                            <Link
+                                                to={`/album/${currSong.albums[0].id}?type=album`}
                                                 className={`${cx(
                                                     ' text-decoration-none text-truncate',
                                                 )} text-white f-family`}
                                             >
                                                 {currSong.title}
-                                            </a>
+                                            </Link>
                                             <div className="fs-13 f-family subtitle_color">
                                                 {currSong.artists.map(
                                                     (artist, index) => {

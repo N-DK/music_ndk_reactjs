@@ -3,10 +3,11 @@ import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faEllipsis,
+    faHeart,
     faMicrophone,
     faPlay,
 } from '@fortawesome/free-solid-svg-icons';
-import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import {
     reducer,
@@ -17,6 +18,9 @@ import {
 } from '~/redux_';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 const cx = classNames.bind(styles);
 
 function ListSongItem({
@@ -31,6 +35,9 @@ function ListSongItem({
     album_id,
 }) {
     useSelector(() => reducer);
+    const token = Cookies.get('token');
+    const [user, setUser] = useState({});
+    const [like, setLike] = useState(false);
     const dispatch = useDispatch();
     const isTabletMobile = useMediaQuery({ maxWidth: 1200 });
 
@@ -52,6 +59,48 @@ function ListSongItem({
         currAudio.pause();
         dispatch(setPlaying(false));
     };
+
+    const handleCheckExist = (id) => {
+        if (user.email) {
+            const wishlist = user.songs;
+            return wishlist.find((wish) => wish === id) ? true : false;
+        }
+    };
+
+    useEffect(() => {
+        setLike(handleCheckExist(song.id));
+    }, [user]);
+
+    const handleWishlist = () => {
+        if (token) {
+            setLike(!like);
+            if (!like) {
+                axios.put(`http://localhost:8080/api/user/${user.id}`, {
+                    nickName: user.nickName,
+                    email: user.email,
+                    birthday: user.birthday,
+                    avatar: user.avatar,
+                    roleCode: user.roleCode,
+                    songs: [song.id],
+                });
+            } else {
+                console.log('delete');
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (token) {
+            axios
+                .get('http://localhost:8080/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((res) => setUser(res.data))
+                .catch((err) => console.log(err));
+        }
+    }, [token]);
 
     return (
         <div onClick={onClick} className={`${cx('wrapper')} container pt-3`}>
@@ -195,12 +244,19 @@ function ListSongItem({
                                     >
                                         <FontAwesomeIcon icon={faMicrophone} />
                                     </a>
-                                    <a
-                                        href=""
-                                        className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                    <Link
+                                        onClick={handleWishlist}
+                                        to=""
+                                        className={` ${cx(
+                                            `${like ? 'liked' : ''}`,
+                                        )} me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
                                     >
-                                        <FontAwesomeIcon icon={faHeart} />
-                                    </a>
+                                        <FontAwesomeIcon
+                                            icon={
+                                                like ? faHeart : faHeartRegular
+                                            }
+                                        />
+                                    </Link>
                                     <a
                                         href="#"
                                         className="text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
