@@ -24,6 +24,7 @@ const allSongsPage = ({ data, artist }) => {
 };
 
 const singlePage = ({ data, artist }) => {
+    console.log(data);
     return (
         <div>
             <div className="">
@@ -32,7 +33,7 @@ const singlePage = ({ data, artist }) => {
                 </p>
                 <div className="row">
                     {data.map((item, index) => (
-                        <CardSongItem type="song" key={index} data={item} />
+                        <CardSongItem type="album" key={index} data={item} />
                     ))}
                 </div>
             </div>

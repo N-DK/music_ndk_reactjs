@@ -14,10 +14,14 @@ import { useMediaQuery } from 'react-responsive';
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '~/components/Loading';
+import Cookies from 'js-cookie';
 
 const cx = classNames.bind(styles);
 
 function Artist() {
+    const token = Cookies.get('token');
+    let { id } = useParams();
+    const [user, setUser] = useState();
     const [songs, setSongs] = useState([]);
     const [artist, setArtist] = useState();
     const [albums, setAlbums] = useState([]);
@@ -26,7 +30,6 @@ function Artist() {
     const [numberInterested, setNumberInterested] = useState(2447764);
     const [isInterested, setIsInterested] = useState(false);
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
-    let { id } = useParams();
 
     const convertNumber = (number) => {
         return number.replace(/,/g, '.');
@@ -42,30 +45,6 @@ function Artist() {
         return albums.filter(
             (album) => !album.name.toLowerCase().includes('single'),
         );
-    };
-
-    const handleAddArtists = (data) => {
-        let artists = [];
-
-        for (const item of data) {
-            item.songs.map((song) => {
-                let artist = [...song.artists];
-                for (let i = 0; i < artist.length; i++) {
-                    if (
-                        artists.length == 0 ||
-                        artists[i].name !== artist[i].name
-                    ) {
-                        artists.push(artist[i]);
-                    }
-                }
-            });
-        }
-
-        let results = data.map((item) => {
-            return { ...item, artists };
-        });
-
-        return results;
     };
 
     useEffect(() => {
@@ -96,6 +75,50 @@ function Artist() {
             })
             .catch((err) => console.log(err));
     }, [id]);
+
+    useEffect(() => {
+        if (token) {
+            axios
+                .get('http://localhost:8080/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((res) => setUser(res.data))
+                .catch((err) => console.log(err));
+        }
+    }, [token]);
+
+    const handleCheckExist = (id) => {
+        if (user) {
+            const wishlist = user.artistIds;
+            return wishlist.find((wish) => wish === Number(id)) ? true : false;
+        }
+    };
+
+    useEffect(() => {
+        setIsInterested(handleCheckExist(id));
+    }, [user]);
+
+    const handleSub = () => {
+        if (token && user) {
+            setNumberInterested((prev) => prev + 1);
+            setIsInterested(true);
+            axios.put(
+                `http://localhost:8080/api/arist/sub/${id}?user_id=${user.id}`,
+            );
+        }
+    };
+
+    const handleUnSub = () => {
+        if (token && user) {
+            setNumberInterested((prev) => prev - 1);
+            setIsInterested(false);
+            axios.put(
+                `http://localhost:8080/api/arist/unsub/${id}?user_id=${user.id}`,
+            );
+        }
+    };
 
     return (
         <>
@@ -153,16 +176,11 @@ function Artist() {
                                         người quan tâm
                                     </p>
                                     {!isInterested ? (
-                                        <div
-                                            onClick={() => {
-                                                setNumberInterested(
-                                                    (prev) => prev + 1,
-                                                );
-                                                setIsInterested(true);
-                                            }}
-                                            className={`${cx(
+                                        <Link
+                                            onClick={handleSub}
+                                            className={` text-decoration-none ${cx(
                                                 'btn-interested',
-                                            )} border border-dark fs-13 rounded-5 ms-4 p-1 ps-3 pe-3`}
+                                            )} border border-dark fs-13 rounded-5 ms-4 p-1 ps-3 pe-3 text-dark`}
                                         >
                                             <FontAwesomeIcon
                                                 icon={faUserPlus}
@@ -171,18 +189,13 @@ function Artist() {
                                             <span className=" text-uppercase">
                                                 quan tâm
                                             </span>
-                                        </div>
+                                        </Link>
                                     ) : (
-                                        <div
-                                            onClick={() => {
-                                                setNumberInterested(
-                                                    (prev) => prev - 1,
-                                                );
-                                                setIsInterested(false);
-                                            }}
-                                            className={` border-dark ${cx(
+                                        <Link
+                                            onClick={handleUnSub}
+                                            className={` text-decoration-none ${cx(
                                                 'btn-interested',
-                                            )} border fs-13 rounded-5 ms-4 p-1 ps-3 pe-3`}
+                                            )} border border-dark fs-13 rounded-5 ms-4 p-1 ps-3 pe-3 text-dark`}
                                         >
                                             <FontAwesomeIcon
                                                 icon={faCheck}
@@ -191,7 +204,7 @@ function Artist() {
                                             <span className=" text-uppercase">
                                                 đã quan tâm
                                             </span>
-                                        </div>
+                                        </Link>
                                     )}
                                 </div>
                             </div>

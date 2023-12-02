@@ -12,6 +12,7 @@ import MyAlbum from '~/components/MyAlbum';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import Loading from '~/components/Loading';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -105,7 +106,8 @@ function MyMusic() {
                     <div>
                         <div className={`border-bottom pb-2`}>
                             {items.map((v, i) => (
-                                <a
+                                <Link
+                                    to=""
                                     key={i}
                                     className={`f-family text-dark text-uppercase text-decoration-none d-inline-block me-4 ${
                                         v.id == item && `${cx('active')}`
@@ -113,14 +115,59 @@ function MyMusic() {
                                     onClick={() => setItem(v.id)}
                                 >
                                     {v.name}
-                                </a>
+                                </Link>
                             ))}
                         </div>
                         <div className="">
                             {item == 1 ? (
-                                <ListSong isShowAlbums={true} data={songs} />
-                            ) : (
+                                songs.length > 0 ? (
+                                    <ListSong
+                                        isShowAlbums={true}
+                                        data={songs}
+                                    />
+                                ) : (
+                                    <div className="f-family d-flex justify-content-center align-items-center pb-5">
+                                        <div className=" d-flex flex-column align-items-center mt-5">
+                                            <img
+                                                className="mb-2"
+                                                style={{
+                                                    width: 120,
+                                                }}
+                                                src="https://zmp3-static.zmdcdn.me/skins/zmp3-v6.1/images/icons/empty-fav-song.png"
+                                                alt=""
+                                            />
+                                            <span>
+                                                There are no favorite songs in
+                                                your personal library
+                                            </span>
+                                            <Link
+                                                to="/"
+                                                className="mt-3 text-decoration-none text-white bg--primary p-1 pe-3 ps-3 rounded-5 text-uppercase"
+                                            >
+                                                Explore now
+                                            </Link>
+                                        </div>
+                                    </div>
+                                )
+                            ) : albums.length > 0 ? (
                                 <MyAlbum data={albums} />
+                            ) : (
+                                <div className="f-family d-flex justify-content-center align-items-center pb-5">
+                                    <div className=" d-flex flex-column align-items-center mt-5">
+                                        <img
+                                            className="mb-2"
+                                            style={{
+                                                width: 120,
+                                            }}
+                                            src="https://zmp3-static.zmdcdn.me/skins/zmp3-v6.1/images/icons/empty-album.png"
+                                            alt=""
+                                        />
+                                        <span>
+                                            There are no album in your personal
+                                            library
+                                        </span>
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </div>
