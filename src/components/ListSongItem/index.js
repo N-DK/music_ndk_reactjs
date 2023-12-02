@@ -63,7 +63,7 @@ function ListSongItem({
     const handleCheckExist = (id) => {
         if (user.email) {
             const wishlist = user.songs;
-            return wishlist.find((wish) => wish === id) ? true : false;
+            return wishlist.find((wish) => wish.id === id) ? true : false;
         }
     };
 
@@ -76,15 +76,12 @@ function ListSongItem({
             setLike(!like);
             if (!like) {
                 axios.put(`http://localhost:8080/api/user/${user.id}`, {
-                    nickName: user.nickName,
-                    email: user.email,
-                    birthday: user.birthday,
-                    avatar: user.avatar,
-                    roleCode: user.roleCode,
                     songs: [song.id],
                 });
             } else {
-                console.log('delete');
+                axios.delete(
+                    `http://localhost:8080/api/user/${user.id}?song_id=${song.id}`,
+                );
             }
         }
     };
@@ -247,9 +244,9 @@ function ListSongItem({
                                     <Link
                                         onClick={handleWishlist}
                                         to=""
-                                        className={` ${cx(
-                                            `${like ? 'liked' : ''}`,
-                                        )} me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
+                                        className={` me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30  ${cx(
+                                            `${like ? 'liked' : 'like'}`,
+                                        )}`}
                                     >
                                         <FontAwesomeIcon
                                             icon={

@@ -1,13 +1,61 @@
-import { faCirclePlay, faHeart } from '@fortawesome/free-regular-svg-icons';
+import {
+    faCirclePlay,
+    faHeart as faHeartRegular,
+} from '@fortawesome/free-regular-svg-icons';
 import styles from './CardSongItem.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const cx = classNames.bind(styles);
 
 function CardSongItem({ data, isSlider, type }) {
+    const token = Cookies.get('token');
+    const [like, setLike] = useState(false);
+    const [user, setUser] = useState();
+
+    useEffect(() => {
+        if (token) {
+            axios
+                .get('http://localhost:8080/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((res) => setUser(res.data))
+                .catch((err) => console.log(err));
+        }
+    }, [token]);
+
+    const handleLike = () => {
+        if (user && token) {
+            setLike(!like);
+            if (!like) {
+                console.log('put ' + type);
+                axios.put(`http://localhost:8080/api/user/${user.id}`, {
+                    [type]: [data.id],
+                });
+            } else {
+                console.log('delete ' + type);
+            }
+        }
+    };
+
+    const handleCheckExist = (id) => {
+        if (user) {
+            const wishlist = type == 'album' ? user.albums : user.playlist;
+            return wishlist.find((wish) => wish.id === id) ? true : false;
+        }
+    };
+
+    useEffect(() => {
+        setLike(handleCheckExist(data.id));
+    }, [user]);
+
     return (
         <div
             className={`${
@@ -30,12 +78,17 @@ function CardSongItem({ data, isSlider, type }) {
                             'action__container',
                         )} position-absolute w-100 h-100 start-0 top-0 d-flex align-items-center justify-content-center`}
                     >
-                        <a
-                            href=""
-                            className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                        <Link
+                            onClick={handleLike}
+                            to=""
+                            className={`rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30 ${cx(
+                                `${like ? 'liked' : 'like'}`,
+                            )}`}
                         >
-                            <FontAwesomeIcon icon={faHeart} />
-                        </a>
+                            <FontAwesomeIcon
+                                icon={like ? faHeart : faHeartRegular}
+                            />
+                        </Link>
                         <Link
                             to={`/album/${data.id}?type=${type}`}
                             className="fs-1 ms-4 me-4 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
@@ -53,14 +106,14 @@ function CardSongItem({ data, isSlider, type }) {
                 <div
                     className={` text-center pt-4 pb-4 p-2 border rounded-3 border-top-0 rounded-top-0 f-family`}
                 >
-                    <a
-                        href="#"
+                    <Link
+                        to={`/album/${data.id}?type=${type}`}
                         className={`${cx(
                             'text',
                         )} mb-1 d-block text-decoration-none text-black`}
                     >
                         {data.name}
-                    </a>
+                    </Link>
                     {type !== 'playlist' &&
                         data.artists &&
                         data.artists.map((artist, index) => {

@@ -6,10 +6,13 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 function MyAlbum({ data }) {
-    // call api
     return (
         <div className={`${cx('wrapper')} mt-4`}>
-            <CardSongItem />
+            <div className="row">
+                {data.map((item) => (
+                    <CardSongItem key={item.id} data={item} type="album" />
+                ))}
+            </div>
         </div>
     );
 }
