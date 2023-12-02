@@ -27,7 +27,10 @@ function CardSongItem({ data, isSlider, type }) {
                     },
                 })
                 .then((res) => setUser(res.data))
-                .catch((err) => console.log(err));
+                .catch((err) => {
+                    Cookies.remove('token');
+                    console.log(err);
+                });
         }
     }, [token]);
 
@@ -35,12 +38,13 @@ function CardSongItem({ data, isSlider, type }) {
         if (user && token) {
             setLike(!like);
             if (!like) {
-                console.log('put ' + type);
                 axios.put(`http://localhost:8080/api/user/${user.id}`, {
                     [type]: [data.id],
                 });
             } else {
-                console.log('delete ' + type);
+                axios.delete(
+                    `http://localhost:8080/api/user/${user.id}?type=${type}&type_id=${data.id}`,
+                );
             }
         }
     };

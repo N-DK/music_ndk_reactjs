@@ -79,14 +79,19 @@ function Header() {
     }, []);
 
     useEffect(() => {
-        axios
-            .get('http://localhost:8080/api/user', {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-            .then((res) => setUser(res.data))
-            .catch((err) => console.log(err));
+        if (token) {
+            axios
+                .get('http://localhost:8080/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((res) => setUser(res.data))
+                .catch((err) => {
+                    Cookies.remove('token');
+                    console.log(err);
+                });
+        }
     }, [token]);
 
     useEffect(() => {

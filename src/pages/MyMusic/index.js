@@ -53,7 +53,10 @@ function MyMusic() {
                     },
                 })
                 .then((res) => setUser(res.data))
-                .catch((err) => console.log(err))
+                .catch((err) => {
+                    Cookies.remove('token');
+                    console.log(err);
+                })
                 .finally(() => setLoading(false));
         }
     }, [token]);

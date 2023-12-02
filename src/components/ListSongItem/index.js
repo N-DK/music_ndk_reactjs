@@ -80,7 +80,7 @@ function ListSongItem({
                 });
             } else {
                 axios.delete(
-                    `http://localhost:8080/api/user/${user.id}?song_id=${song.id}`,
+                    `http://localhost:8080/api/user/${user.id}?type=song&type_id=${song.id}`,
                 );
             }
         }
@@ -95,7 +95,10 @@ function ListSongItem({
                     },
                 })
                 .then((res) => setUser(res.data))
-                .catch((err) => console.log(err));
+                .catch((err) => {
+                    Cookies.remove('token');
+                    console.log(err);
+                });
         }
     }, [token]);
 
