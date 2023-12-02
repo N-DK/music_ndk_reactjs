@@ -1,6 +1,7 @@
 import {
     faArrowLeft,
     faArrowRight,
+    faArrowRightFromBracket,
     faCompactDisc,
     faGear,
     faHouse,
@@ -26,6 +27,7 @@ function Header() {
     const token = Cookies.get('token');
     const [search, setSearch] = useState('');
     const [songs, setSongs] = useState([]);
+    const [turnProfile, setTurnProfile] = useState(false);
     const [current, setCurrent] = useState(window.location.href);
     const [back, setBack] = useState([]);
     const [forward, setForward] = useState([]);
@@ -34,7 +36,7 @@ function Header() {
     const [isBlur, setIsBlur] = useState(false);
     const [isTurnOnMenu, setIsTurnOnMenu] = useState(false);
     const [isTurnOnSearch, setIsTurnOnSearch] = useState(false);
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState();
     const navigate = useNavigate();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -125,7 +127,6 @@ function Header() {
             isTurnOnMenu || (isTurnOnSearch && isMobile) ? 'hidden' : 'scroll';
     }, [isTurnOnMenu, isTurnOnSearch, isMobile]);
 
-    // call api
     useEffect(() => {
         axios
             .get(`http://localhost:8080/api/search/song?page=1&query=${search}`)
@@ -134,6 +135,17 @@ function Header() {
             })
             .catch((err) => console.log(err));
     }, [search]);
+
+    const handleLogOut = (e) => {
+        Cookies.remove('token');
+        window.location.href = '/';
+    };
+
+    const handleTurnProfile = () => {
+        if (user) {
+            setTurnProfile(!turnProfile);
+        }
+    };
 
     return (
         <>
@@ -281,7 +293,11 @@ function Header() {
                                 </div>
                             </>
                         )}
-                        <div className={`${cx('')} d-flex align-items-center`}>
+                        <div
+                            className={` position-relative ${cx(
+                                '',
+                            )} d-flex align-items-center`}
+                        >
                             <a
                                 onClick={() => {
                                     if (isMobile) {
@@ -302,16 +318,18 @@ function Header() {
                                     className={`text-dark`}
                                 />
                             </a>
-                            <a
+                            <Link
                                 data-bs-toggle={!token && 'modal'}
                                 data-bs-target={!token && '#modalLogin'}
-                                href="#"
+                                to=""
                                 className="rounded-circle square_40 d-block overflow-hidden"
+                                onClick={handleTurnProfile}
+                                onBlur={() => setTimeout(handleTurnProfile, 80)}
                             >
                                 <figure>
                                     <img
                                         src={
-                                            user.avatar
+                                            user
                                                 ? user.avatar
                                                 : 'https://zjs.zmdcdn.me/zmp3-desktop/releases/v1.9.67/static/media/user-default.3ff115bb.png'
                                         }
@@ -319,7 +337,43 @@ function Header() {
                                         className="w-100 h-100"
                                     />
                                 </figure>
-                            </a>
+                            </Link>
+                            {turnProfile && (
+                                <div
+                                    className={`f-family end-0 bg-white p-2 position-absolute ${cx(
+                                        'box',
+                                    )} top-100 mt-2`}
+                                >
+                                    <div className=" d-flex  align-items-center">
+                                        <figure className=" rounded-circle overflow-hidden me-2 mb-0">
+                                            <img
+                                                className="w-100"
+                                                src={user.avatar}
+                                                alt=""
+                                            />
+                                        </figure>
+                                        <div className="">
+                                            <h3 className="mb-0">
+                                                {user.nickName}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div className=" border-top mt-2">
+                                        <Link
+                                            onClick={handleLogOut}
+                                            className={`${cx(
+                                                'func_user',
+                                            )} d-block text-decoration-none text-dark p-2 mt-1`}
+                                        >
+                                            <FontAwesomeIcon
+                                                className="me-2"
+                                                icon={faArrowRightFromBracket}
+                                            />
+                                            Log out
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -376,7 +430,6 @@ function Header() {
                     </div>
                 )}
             </div>
-
             <div
                 onClick={() => setIsTurnOnMenu(false)}
                 className={` ${cx(
