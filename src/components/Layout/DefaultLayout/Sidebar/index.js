@@ -9,9 +9,12 @@ import {
     faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
 const cx = classNames.bind(styles);
 
 function Sidebar() {
+    const token = Cookies.get('token');
+
     return (
         <div
             className={`${cx(
@@ -55,13 +58,17 @@ function Sidebar() {
                         </Link>
                     </li>
                     <li>
-                        <a
-                            href="#"
+                        <Link
+                            data-bs-toggle={'modal'}
+                            data-bs-target={
+                                !token ? '#modalLogin' : '#modalPlaylist'
+                            }
+                            to=""
                             className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                         >
                             <FontAwesomeIcon icon={faPlus} />
                             <span className="ms-2">Create new playlist</span>
-                        </a>
+                        </Link>
                     </li>
                 </ul>
             </div>

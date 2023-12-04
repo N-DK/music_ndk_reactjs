@@ -7,10 +7,14 @@ import { useEffect, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
 function DefaultLayout({ children }) {
+    const navigate = useNavigate();
     const [isLogin, setIsLogin] = useState(true);
     const [userNameLogin, setUserNameLogin] = useState('');
     const [passLogin, setPassLogin] = useState('');
@@ -21,7 +25,10 @@ function DefaultLayout({ children }) {
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
     const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState();
+    const [playlistName, setPlaylistName] = useState('');
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
+    const token = Cookies.get('token');
 
     const handleLogin = () => {
         setLoading(true);
@@ -119,6 +126,20 @@ function DefaultLayout({ children }) {
         return flag;
     };
 
+    const handleCreateNewPlaylist = () => {
+        axios
+            .post('http://localhost:8080/api/playlist', {
+                name: playlistName,
+                favoriteSong: [],
+                emailUser: user.email,
+                thumbnail: '',
+                topicCode: '',
+            })
+            .then((res) => {
+                navigate(`/album/${res.data.id}?type=playlist`);
+            });
+    };
+
     useEffect(() => {
         var modal = document.getElementById('modalId');
         modal.addEventListener('show.bs.modal', function (event) {
@@ -127,6 +148,19 @@ function DefaultLayout({ children }) {
             modal.querySelector('.lyricModal').innerHTML = recipient;
         });
     }, []);
+
+    useEffect(() => {
+        if (token) {
+            axios
+                .get('http://localhost:8080/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((res) => setUser(res.data))
+                .catch((err) => console.log(err));
+        }
+    }, [token]);
 
     return (
         <>
@@ -171,6 +205,45 @@ function DefaultLayout({ children }) {
                                     data-bs-dismiss="modal"
                                 >
                                     Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="modal fade f-family" id="modalPlaylist">
+                <div className="modal-dialog modal-sm modal-dialog-centered">
+                    <div className="modal-content">
+                        <div className="modal-body">
+                            <div>
+                                <Link
+                                    data-bs-dismiss="modal"
+                                    className=" text-end d-block text-dark"
+                                >
+                                    <FontAwesomeIcon icon={faXmark} />
+                                </Link>
+                                <h5
+                                    className="modal-title text-center mb-2"
+                                    id="modalTitleId"
+                                >
+                                    Create new playlist
+                                </h5>
+                                <input
+                                    value={playlistName}
+                                    onChange={(e) =>
+                                        setPlaylistName(e.target.value)
+                                    }
+                                    className=" rounded-5 border w-100 pt-2 pb-2 ps-3 pe-3"
+                                    placeholder="Enter playlist name"
+                                />
+                                <button
+                                    onClick={handleCreateNewPlaylist}
+                                    style={{ borderRadius: 9999999 }}
+                                    type="button"
+                                    className="pt-2 pb-2 w-100 border bg--primary text-white pe-4 ps-4 mt-3"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Create new
                                 </button>
                             </div>
                         </div>
