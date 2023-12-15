@@ -7,6 +7,7 @@ import {
     faHouse,
     faIcons,
     faMagnifyingGlass,
+    faPen,
     faPlus,
     faXmark,
 } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +17,7 @@ import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ListSongItem from '~/components/ListSongItem';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
@@ -37,9 +38,12 @@ function Header() {
     const [isTurnOnMenu, setIsTurnOnMenu] = useState(false);
     const [isTurnOnSearch, setIsTurnOnSearch] = useState(false);
     const [user, setUser] = useState();
+    const [avatar, setAvatar] = useState();
     const navigate = useNavigate();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 768 });
+    const refUserDetail = useRef();
+    const refProfileBtn = useRef();
 
     const goToPreviousPage = () => {
         var lastItemBack = back.pop();
@@ -55,6 +59,12 @@ function Header() {
         setBack((prev) => [...prev, current]);
         setIsEnter(true);
         setCurrent(lastItemForward);
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        setAvatar(URL.createObjectURL(file));
     };
 
     useEffect(() => {
@@ -95,6 +105,17 @@ function Header() {
                 });
         }
     }, [token]);
+
+    useEffect(() => {
+        if (user && avatar) {
+            axios
+                .put(`http://localhost:8080/api/user/${user.id}`, {
+                    avatar: avatar,
+                })
+                .then((res) => setUser(res.data))
+                .catch((err) => console.log(err));
+        }
+    }, [avatar]);
 
     useEffect(() => {
         if (isPopstate && !isEnter) {
@@ -146,6 +167,24 @@ function Header() {
             setTurnProfile(!turnProfile);
         }
     };
+
+    const handleClickOutside = (e) => {
+        if (
+            refUserDetail.current &&
+            refProfileBtn.current &&
+            !refUserDetail.current.contains(e.target) &&
+            !refProfileBtn.current.contains(e.target)
+        ) {
+            setTurnProfile(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
 
     return (
         <>
@@ -319,12 +358,12 @@ function Header() {
                                 />
                             </a>
                             <Link
+                                ref={refProfileBtn}
                                 data-bs-toggle={!token && 'modal'}
                                 data-bs-target={!token && '#modalLogin'}
                                 to=""
                                 className="rounded-circle square_40 d-block overflow-hidden"
                                 onClick={handleTurnProfile}
-                                onBlur={() => setTimeout(handleTurnProfile, 80)}
                             >
                                 <figure>
                                     <img
@@ -340,17 +379,41 @@ function Header() {
                             </Link>
                             {turnProfile && (
                                 <div
+                                    ref={refUserDetail}
                                     className={`f-family end-0 bg-white p-2 position-absolute ${cx(
                                         'box',
                                     )} top-100 mt-2`}
                                 >
                                     <div className=" d-flex  align-items-center">
-                                        <figure className=" rounded-circle overflow-hidden me-2 mb-0">
+                                        <figure
+                                            className={`rounded-circle overflow-hidden me-2 mb-0 position-relative ${cx(
+                                                'avatar',
+                                            )}`}
+                                        >
                                             <img
-                                                className="w-100"
+                                                className="w-100 h-100"
                                                 src={user.avatar}
                                                 alt=""
                                             />
+                                            <label
+                                                htmlFor="avatar"
+                                                className={` d-flex align-items-center justify-content-center position-absolute end-0 top-0 w-100 h-100 text-white ${cx(
+                                                    'edit',
+                                                )}`}
+                                            >
+                                                <FontAwesomeIcon
+                                                    className="fs-4"
+                                                    icon={faPen}
+                                                />
+                                                <input
+                                                    id="avatar"
+                                                    type="file"
+                                                    className={`${cx(
+                                                        'input_avatar',
+                                                    )}`}
+                                                    onChange={handleFileChange}
+                                                />
+                                            </label>
                                         </figure>
                                         <div className="">
                                             <h3 className="mb-0">

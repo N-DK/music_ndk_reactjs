@@ -100,7 +100,8 @@
     border-radius: 4px;
 
     figure {
-        width: 40%;
+        width: 100px;
+        height: 100px;
     }
 }
 
@@ -110,5 +111,29 @@
     &:hover {
         background: rgba(0, 0, 0, 0.05);
         color: var(--iq-primary) !important;
+    }
+}
+
+.avatar {
+    .edit {
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    &:hover {
+        .edit {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    .input_avatar {
+        visibility: hidden;
+        opacity: 0;
+        z-index: -1;
+        position: absolute;
     }
 }
