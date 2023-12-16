@@ -63,8 +63,24 @@ function Header() {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
+        convertBase64(URL.createObjectURL(file));
+    };
 
-        setAvatar(URL.createObjectURL(file));
+    const convertBase64 = (blobUrl) => {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.onload = function () {
+            var recoveredBlob = xhr.response;
+            var reader = new FileReader();
+            reader.onload = function () {
+                var dataURL = reader.result;
+                // dataURL chứa URL không có blob nữa
+                setAvatar(dataURL);
+            };
+            reader.readAsDataURL(recoveredBlob);
+        };
+        xhr.open('GET', blobUrl);
+        xhr.send();
     };
 
     useEffect(() => {
@@ -122,7 +138,7 @@ function Header() {
             var length = back.length;
             setBack((prev) => {
                 var lastItem = prev.pop();
-                if (prev.length == length) {
+                if (prev.length === length) {
                     return prev;
                 } else {
                     return [...prev, lastItem];

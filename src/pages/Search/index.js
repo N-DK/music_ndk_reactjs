@@ -3,7 +3,6 @@ import styles from './Search.module.scss';
 import classNames from 'classnames/bind';
 import ListSong from '~/components/ListSong';
 import CardSongItem from '~/components/CardSongItem';
-import CardVideoSongItem from '~/components/CardVideoSongItem';
 import CardArtist from '~/components/CardArtist';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
@@ -65,7 +64,7 @@ function Search() {
                                     to={`/search/?query=${query}`}
                                     key={i}
                                     className={`f-family text-dark text-uppercase text-decoration-none d-inline-block me-4 ${
-                                        v.id == item && `${cx('active')}`
+                                        v.id === item && `${cx('active')}`
                                     }`}
                                     onClick={() => setItem(v.id)}
                                 >
@@ -74,7 +73,7 @@ function Search() {
                             ))}
                         </div>
                     </div>
-                    {item == 1 &&
+                    {item === 1 &&
                         (results.length > 0 ? (
                             <ListSong isShowAlbums={true} data={results} />
                         ) : (
@@ -92,7 +91,7 @@ function Search() {
                                 </div>
                             </div>
                         ))}
-                    {item == 2 &&
+                    {item === 2 &&
                         (results.length > 0 ? (
                             <div className="row mt-4">
                                 {results.map((song, index) => (
@@ -114,7 +113,7 @@ function Search() {
                                 </div>
                             </div>
                         ))}
-                    {item == 3 &&
+                    {item === 3 &&
                         (results.length > 0 ? (
                             <div className="row mt-4">
                                 {results.map((song, index) => (

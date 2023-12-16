@@ -61,3 +61,31 @@
 .like {
     color: black;
 }
+
+.more__container {
+    width: 250px;
+    box-shadow: 0px 0px 20px 0px rgba(44, 101, 144, 0.2);
+}
+
+.add__playlist {
+    box-shadow: 0px 0px 20px 0px rgba(44, 101, 144, 0.2);
+    width: 210px;
+    // margin-left: -10px;
+}
+
+.more__item {
+    transition: 0.3s;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--iq-primary);
+    }
+}
+
+.down_btn {
+    min-height: 47.5px;
+}
+
+.pointer {
+    cursor: pointer;
+}
