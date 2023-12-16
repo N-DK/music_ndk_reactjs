@@ -70,7 +70,7 @@
 .add__playlist {
     box-shadow: 0px 0px 20px 0px rgba(44, 101, 144, 0.2);
     width: 210px;
-    // margin-left: -10px;
+    margin-left: -5px;
 }
 
 .more__item {
@@ -88,4 +88,32 @@
 
 .pointer {
     cursor: pointer;
+}
+
+.message {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 1px 10px;
+    max-width: 400px;
+    animation-name: message_in, message_out; /* Kết hợp hai animation */
+    animation-duration: 0.6s, 0.6s; /* Thời gian cho mỗi animation */
+    animation-delay: 0s, 1.5s; /* Delay giữa hai animation */
+}
+
+@keyframes message_in {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes message_out {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
 }

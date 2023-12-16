@@ -27,7 +27,7 @@ import { saveAs } from 'file-saver';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import Cookies from 'js-cookie';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import HeadlessTippy from '@tippyjs/react/headless';
 import 'tippy.js/dist/tippy.css'; // optional
@@ -50,6 +50,7 @@ function ListSongItem({
     const [user, setUser] = useState();
     const [like, setLike] = useState(false);
     const [playlist, setPlaylist] = useState([]);
+    const [message, setMessage] = useState();
     const [visible, setVisible] = useState(false);
     const [downloading, setDownloading] = useState(false);
     const dispatch = useDispatch();
@@ -122,9 +123,21 @@ function ListSongItem({
                 favoriteSong: [song.title],
                 thumbnail: song.thumbnail,
             })
-            .then((res) => {})
+            .then((res) => {
+                setMessage(createMessageAddSuccess(song.title));
+                setTimeout(() => {
+                    setMessage();
+                }, 2000);
+            })
             .then((err) => console.log(err));
     };
+
+    const createMessageAddSuccess = (title) => (
+        <div className={` bg-white rounded-2 f-family p-3 ${cx('message')}`}>
+            Đã thêm bài hát “<span className=" fw-bold">{title}</span>” vào
+            playlist thành công
+        </div>
+    );
 
     useEffect(() => {
         if (token) {
@@ -563,6 +576,12 @@ function ListSongItem({
                         </div>
                     </>
                 )}
+            </div>
+            <div
+                style={{ zIndex: 9999 }}
+                className=" position-fixed start-0 bottom-0 m-3"
+            >
+                {message}
             </div>
         </div>
     );
