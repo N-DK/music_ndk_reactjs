@@ -27,7 +27,8 @@ import { saveAs } from 'file-saver';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import Cookies from 'js-cookie';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import clipboard from 'clipboard-copy';
 import axios from 'axios';
 import HeadlessTippy from '@tippyjs/react/headless';
 import 'tippy.js/dist/tippy.css'; // optional
@@ -80,9 +81,12 @@ function ListSongItem({
         }
         audio.play();
         let song = songs.find((song) => song.id == songActive);
+        if (!song.albums) {
+            song.albums = [{ id: album_id }];
+        }
+        dispatch(setData(song));
         dispatch(setPlaying(true));
         dispatch(setCurrAudio(audio));
-        dispatch(setData(song));
         dispatch(setActive(songActive));
     };
 
@@ -97,10 +101,6 @@ function ListSongItem({
             return wishlist.find((wish) => wish.id === id) ? true : false;
         }
     };
-
-    useEffect(() => {
-        setLike(handleCheckExist(song.id));
-    }, [user]);
 
     const handleWishlist = () => {
         if (token) {
@@ -139,6 +139,28 @@ function ListSongItem({
         </div>
     );
 
+    const createMessCopied = () => (
+        <div className={` bg-white rounded-2 f-family p-3 ${cx('message')}`}>
+            Link đã được sao chép vào clipboard
+        </div>
+    );
+
+    const handleCopyToClipboard = () => {
+        clipboard(
+            `http://localhost:3001/album/${
+                song.albums ? song.albums[0].id : album_id
+            }?type=album`,
+        );
+        setMessage(createMessCopied);
+        setTimeout(() => {
+            setMessage();
+        }, 2000);
+    };
+
+    useEffect(() => {
+        setLike(handleCheckExist(song.id));
+    }, [user]);
+
     useEffect(() => {
         if (token) {
             axios
@@ -160,7 +182,7 @@ function ListSongItem({
             axios
                 .get(`http://localhost:8080/api/playlist/user/${user.id}`)
                 .then((res) => setPlaylist(res.data.results))
-                .then((err) => console.log(err));
+                .catch((err) => console.log(err));
         }
     }, [user]);
 
@@ -332,14 +354,43 @@ function ListSongItem({
                                                         >
                                                             {song.title}
                                                         </Link>
-                                                        <div>
-                                                            <FontAwesomeIcon
-                                                                className="me-1"
-                                                                icon={
-                                                                    faHeadphones
-                                                                }
-                                                            />
-                                                            <span>11M</span>
+                                                        <div className="fs-13 f-family subtitle_color">
+                                                            {song.artists &&
+                                                                song.artists.map(
+                                                                    (
+                                                                        artist,
+                                                                        index,
+                                                                    ) => {
+                                                                        let artist_name =
+                                                                            artist.name;
+                                                                        if (
+                                                                            artist !==
+                                                                            song
+                                                                                .artists[
+                                                                                song
+                                                                                    .artists
+                                                                                    .length -
+                                                                                    1
+                                                                            ]
+                                                                        ) {
+                                                                            artist_name +=
+                                                                                ',';
+                                                                        }
+                                                                        return (
+                                                                            <Link
+                                                                                key={
+                                                                                    artist.id
+                                                                                }
+                                                                                to={`/artist/${artist.id}`}
+                                                                                className={` subtitle_color is_truncate pe-1`}
+                                                                            >
+                                                                                {
+                                                                                    artist_name
+                                                                                }
+                                                                            </Link>
+                                                                        );
+                                                                    },
+                                                                )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -431,6 +482,9 @@ function ListSongItem({
                                                                                 pl,
                                                                             ) => (
                                                                                 <li
+                                                                                    key={
+                                                                                        pl.id
+                                                                                    }
                                                                                     onClick={() =>
                                                                                         handleIntoPlayList(
                                                                                             pl.id,
@@ -509,6 +563,9 @@ function ListSongItem({
                                                         </span>
                                                     </li>
                                                     <li
+                                                        onClick={
+                                                            handleCopyToClipboard
+                                                        }
                                                         className={`d-flex align-items-center p-3 pt-2 pb-2 ${cx(
                                                             'more__item',
                                                         )}`}

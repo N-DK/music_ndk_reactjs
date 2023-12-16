@@ -127,12 +127,24 @@ body {
     height: 40px;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
+.color--primary {
+    color: var(--iq-primary);
+}
+
 .w-main {
     width: calc(100% - var(--iq-width-sidebar));
 }
 
 .mt-header {
     margin-top: var(--iq-height-header);
+}
+
+.bg--gray {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .col-2-4 {

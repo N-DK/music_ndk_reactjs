@@ -30,7 +30,6 @@ import {
 } from '~/redux_';
 import { useMediaQuery } from 'react-responsive';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 const cx = classNames.bind(styles);
 
@@ -38,7 +37,7 @@ const NEXT = 'next';
 const PREV = 'prev';
 
 function Footer({ data, isPlaying, currAudio, songs }) {
-    const [currSong, setCurrSong] = useState('');
+    const [currSong, setCurrSong] = useState();
     const [currTimeSong, setCurrTimeSong] = useState();
     const [isRepeat, setIsRepeat] = useState(false);
     const [volume, setVolume] = useState(1);
@@ -138,7 +137,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
 
     return (
         <>
-            {currSong == '' ? (
+            {!currSong ? (
                 <></>
             ) : (
                 <div>
