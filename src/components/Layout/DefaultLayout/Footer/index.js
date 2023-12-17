@@ -8,12 +8,15 @@ import {
 } from '@fortawesome/free-regular-svg-icons';
 import {
     faBackwardStep,
+    faCompactDisc,
     faEllipsis,
     faForwardStep,
     faMicrophone,
+    faMusic,
     faPlus,
     faRepeat,
     faShuffle,
+    faSliders,
     faVolumeHigh,
     faVolumeLow,
     faVolumeXmark,
@@ -30,6 +33,8 @@ import {
 } from '~/redux_';
 import { useMediaQuery } from 'react-responsive';
 import { Link } from 'react-router-dom';
+import plist from '~/img/plist.png';
+import ListSongItem from '~/components/ListSongItem';
 
 const cx = classNames.bind(styles);
 
@@ -43,6 +48,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
     const [volume, setVolume] = useState(1);
     const [isMute, setIsMute] = useState(false);
     const [isExpandControls, setIsExpandControls] = useState(false);
+    const [turnOnList, setTurnOnList] = useState(false);
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 766 });
 
@@ -57,6 +63,16 @@ function Footer({ data, isPlaying, currAudio, songs }) {
     const handlePause = () => {
         currAudio.pause();
         dispatch(setPlaying(false));
+    };
+
+    const getIndexSong = () => {
+        let index;
+        for (let i = 0; i < songs.length; i++) {
+            if (songs[i].id === data.id) {
+                index = i;
+            }
+        }
+        return index;
     };
 
     const formatTime = (seconds) => {
@@ -449,6 +465,25 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                 ></div>
                                             </div>
                                         </div>
+                                        <div
+                                            onClick={() =>
+                                                setTurnOnList(!turnOnList)
+                                            }
+                                            className=" border-start ms-2 ps-3"
+                                        >
+                                            <div
+                                                style={{ transition: '0.3s' }}
+                                                className={`rounded-1 p-2 d-flex align-items-center justify-content-center pointer ${
+                                                    turnOnList && 'bg--primary'
+                                                }`}
+                                            >
+                                                <FontAwesomeIcon
+                                                    className="text-white"
+                                                    icon={faCompactDisc}
+                                                    spin={turnOnList}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </>
                             )}
@@ -563,6 +598,63 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                             </div>
                         )}
                     </div>
+                    {turnOnList && (
+                        <div
+                            className={`position-fixed bottom-0 top-0 end-0 h-100 ${cx(
+                                'list__container',
+                            )}`}
+                        >
+                            <div
+                                className={` f-family ${cx(
+                                    'list__playlist',
+                                )} h-100 mb-5 `}
+                            >
+                                <div className="">
+                                    {songs
+                                        .slice(0, getIndexSong() + 1)
+                                        .map((song) => (
+                                            <div
+                                                key={song.id}
+                                                className={`${
+                                                    song.id === data.id
+                                                        ? `bg--primary rounded-2 position-sticky top-0 ${cx(
+                                                              'active',
+                                                          )}`
+                                                        : `${cx('opacity-5')}`
+                                                }`}
+                                            >
+                                                <ListSongItem
+                                                    song={song}
+                                                    songs={songs}
+                                                    isInPlaylist={
+                                                        song.id === data.id
+                                                    }
+                                                    placement="bottom-end"
+                                                />
+                                            </div>
+                                        ))}
+                                </div>
+                                <h5 className="mt-2">Playlist</h5>
+                                <span>From playlist</span>
+                                <div
+                                    className={`mt-2 h-100 ${cx(
+                                        'next__playlist',
+                                    )}`}
+                                >
+                                    {songs
+                                        .slice(getIndexSong() + 1, songs.length)
+                                        .map((song) => (
+                                            <ListSongItem
+                                                key={song.id}
+                                                song={song}
+                                                songs={songs}
+                                                placement="bottom-end"
+                                            />
+                                        ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </>

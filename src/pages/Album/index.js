@@ -27,6 +27,7 @@ function Album() {
     const [songs, setSongs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [visible, setVisible] = useState(false);
+    const [mess, setMess] = useState();
     const [liked, setLiked] = useState(false);
     let { id } = useParams();
     const { search } = useLocation();
@@ -67,12 +68,18 @@ function Album() {
         }
     };
 
+    const createMessCopied = () => (
+        <div className={` bg-white rounded-2 f-family p-3 ${cx('message')}`}>
+            Link đã được sao chép vào clipboard
+        </div>
+    );
+
     const handleCopyToClipboard = () => {
         clipboard(`http://localhost:3001/album/${id}?type=${type}`);
-        // setMess(createMessCopied);
-        // setTimeout(() => {
-        //     setMess();
-        // }, 2000);
+        setMess(createMessCopied);
+        setTimeout(() => {
+            setMess();
+        }, 2000);
     };
 
     useEffect(() => {
@@ -83,7 +90,13 @@ function Album() {
                         Authorization: `Bearer ${token}`,
                     },
                 })
-                .then((res) => setUser(res.data))
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
                 .catch((err) => {
                     Cookies.remove('token');
                     console.log(err);
@@ -266,6 +279,12 @@ function Album() {
                                 />
                             </div>
                         </div>
+                    </div>
+                    <div
+                        style={{ zIndex: 9999 }}
+                        className=" position-fixed start-0 bottom-0 m-3"
+                    >
+                        {mess}
                     </div>
                 </div>
             )}

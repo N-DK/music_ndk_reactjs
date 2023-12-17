@@ -45,7 +45,6 @@ function MyMusic() {
     }, [user]);
 
     useEffect(() => {
-        setLoading(true);
         if (token) {
             axios
                 .get('http://localhost:8080/api/user', {
@@ -53,7 +52,13 @@ function MyMusic() {
                         Authorization: `Bearer ${token}`,
                     },
                 })
-                .then((res) => setUser(res.data))
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
                 .catch((err) => {
                     Cookies.remove('token');
                     console.log(err);

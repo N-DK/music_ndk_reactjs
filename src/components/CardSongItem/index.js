@@ -39,7 +39,13 @@ function CardSongItem({ data, isSlider, type }) {
                         Authorization: `Bearer ${token}`,
                     },
                 })
-                .then((res) => setUser(res.data))
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
                 .catch((err) => {
                     Cookies.remove('token');
                     console.log(err);

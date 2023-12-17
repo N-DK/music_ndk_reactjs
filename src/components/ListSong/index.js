@@ -1,17 +1,26 @@
 import styles from './ListSong.module.scss';
 import classNames from 'classnames/bind';
 import ListSongItem from '../ListSongItem';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { reducer, setListSongs } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
-function ListSong({ isShowAlbums, data, album_id }) {
+function ListSong({ isShowAlbums, data, album_id, playlist }) {
     useSelector(() => reducer);
     const dispatch = useDispatch();
 
     const handleListSongClick = () => {
-        dispatch(setListSongs(data));
+        let res = playlist ? [...playlist] : [...data];
+        if (playlist) {
+            for (const item of data) {
+                const isExist = playlist.find((pl) => item.id === pl.id);
+                if (!isExist) {
+                    res.push(item);
+                }
+            }
+        }
+        dispatch(setListSongs(res));
     };
 
     return (
@@ -44,4 +53,12 @@ function ListSong({ isShowAlbums, data, album_id }) {
     );
 }
 
-export default ListSong;
+const mapStateToProps = (state) => {
+    if (state) {
+        return {
+            playlist: state.songs,
+        };
+    }
+};
+
+export default connect(mapStateToProps)(ListSong);

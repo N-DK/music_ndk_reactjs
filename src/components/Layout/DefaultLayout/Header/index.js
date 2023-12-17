@@ -114,7 +114,13 @@ function Header() {
                         Authorization: `Bearer ${token}`,
                     },
                 })
-                .then((res) => setUser(res.data))
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
                 .catch((err) => {
                     Cookies.remove('token');
                     console.log(err);
@@ -373,15 +379,14 @@ function Header() {
                                     className={`text-dark`}
                                 />
                             </a>
-                            <Link
+                            <button
                                 ref={refProfileBtn}
                                 data-bs-toggle={!token && 'modal'}
                                 data-bs-target={!token && '#modalLogin'}
-                                to=""
-                                className="rounded-circle square_40 d-block overflow-hidden"
+                                className="rounded-circle square_40 d-block overflow-hidden border-0 p-0"
                                 onClick={handleTurnProfile}
                             >
-                                <figure>
+                                <figure className="w-100 h-100">
                                     <img
                                         src={
                                             user
@@ -392,7 +397,7 @@ function Header() {
                                         className="w-100 h-100"
                                     />
                                 </figure>
-                            </Link>
+                            </button>
                             {turnProfile && (
                                 <div
                                     ref={refUserDetail}

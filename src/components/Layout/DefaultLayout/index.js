@@ -157,8 +157,17 @@ function DefaultLayout({ children }) {
                         Authorization: `Bearer ${token}`,
                     },
                 })
-                .then((res) => setUser(res.data))
-                .catch((err) => console.log(err));
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
+                .catch((err) => {
+                    Cookies.remove('token');
+                    console.log(err);
+                });
         }
     }, [token]);
 

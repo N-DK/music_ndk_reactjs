@@ -45,6 +45,8 @@ function ListSongItem({
     isShowAlbum,
     onClick,
     album_id,
+    isInPlaylist,
+    placement,
 }) {
     useSelector(() => reducer);
     const token = Cookies.get('token');
@@ -158,8 +160,10 @@ function ListSongItem({
     };
 
     useEffect(() => {
-        setLike(handleCheckExist(song.id));
-    }, [user]);
+        if (user) {
+            setLike(handleCheckExist(song.id));
+        }
+    }, [user, song.id]);
 
     useEffect(() => {
         if (token) {
@@ -169,7 +173,13 @@ function ListSongItem({
                         Authorization: `Bearer ${token}`,
                     },
                 })
-                .then((res) => setUser(res.data))
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
                 .catch((err) => {
                     Cookies.remove('token');
                     console.log(err);
@@ -244,18 +254,18 @@ function ListSongItem({
                                 )}
                             </div>
                         </div>
-                        <div className="ms-3">
+                        <div className={`ms-3 ${cx('text')}`}>
                             <Link
                                 to={`/album/${
                                     song.albums ? song.albums[0].id : album_id
                                 }?type=album`}
-                                className={` text-decoration-none text-dark text--primary ${cx(
-                                    '',
-                                )} m-0 f-family`}
+                                className={` text-decoration-none ${
+                                    isInPlaylist ? 'text-white' : 'text-dark'
+                                } text--primary ${cx('')} m-0 f-family`}
                             >
                                 {song.title}
                             </Link>
-                            <div className="fs-13 f-family subtitle_color">
+                            <div className={`fs-13 f-family subtitle_color`}>
                                 {song.artists &&
                                     song.artists.map((artist, index) => {
                                         let artist_name = artist.name;
@@ -271,7 +281,9 @@ function ListSongItem({
                                             <Link
                                                 key={artist.id}
                                                 to={`/artist/${artist.id}`}
-                                                className={` subtitle_color is_truncate pe-1`}
+                                                className={` subtitle_color is_truncate pe-1 ${
+                                                    isInPlaylist && 'text-white'
+                                                }`}
                                             >
                                                 {artist_name}
                                             </Link>
@@ -320,7 +332,7 @@ function ListSongItem({
                                     visible={visible}
                                     render={(attrs) => (
                                         <div
-                                            className={` box bg-white rounded-2 ${cx(
+                                            className={` box bg-white rounded-2 text-dark ${cx(
                                                 '',
                                             )}`}
                                             tabIndex="-1"
@@ -431,7 +443,9 @@ function ListSongItem({
                                                 <ul className=" list-unstyled fs-15">
                                                     <HeadlessTippy
                                                         interactive
-                                                        placement="right"
+                                                        placement={
+                                                            placement ?? 'right'
+                                                        }
                                                         render={(attrs) => (
                                                             <div
                                                                 tabIndex="-1"
@@ -439,7 +453,7 @@ function ListSongItem({
                                                                 {...attrs}
                                                             >
                                                                 <div
-                                                                    className={` rounded-1 ${cx(
+                                                                    className={`bg-white rounded-1 ${cx(
                                                                         'add__playlist',
                                                                     )}`}
                                                                 >
@@ -585,7 +599,7 @@ function ListSongItem({
                                     onClickOutside={hide}
                                 >
                                     <div
-                                        className={` position-absolute d-flex algin-items-center end-0 ${cx(
+                                        className={` position-absolute  d-flex algin-items-center end-0 ${cx(
                                             'action_hover',
                                         )}`}
                                     >
@@ -594,7 +608,11 @@ function ListSongItem({
                                             data-bs-target="#modalId"
                                             data-bs-lyric={song.lyric}
                                             href="#"
-                                            className="me-3 text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                            className={`me-3 ${
+                                                isInPlaylist
+                                                    ? 'text-white'
+                                                    : 'text-dark'
+                                            } rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
                                         >
                                             <FontAwesomeIcon
                                                 icon={faMicrophone}
@@ -603,11 +621,22 @@ function ListSongItem({
                                         <span
                                             onClick={handleWishlist}
                                             className={` me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30  ${cx(
-                                                `${like ? 'liked' : 'like'}`,
+                                                `${
+                                                    like
+                                                        ? `${
+                                                              isInPlaylist
+                                                                  ? 'text-white'
+                                                                  : 'liked'
+                                                          }`
+                                                        : 'like'
+                                                }`,
                                                 'pointer',
                                             )}`}
                                         >
                                             <FontAwesomeIcon
+                                                className={`${
+                                                    isInPlaylist && 'text-white'
+                                                }`}
                                                 icon={
                                                     like
                                                         ? faHeart
@@ -618,7 +647,11 @@ function ListSongItem({
                                         <Tippy animation="fade" content="Khác">
                                             <span
                                                 onClick={show}
-                                                className={`text-dark rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30 ${cx(
+                                                className={`${
+                                                    isInPlaylist
+                                                        ? 'text-white'
+                                                        : 'text-dark'
+                                                } rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30 ${cx(
                                                     'pointer',
                                                 )}`}
                                             >
@@ -635,8 +668,11 @@ function ListSongItem({
                 )}
             </div>
             <div
-                style={{ zIndex: 9999 }}
-                className=" position-fixed start-0 bottom-0 m-3"
+                style={{
+                    zIndex: 9999,
+                    marginBottom: `${isInPlaylist ? '100px' : '16px'}`,
+                }}
+                className=" position-fixed start-0 bottom-0 ms-3 text-dark"
             >
                 {message}
             </div>
