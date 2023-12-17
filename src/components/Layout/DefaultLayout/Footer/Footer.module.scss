@@ -87,7 +87,8 @@
 
 .list__container {
     z-index: 999;
-    animation: on ease 0.5s;
+    transition: 0.5s;
+    transform: translateX(100%);
     .list__playlist {
         background-color: white;
         color: black;
@@ -107,6 +108,14 @@
     .opacity-5 {
         opacity: 0.5;
     }
+}
+
+.list__container.on {
+    animation: on ease 0.5s;
+}
+
+.list__container.off {
+    animation: off ease 0.5s;
 }
 
 .next__playlist {

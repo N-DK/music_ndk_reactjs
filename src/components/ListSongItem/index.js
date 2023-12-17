@@ -672,7 +672,7 @@ function ListSongItem({
                     zIndex: 9999,
                     marginBottom: `${isInPlaylist ? '100px' : '16px'}`,
                 }}
-                className=" position-fixed start-0 bottom-0 ms-3 text-dark"
+                className="position-fixed start-0 bottom-0 ms-3 text-dark"
             >
                 {message}
             </div>

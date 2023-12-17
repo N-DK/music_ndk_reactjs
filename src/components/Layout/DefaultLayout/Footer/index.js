@@ -21,7 +21,7 @@ import {
     faVolumeLow,
     faVolumeXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -49,6 +49,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
     const [isMute, setIsMute] = useState(false);
     const [isExpandControls, setIsExpandControls] = useState(false);
     const [turnOnList, setTurnOnList] = useState(false);
+    const refPlaylist = useRef();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 766 });
 
@@ -114,6 +115,13 @@ function Footer({ data, isPlaying, currAudio, songs }) {
             audio.play();
         }
     };
+
+    useEffect(() => {
+        let x = `translateX(${turnOnList ? 0 : 100}%)`;
+        if (refPlaylist.current) {
+            refPlaylist.current.style.transform = x;
+        }
+    }, [turnOnList]);
 
     useEffect(() => {
         setCurrSong(data);
@@ -598,63 +606,60 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                             </div>
                         )}
                     </div>
-                    {turnOnList && (
+                    <div
+                        ref={refPlaylist}
+                        className={`position-fixed bottom-0 top-0 end-0 h-100 ${cx(
+                            'list__container',
+                        )}`}
+                    >
                         <div
-                            className={`position-fixed bottom-0 top-0 end-0 h-100 ${cx(
-                                'list__container',
-                            )}`}
+                            className={` f-family ${cx(
+                                'list__playlist',
+                            )} h-100 mb-5 `}
                         >
-                            <div
-                                className={` f-family ${cx(
-                                    'list__playlist',
-                                )} h-100 mb-5 `}
-                            >
-                                <div className="">
-                                    {songs
-                                        .slice(0, getIndexSong() + 1)
-                                        .map((song) => (
-                                            <div
-                                                key={song.id}
-                                                className={`${
-                                                    song.id === data.id
-                                                        ? `bg--primary rounded-2 position-sticky top-0 ${cx(
-                                                              'active',
-                                                          )}`
-                                                        : `${cx('opacity-5')}`
-                                                }`}
-                                            >
-                                                <ListSongItem
-                                                    song={song}
-                                                    songs={songs}
-                                                    isInPlaylist={
-                                                        song.id === data.id
-                                                    }
-                                                    placement="bottom-end"
-                                                />
-                                            </div>
-                                        ))}
-                                </div>
-                                <h5 className="mt-2">Playlist</h5>
-                                <span>From playlist</span>
-                                <div
-                                    className={`mt-2 h-100 ${cx(
-                                        'next__playlist',
-                                    )}`}
-                                >
-                                    {songs
-                                        .slice(getIndexSong() + 1, songs.length)
-                                        .map((song) => (
+                            <div className="">
+                                {songs
+                                    .slice(0, getIndexSong() + 1)
+                                    .map((song) => (
+                                        <div
+                                            key={song.id}
+                                            className={`${
+                                                song.id === data.id
+                                                    ? `bg--primary rounded-2 position-sticky top-0 ${cx(
+                                                          'active',
+                                                      )}`
+                                                    : `${cx('opacity-5')}`
+                                            }`}
+                                        >
                                             <ListSongItem
-                                                key={song.id}
                                                 song={song}
                                                 songs={songs}
+                                                isInPlaylist={
+                                                    song.id === data.id
+                                                }
                                                 placement="bottom-end"
                                             />
-                                        ))}
-                                </div>
+                                        </div>
+                                    ))}
+                            </div>
+                            <h5 className="mt-2">Playlist</h5>
+                            <span>From playlist</span>
+                            <div
+                                className={`mt-2 h-100 ${cx('next__playlist')}`}
+                            >
+                                {songs
+                                    .slice(getIndexSong() + 1, songs.length)
+                                    .map((song) => (
+                                        <ListSongItem
+                                            key={song.id}
+                                            song={song}
+                                            songs={songs}
+                                            placement="bottom-end"
+                                        />
+                                    ))}
                             </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             )}
         </>

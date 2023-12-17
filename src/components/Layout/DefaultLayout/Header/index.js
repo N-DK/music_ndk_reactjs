@@ -75,7 +75,8 @@ function Header() {
             reader.onload = function () {
                 var dataURL = reader.result;
                 // dataURL chứa URL không có blob nữa
-                setAvatar(dataURL);
+                console.log(blobUrl);
+                setAvatar(btoa(dataURL));
             };
             reader.readAsDataURL(recoveredBlob);
         };
