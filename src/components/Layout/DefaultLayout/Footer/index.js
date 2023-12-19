@@ -3,7 +3,7 @@ import styles from './Footer.module.scss';
 import classNames from 'classnames/bind';
 import {
     faCirclePlay,
-    faHeart,
+    faHeart as faHeartRegular,
     faCirclePause,
 } from '@fortawesome/free-regular-svg-icons';
 import {
@@ -11,12 +11,11 @@ import {
     faCompactDisc,
     faEllipsis,
     faForwardStep,
+    faHeart,
     faMicrophone,
-    faMusic,
     faPlus,
     faRepeat,
     faShuffle,
-    faSliders,
     faVolumeHigh,
     faVolumeLow,
     faVolumeXmark,
@@ -33,8 +32,12 @@ import {
 } from '~/redux_';
 import { useMediaQuery } from 'react-responsive';
 import { Link } from 'react-router-dom';
-import plist from '~/img/plist.png';
 import ListSongItem from '~/components/ListSongItem';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import Tippy from '@tippyjs/react';
+import HeadlessTippy from '@tippyjs/react/headless';
+import ReceptacleTippy from '~/components/ReceptacleTippy';
 
 const cx = classNames.bind(styles);
 
@@ -42,19 +45,26 @@ const NEXT = 'next';
 const PREV = 'prev';
 
 function Footer({ data, isPlaying, currAudio, songs }) {
+    const token = Cookies.get('token');
     const [currSong, setCurrSong] = useState();
     const [currTimeSong, setCurrTimeSong] = useState();
+    const [like, setLike] = useState(false);
+    const [user, setUser] = useState();
     const [isRepeat, setIsRepeat] = useState(false);
     const [volume, setVolume] = useState(1);
     const [isMute, setIsMute] = useState(false);
     const [isExpandControls, setIsExpandControls] = useState(false);
     const [turnOnList, setTurnOnList] = useState(false);
+    const [visible, setVisible] = useState(false);
     const refPlaylist = useRef();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 766 });
 
     useSelector(() => reducer);
     const dispatch = useDispatch();
+
+    const show = () => setVisible(true);
+    const hide = () => setVisible(false);
 
     const handlePlay = () => {
         currAudio.play();
@@ -84,6 +94,13 @@ function Footer({ data, isPlaying, currAudio, songs }) {
         const formattedSeconds = String(remainingSeconds).padStart(2, '0');
 
         return seconds ? `${formattedMinutes}:${formattedSeconds}` : NaN;
+    };
+
+    const handleCheckExist = (id) => {
+        if (user) {
+            const wishlist = user.songs;
+            return wishlist.find((wish) => wish.id === id) ? true : false;
+        }
     };
 
     const handleNavigationSong = (type) => {
@@ -116,12 +133,64 @@ function Footer({ data, isPlaying, currAudio, songs }) {
         }
     };
 
+    const handleWishlist = () => {
+        if (token) {
+            setLike(!like);
+            if (!like) {
+                axios.put(`http://localhost:8080/api/user/${user.id}`, {
+                    songs: [data.id],
+                });
+            } else {
+                axios.delete(
+                    `http://localhost:8080/api/user/${user.id}?type=song&type_id=${data.id}`,
+                );
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (songs.length > 0 && !currSong && !currAudio) {
+            dispatch(setData(songs[0]));
+            dispatch(setActive(songs[0].id));
+            dispatch(setPlaying(true));
+            var audio = new Audio(songs[0].audioUrl);
+            dispatch(setCurrAudio(audio));
+            audio.play();
+        }
+    }, [songs]);
+
     useEffect(() => {
         let x = `translateX(${turnOnList ? 0 : 100}%)`;
         if (refPlaylist.current) {
             refPlaylist.current.style.transform = x;
         }
     }, [turnOnList]);
+
+    useEffect(() => {
+        if (token) {
+            axios
+                .get('http://localhost:8080/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
+                .catch((err) => {
+                    Cookies.remove('token');
+                    console.log(err);
+                });
+        }
+    }, [token]);
+
+    useEffect(() => {
+        setLike(handleCheckExist(data.id));
+    }, [user, data.id]);
 
     useEffect(() => {
         setCurrSong(data);
@@ -194,7 +263,11 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                     >
                                         <img src={currSong.thumbnail} alt="" />
                                     </div>
-                                    <div className="d-flex align-items-center">
+                                    <div
+                                        className={`d-flex align-items-center ${cx(
+                                            'flex_1',
+                                        )}`}
+                                    >
                                         <div
                                             className={`${cx(
                                                 'song__container--name',
@@ -236,24 +309,50 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                             </div>
                                         </div>
                                         {!isMobile && (
-                                            <>
-                                                <a
-                                                    href=""
-                                                    className="ms-4 me-2 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                                                >
-                                                    <FontAwesomeIcon
-                                                        icon={faHeart}
-                                                    />
-                                                </a>
-                                                <a
-                                                    href="#"
-                                                    className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                                                >
-                                                    <FontAwesomeIcon
-                                                        icon={faEllipsis}
-                                                    />
-                                                </a>
-                                            </>
+                                            <ReceptacleTippy
+                                                song={data}
+                                                visible={visible}
+                                                hide={hide}
+                                                handlePlay={handlePlay}
+                                                token={token}
+                                                user={user}
+                                                album_id={currSong.albums[0].id}
+                                            >
+                                                <div className="d-flex">
+                                                    <span
+                                                        data-bs-toggle={
+                                                            !token && 'modal'
+                                                        }
+                                                        data-bs-target={
+                                                            !token &&
+                                                            '#modalLogin'
+                                                        }
+                                                        onClick={handleWishlist}
+                                                        className="pointer ms-4 me-2 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={
+                                                                like
+                                                                    ? faHeart
+                                                                    : faHeartRegular
+                                                            }
+                                                        />
+                                                    </span>
+                                                    <Tippy content="Khác">
+                                                        <Link
+                                                            onClick={show}
+                                                            to=""
+                                                            className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                                        >
+                                                            <FontAwesomeIcon
+                                                                icon={
+                                                                    faEllipsis
+                                                                }
+                                                            />
+                                                        </Link>
+                                                    </Tippy>
+                                                </div>
+                                            </ReceptacleTippy>
                                         )}
                                     </div>
                                 </div>
@@ -617,7 +716,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                 'list__playlist',
                             )} h-100 mb-5 `}
                         >
-                            <div className="">
+                            <div className=" ">
                                 {songs
                                     .slice(0, getIndexSong() + 1)
                                     .map((song) => (
@@ -628,7 +727,9 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                     ? `bg--primary rounded-2 position-sticky top-0 ${cx(
                                                           'active',
                                                       )}`
-                                                    : `${cx('opacity-5')}`
+                                                    : `${cx(
+                                                          'un_active',
+                                                      )} position-relative`
                                             }`}
                                         >
                                             <ListSongItem
@@ -639,6 +740,13 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                 }
                                                 placement="bottom-end"
                                             />
+                                            {song.id !== data.id && (
+                                                <div
+                                                    className={`position-absolute top-0 start-0 w-100 h-100 ${cx(
+                                                        'opacity-5',
+                                                    )}`}
+                                                ></div>
+                                            )}
                                         </div>
                                     ))}
                             </div>

@@ -38,6 +38,8 @@ function Sidebar() {
                     <li>
                         <Link
                             to="/mymusic"
+                            data-bs-toggle={!token && 'modal'}
+                            data-bs-target={!token && '#modalLogin'}
                             className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                         >
                             <FontAwesomeIcon icon={faCompactDisc} />

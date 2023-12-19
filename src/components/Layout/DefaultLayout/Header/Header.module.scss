@@ -24,6 +24,10 @@
         }
     }
 
+    .results__container {
+        width: 420px;
+    }
+
     .result::-webkit-scrollbar {
         display: none;
     }
@@ -135,5 +139,12 @@
         opacity: 0;
         z-index: -1;
         position: absolute;
+    }
+}
+
+.uploading {
+    background-color: rgba(0, 0, 0, 0.1);
+    img {
+        width: 100%;
     }
 }

@@ -3,18 +3,19 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import styles from './DefaultLayout.module.scss';
 import classNames from 'classnames/bind';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { reducer, setMessage } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
-function DefaultLayout({ children }) {
-    const navigate = useNavigate();
+function DefaultLayout({ children, message, currSong }) {
     const [isLogin, setIsLogin] = useState(true);
     const [userNameLogin, setUserNameLogin] = useState('');
     const [passLogin, setPassLogin] = useState('');
@@ -27,8 +28,19 @@ function DefaultLayout({ children }) {
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState();
     const [playlistName, setPlaylistName] = useState('');
+    const [messContent, setMessContent] = useState();
+    const navigate = useNavigate();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const token = Cookies.get('token');
+    const refMessage = useRef();
+    useSelector(() => reducer);
+    const dispatch = useDispatch();
+
+    const createMess = (content) => (
+        <div className={` bg-white rounded-2 f-family p-3 ${cx('message')}`}>
+            {content}
+        </div>
+    );
 
     const handleLogin = () => {
         setLoading(true);
@@ -43,8 +55,13 @@ function DefaultLayout({ children }) {
                 window.location.reload();
             })
             .catch((error) => {
+                dispatch(
+                    setMessage(createMess('Login information is incorrect')),
+                );
+                setTimeout(() => {
+                    dispatch(setMessage());
+                }, 2000);
                 setLoading(false);
-                console.log(error);
             });
     };
 
@@ -69,8 +86,15 @@ function DefaultLayout({ children }) {
                 window.location.reload();
             })
             .catch((error) => {
+                dispatch(
+                    setMessage(
+                        createMess('Registration information is incorrect'),
+                    ),
+                );
+                setTimeout(() => {
+                    dispatch(setMessage());
+                }, 2000);
                 setLoading(false);
-                console.log(error);
             });
     };
 
@@ -150,6 +174,10 @@ function DefaultLayout({ children }) {
     }, []);
 
     useEffect(() => {
+        setMessContent(message);
+    }, [message]);
+
+    useEffect(() => {
         if (token) {
             axios
                 .get('http://localhost:8080/api/user', {
@@ -174,9 +202,7 @@ function DefaultLayout({ children }) {
     return (
         <>
             <div className="overflow-hidden">
-                {/* if như mobile thì cút Sidebar */}
                 {!isTabletMobile && <Sidebar />}
-                {/* nếu như mobile thì thêm w-100 */}
                 <div
                     className={`w-main float-end ${isTabletMobile && 'w-100'}`}
                 >
@@ -265,7 +291,14 @@ function DefaultLayout({ children }) {
                         <div className="modal-body">
                             <div className="p-2 pt-4">
                                 {isLogin ? (
-                                    <div className="border-bottom pb-4 mb-4">
+                                    <div
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleLogin();
+                                            }
+                                        }}
+                                        className="border-bottom pb-4 mb-4"
+                                    >
                                         <h3 className="text-center mb-4">
                                             Log in to Mulienfe
                                         </h3>
@@ -283,6 +316,7 @@ function DefaultLayout({ children }) {
                                                 className={`${cx(
                                                     'input-form',
                                                 )} w-100 form-control`}
+                                                required
                                             />
                                         </div>
                                         <div className="pb-3">
@@ -298,6 +332,7 @@ function DefaultLayout({ children }) {
                                                     'input-form',
                                                 )} w-100 form-control`}
                                                 type="password"
+                                                required
                                             />
                                         </div>
                                         <button
@@ -315,7 +350,10 @@ function DefaultLayout({ children }) {
                                         >
                                             {loading ? (
                                                 <img
-                                                    style={{ width: '15%' }}
+                                                    style={{
+                                                        width: '10%',
+                                                        height: '100%',
+                                                    }}
                                                     src="https://res.cloudinary.com/dmvyx3gwr/image/upload/v1701431805/loading-circle-5662747-4719071-unscreen_y4rshy.gif"
                                                     alt=""
                                                 />
@@ -333,7 +371,10 @@ function DefaultLayout({ children }) {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="border-bottom pb-4 mb-4">
+                                    <form
+                                        onSubmit={handleSignUp}
+                                        className="border-bottom pb-4 mb-4"
+                                    >
                                         <h3 className="text-center mb-4">
                                             Sign up for Mulienfe
                                         </h3>
@@ -518,7 +559,7 @@ function DefaultLayout({ children }) {
                                                 Forgot your password?
                                             </a>
                                         </div>
-                                    </div>
+                                    </form>
                                 )}
                                 <div className="text-center pt-3">
                                     {isLogin
@@ -539,8 +580,26 @@ function DefaultLayout({ children }) {
                     </div>
                 </div>
             </div>
+            <div
+                ref={refMessage}
+                style={{ zIndex: 1000 }}
+                className={`position-fixed start-0 bottom-0 ${
+                    currSong ? `${cx('message__container')}` : 'm-3'
+                }`}
+            >
+                {messContent}
+            </div>
         </>
     );
 }
 
-export default DefaultLayout;
+const mapStateToProps = (state) => {
+    if (state) {
+        return {
+            message: state.message,
+            currSong: state.currSong,
+        };
+    }
+};
+
+export default connect(mapStateToProps)(DefaultLayout);

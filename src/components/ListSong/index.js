@@ -1,30 +1,12 @@
 import styles from './ListSong.module.scss';
 import classNames from 'classnames/bind';
 import ListSongItem from '../ListSongItem';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { reducer, setListSongs } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
-function ListSong({ isShowAlbums, data, album_id, playlist }) {
-    useSelector(() => reducer);
-    const dispatch = useDispatch();
-
-    const handleListSongClick = () => {
-        let res = playlist ? [...playlist] : [...data];
-        if (playlist) {
-            for (const item of data) {
-                const isExist = playlist.find((pl) => item.id === pl.id);
-                if (!isExist) {
-                    res.push(item);
-                }
-            }
-        }
-        dispatch(setListSongs(res));
-    };
-
+function ListSong({ isShowAlbums, data, album_id }) {
     return (
-        <div className={`${cx('wrapper')} mt-4`} onClick={handleListSongClick}>
+        <div className={`${cx('wrapper')} mt-4`}>
             <div className="container">
                 <div className={`row border-bottom`}>
                     <div className="col-5">
@@ -53,12 +35,4 @@ function ListSong({ isShowAlbums, data, album_id, playlist }) {
     );
 }
 
-const mapStateToProps = (state) => {
-    if (state) {
-        return {
-            playlist: state.songs,
-        };
-    }
-};
-
-export default connect(mapStateToProps)(ListSong);
+export default ListSong;

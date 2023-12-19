@@ -17,11 +17,13 @@ import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ListSongItem from '~/components/ListSongItem';
+import HeadlessTippy from '@tippyjs/react/headless';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useDebounce } from '~/hooks';
 const cx = classNames.bind(styles);
 
 function Header() {
@@ -34,16 +36,21 @@ function Header() {
     const [forward, setForward] = useState([]);
     const [isEnter, setIsEnter] = useState(true);
     const [isPopstate, setIsPopstate] = useState(false);
-    const [isBlur, setIsBlur] = useState(false);
     const [isTurnOnMenu, setIsTurnOnMenu] = useState(false);
     const [isTurnOnSearch, setIsTurnOnSearch] = useState(false);
     const [user, setUser] = useState();
     const [avatar, setAvatar] = useState();
+    const [visible, setVisible] = useState(true);
+    const [uploading, setUploading] = useState(false);
     const navigate = useNavigate();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 768 });
     const refUserDetail = useRef();
     const refProfileBtn = useRef();
+    const debouncedValue = useDebounce(search, 500);
+
+    const hide = () => setVisible(false);
+    const show = () => setVisible(true);
 
     const goToPreviousPage = () => {
         var lastItemBack = back.pop();
@@ -62,8 +69,14 @@ function Header() {
     };
 
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        convertBase64(URL.createObjectURL(file));
+        if (e.target.files) {
+            try {
+                const file = e.target.files[0];
+                convertBase64(URL.createObjectURL(file));
+            } catch (err) {
+                console.log(err);
+            }
+        }
     };
 
     const convertBase64 = (blobUrl) => {
@@ -74,14 +87,34 @@ function Header() {
             var reader = new FileReader();
             reader.onload = function () {
                 var dataURL = reader.result;
-                // dataURL chứa URL không có blob nữa
-                console.log(blobUrl);
                 setAvatar(btoa(dataURL));
             };
             reader.readAsDataURL(recoveredBlob);
         };
         xhr.open('GET', blobUrl);
         xhr.send();
+    };
+
+    const handleLogOut = (e) => {
+        Cookies.remove('token');
+        window.location.href = '/';
+    };
+
+    const handleTurnProfile = () => {
+        if (user) {
+            setTurnProfile(!turnProfile);
+        }
+    };
+
+    const handleClickOutside = (e) => {
+        if (
+            refUserDetail.current &&
+            refProfileBtn.current &&
+            !refUserDetail.current.contains(e.target) &&
+            !refProfileBtn.current.contains(e.target)
+        ) {
+            setTurnProfile(false);
+        }
     };
 
     useEffect(() => {
@@ -131,12 +164,14 @@ function Header() {
 
     useEffect(() => {
         if (user && avatar) {
+            setUploading(true);
             axios
                 .put(`http://localhost:8080/api/user/${user.id}`, {
                     avatar: avatar,
                 })
                 .then((res) => setUser(res.data))
-                .catch((err) => console.log(err));
+                .catch((err) => console.log(err))
+                .finally(() => setUploading(false));
         }
     }, [avatar]);
 
@@ -172,35 +207,21 @@ function Header() {
     }, [isTurnOnMenu, isTurnOnSearch, isMobile]);
 
     useEffect(() => {
+        if (!debouncedValue.trim()) {
+            setSongs([]);
+            return;
+        }
         axios
             .get(`http://localhost:8080/api/search/song?page=1&query=${search}`)
             .then((res) => {
                 setSongs(res.data.results);
             })
             .catch((err) => console.log(err));
-    }, [search]);
+    }, [debouncedValue]);
 
-    const handleLogOut = (e) => {
-        Cookies.remove('token');
-        window.location.href = '/';
-    };
-
-    const handleTurnProfile = () => {
-        if (user) {
-            setTurnProfile(!turnProfile);
-        }
-    };
-
-    const handleClickOutside = (e) => {
-        if (
-            refUserDetail.current &&
-            refProfileBtn.current &&
-            !refUserDetail.current.contains(e.target) &&
-            !refProfileBtn.current.contains(e.target)
-        ) {
-            setTurnProfile(false);
-        }
-    };
+    useEffect(() => {
+        setSearch('');
+    }, [window.location.href]);
 
     useEffect(() => {
         document.addEventListener('click', handleClickOutside);
@@ -276,60 +297,69 @@ function Header() {
                                     </a>
                                 </>
                             )}
-                            <div
-                                className={` position-relative ${cx(
-                                    'search',
-                                )} d-flex align-items-center`}
-                            >
-                                <a
-                                    href="#"
-                                    className={` text-decoration-none me-2 text--primary`}
-                                >
-                                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                                </a>
-                                <input
-                                    type="text"
-                                    className={` border-0 bg-transparent f-family`}
-                                    placeholder="Search song..."
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    value={search}
-                                    onFocus={() => setIsBlur(false)}
-                                    onBlur={() =>
-                                        setTimeout(() => {
-                                            setIsBlur(true);
-                                        }, 150)
-                                    }
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            navigate(
-                                                `/search/?query=${search}`,
-                                            );
-                                            setIsBlur(true);
-                                            setSearch('');
-                                        }
-                                    }}
-                                />
-                                {search && !isBlur && songs.length > 0 && (
+                            <HeadlessTippy
+                                interactive
+                                visible={search && songs.length > 0 && visible}
+                                placement="bottom"
+                                render={(attrs) => (
                                     <div
-                                        className={` bg-white ${cx(
-                                            'result',
-                                        )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-3 pb-3`}
+                                        className={`bg-white rounded-3 ${cx(
+                                            'results__container',
+                                        )}`}
+                                        tabIndex={-1}
+                                        {...attrs}
                                     >
-                                        {songs.map((song, index) => (
-                                            <ListSongItem
-                                                key={index}
-                                                song={song}
-                                                songs={songs}
-                                                isSearchItem={true}
-                                                onClick={() => {
-                                                    setIsBlur(true);
-                                                    setSearch('');
-                                                }}
-                                            />
-                                        ))}
+                                        <div
+                                            className={` bg-white ${cx(
+                                                'result',
+                                            )} rounded-3 position-absolute start-0 w-100 top-100 mt-2 pt-3 pb-3`}
+                                        >
+                                            {songs.map((song, index) => (
+                                                <ListSongItem
+                                                    key={index}
+                                                    song={song}
+                                                    songs={songs}
+                                                    isSearchItem={true}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
                                 )}
-                            </div>
+                                onClickOutside={hide}
+                            >
+                                <div
+                                    className={` position-relative ${cx(
+                                        'search',
+                                    )} d-flex align-items-center`}
+                                >
+                                    <a
+                                        href="#"
+                                        className={` text-decoration-none me-2 text--primary`}
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faMagnifyingGlass}
+                                        />
+                                    </a>
+                                    <input
+                                        type="text"
+                                        className={` border-0 bg-transparent f-family`}
+                                        placeholder="Search song..."
+                                        onChange={(e) =>
+                                            setSearch(e.target.value)
+                                        }
+                                        value={search}
+                                        onFocus={show}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                navigate(
+                                                    `/search/?query=${search}`,
+                                                );
+                                                setSearch('');
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </HeadlessTippy>
                         </div>
                         {isMobile && (
                             <>
@@ -388,15 +418,28 @@ function Header() {
                                 onClick={handleTurnProfile}
                             >
                                 <figure className="w-100 h-100">
-                                    <img
-                                        src={
-                                            user
-                                                ? user.avatar
-                                                : 'https://zjs.zmdcdn.me/zmp3-desktop/releases/v1.9.67/static/media/user-default.3ff115bb.png'
-                                        }
-                                        alt=""
-                                        className="w-100 h-100"
-                                    />
+                                    {uploading ? (
+                                        <div
+                                            className={`h-100 w-100 d-flex justify-content-center align-items-center ${cx(
+                                                'uploading',
+                                            )}`}
+                                        >
+                                            <img
+                                                src="https://res.cloudinary.com/dmvyx3gwr/image/upload/v1701431805/loading-circle-5662747-4719071-unscreen_y4rshy.gif"
+                                                alt=""
+                                            />
+                                        </div>
+                                    ) : (
+                                        <img
+                                            src={
+                                                user
+                                                    ? user.avatar
+                                                    : 'https://zjs.zmdcdn.me/zmp3-desktop/releases/v1.9.67/static/media/user-default.3ff115bb.png'
+                                            }
+                                            alt=""
+                                            className="w-100 h-100"
+                                        />
+                                    )}
                                 </figure>
                             </button>
                             {turnProfile && (
@@ -412,11 +455,25 @@ function Header() {
                                                 'avatar',
                                             )}`}
                                         >
-                                            <img
-                                                className="w-100 h-100"
-                                                src={user.avatar}
-                                                alt=""
-                                            />
+                                            {uploading ? (
+                                                <div
+                                                    className={`h-100 w-100 d-flex justify-content-center align-items-center ${cx(
+                                                        'uploading',
+                                                    )}`}
+                                                >
+                                                    <img
+                                                        src="https://res.cloudinary.com/dmvyx3gwr/image/upload/v1701431805/loading-circle-5662747-4719071-unscreen_y4rshy.gif"
+                                                        alt=""
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    className="w-100 h-100"
+                                                    src={user.avatar}
+                                                    alt=""
+                                                />
+                                            )}
+
                                             <label
                                                 htmlFor="avatar"
                                                 className={` d-flex align-items-center justify-content-center position-absolute end-0 top-0 w-100 h-100 text-white ${cx(
@@ -486,8 +543,6 @@ function Header() {
                                     placeholder="Search song..."
                                     onChange={(e) => setSearch(e.target.value)}
                                     value={search}
-                                    onBlur={() => setIsBlur(true)}
-                                    onFocus={() => setIsBlur(false)}
                                 />
                                 {search && (
                                     <div
@@ -552,6 +607,8 @@ function Header() {
                             <li>
                                 <Link
                                     to="/mymusic"
+                                    data-bs-toggle={!token && 'modal'}
+                                    data-bs-target={!token && '#modalLogin'}
                                     className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                                 >
                                     <FontAwesomeIcon icon={faCompactDisc} />

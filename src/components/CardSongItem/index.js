@@ -1,6 +1,7 @@
 import {
     faCirclePlay,
     faHeart as faHeartRegular,
+    faSquarePlus,
 } from '@fortawesome/free-regular-svg-icons';
 import styles from './CardSongItem.module.scss';
 import classNames from 'classnames/bind';
@@ -18,40 +19,22 @@ import axios from 'axios';
 import Tippy from '@tippyjs/react';
 import clipboard from 'clipboard-copy';
 import HeadlessTippy from '@tippyjs/react/headless';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { reducer, setListSongs, setMessage } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
-function CardSongItem({ data, isSlider, type }) {
+function CardSongItem({ data, isSlider, type, playlist }) {
     const token = Cookies.get('token');
     const [like, setLike] = useState(false);
     const [user, setUser] = useState();
     const [visible, setVisible] = useState(false);
     const [mess, setMess] = useState();
+    useSelector(() => reducer);
+    const dispatch = useDispatch();
 
     const show = () => setVisible(true);
     const hide = () => setVisible(false);
-
-    useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                });
-        }
-    }, [token]);
 
     const handleLike = () => {
         if (user && token) {
@@ -75,19 +58,64 @@ function CardSongItem({ data, isSlider, type }) {
         }
     };
 
-    const createMessCopied = () => (
+    const createMess = (content) => (
         <div className={` bg-white rounded-2 f-family p-3 ${cx('message')}`}>
-            Link đã được sao chép vào clipboard
+            {content}
         </div>
     );
 
     const handleCopyToClipboard = () => {
         clipboard(`http://localhost:3001/album/${data.id}?type=${type}`);
-        setMess(createMessCopied);
+        dispatch(setMessage(createMess('Link đã được sao chép vào clipboard')));
         setTimeout(() => {
-            setMess();
+            dispatch(setMessage());
         }, 2000);
     };
+
+    const handleIntoPlaylist = () => {
+        let res = playlist ? [...playlist] : [...data.songs];
+        if (playlist) {
+            for (const item of data.songs) {
+                const isExist = playlist.find((pl) => item.id === pl.id);
+                if (!isExist) {
+                    res.push(item);
+                }
+            }
+        }
+        dispatch(setListSongs(res));
+        dispatch(
+            setMessage(
+                createMess(
+                    `Đã thêm ${data.songs.length} bài hát vào danh sách phát`,
+                ),
+            ),
+        );
+        setTimeout(() => {
+            dispatch(setMessage());
+        }, 2000);
+    };
+
+    useEffect(() => {
+        if (token) {
+            axios
+                .get('http://localhost:8080/api/user', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                .then((res) => {
+                    if (res.data === '') {
+                        Cookies.remove('token');
+                    } else {
+                        setUser(res.data);
+                    }
+                })
+                .catch((err) => {
+                    Cookies.remove('token');
+                    console.log(err);
+                });
+        }
+    }, [token]);
 
     useEffect(() => {
         setLike(handleCheckExist(data.id));
@@ -119,7 +147,7 @@ function CardSongItem({ data, isSlider, type }) {
                                     'more__container',
                                 )} bg-white `}
                             >
-                                <ul className="mb-0 p-0">
+                                <ul className="mb-0 p-0 fs-15">
                                     <li
                                         onClick={handleCopyToClipboard}
                                         className={`d-flex align-items-center p-3 pt-2 pb-2 ${cx(
@@ -142,7 +170,19 @@ function CardSongItem({ data, isSlider, type }) {
                                             className="me-2"
                                             icon={faLink}
                                         />
-                                        <span>Sao chép Link</span>
+                                        <span>Copy link</span>
+                                    </li>
+                                    <li
+                                        onClick={handleIntoPlaylist}
+                                        className={`d-flex align-items-center p-3 pt-2 pb-2 ${cx(
+                                            'more__item',
+                                        )}`}
+                                    >
+                                        <FontAwesomeIcon
+                                            className="me-2"
+                                            icon={faSquarePlus}
+                                        />
+                                        <span>Add to playlist</span>
                                     </li>
                                 </ul>
                             </div>
@@ -167,7 +207,8 @@ function CardSongItem({ data, isSlider, type }) {
                         >
                             <Link
                                 onClick={handleLike}
-                                to=""
+                                data-bs-toggle={!token && 'modal'}
+                                data-bs-target={!token && '#modalLogin'}
                                 className={`rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30 ${cx(
                                     `${like ? 'liked' : 'like'}`,
                                 )}`}
@@ -183,12 +224,12 @@ function CardSongItem({ data, isSlider, type }) {
                                 <FontAwesomeIcon icon={faCirclePlay} />
                             </Link>
                             <Tippy content="Khác">
-                                <Link
+                                <nav
                                     onClick={show}
-                                    className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                    className=" pointer text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                 >
                                     <FontAwesomeIcon icon={faEllipsis} />
-                                </Link>
+                                </nav>
                             </Tippy>
                         </div>
                     </div>
@@ -227,14 +268,16 @@ function CardSongItem({ data, isSlider, type }) {
                         })}
                 </div>
             </div>
-            <div
-                style={{ zIndex: 9999 }}
-                className=" position-fixed start-0 bottom-0 m-3"
-            >
-                {mess}
-            </div>
         </div>
     );
 }
 
-export default CardSongItem;
+const mapStateToProps = (state) => {
+    if (state) {
+        return {
+            playlist: state.songs,
+        };
+    }
+};
+
+export default connect(mapStateToProps)(CardSongItem);
