@@ -73,9 +73,7 @@ function Header() {
             try {
                 const file = e.target.files[0];
                 convertBase64(URL.createObjectURL(file));
-            } catch (err) {
-                console.log(err);
-            }
+            } catch (err) {}
         }
     };
 

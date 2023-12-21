@@ -17,6 +17,8 @@ import Tippy from '@tippyjs/react';
 import HeadlessTippy from '@tippyjs/react/headless';
 import clipboard from 'clipboard-copy';
 import Cookies from 'js-cookie';
+import { useDispatch, useSelector } from 'react-redux';
+import { reducer, setMessage } from '~/redux_';
 
 const cx = classNames.bind(styles);
 
@@ -27,12 +29,13 @@ function Album() {
     const [songs, setSongs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [visible, setVisible] = useState(false);
-    const [mess, setMess] = useState();
     const [liked, setLiked] = useState(false);
     let { id } = useParams();
     const { search } = useLocation();
     const param = new URLSearchParams(search);
     const type = param.get('type');
+    useSelector(() => reducer);
+    const dispatch = useDispatch();
 
     const show = () => setVisible(true);
     const hide = () => setVisible(false);
@@ -76,9 +79,9 @@ function Album() {
 
     const handleCopyToClipboard = () => {
         clipboard(`http://localhost:3001/album/${id}?type=${type}`);
-        setMess(createMessCopied);
+        dispatch(setMessage(createMessCopied));
         setTimeout(() => {
-            setMess();
+            dispatch(setMessage());
         }, 2000);
     };
 
@@ -182,7 +185,7 @@ function Album() {
                                     placement="bottom-start"
                                     render={(attrs) => (
                                         <div
-                                            className=" bg-white rounded-1"
+                                            className=" bg-white rounded-1 ms-5"
                                             tabIndex="-1"
                                             {...attrs}
                                         >
@@ -279,12 +282,6 @@ function Album() {
                                 />
                             </div>
                         </div>
-                    </div>
-                    <div
-                        style={{ zIndex: 9999 }}
-                        className=" position-fixed start-0 bottom-0 m-3"
-                    >
-                        {mess}
                     </div>
                 </div>
             )}

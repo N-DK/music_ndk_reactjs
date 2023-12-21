@@ -28,6 +28,7 @@ import {
     setActive,
     setCurrAudio,
     setData,
+    setListSongs,
     setPlaying,
 } from '~/redux_';
 import { useMediaQuery } from 'react-responsive';
@@ -36,7 +37,6 @@ import ListSongItem from '~/components/ListSongItem';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import Tippy from '@tippyjs/react';
-import HeadlessTippy from '@tippyjs/react/headless';
 import ReceptacleTippy from '~/components/ReceptacleTippy';
 
 const cx = classNames.bind(styles);
@@ -51,11 +51,13 @@ function Footer({ data, isPlaying, currAudio, songs }) {
     const [like, setLike] = useState(false);
     const [user, setUser] = useState();
     const [isRepeat, setIsRepeat] = useState(false);
+    const [isShuffle, setIsShuffle] = useState(false);
     const [volume, setVolume] = useState(1);
     const [isMute, setIsMute] = useState(false);
     const [isExpandControls, setIsExpandControls] = useState(false);
     const [turnOnList, setTurnOnList] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [playlist, setPlaylist] = useState([]);
     const refPlaylist = useRef();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
     const isMobile = useMediaQuery({ maxWidth: 766 });
@@ -78,8 +80,8 @@ function Footer({ data, isPlaying, currAudio, songs }) {
 
     const getIndexSong = () => {
         let index;
-        for (let i = 0; i < songs.length; i++) {
-            if (songs[i].id === data.id) {
+        for (let i = 0; i < playlist.length; i++) {
+            if (playlist[i].id === data.id) {
                 index = i;
             }
         }
@@ -116,18 +118,18 @@ function Footer({ data, isPlaying, currAudio, songs }) {
             default:
                 break;
         }
-        for (let i = 0; i < songs.length; i++) {
-            if (songs[i].id === data.id && songs[i + value]) {
+        for (let i = 0; i < playlist.length; i++) {
+            if (playlist[i].id === data.id && playlist[i + value]) {
                 indexNextSong = i + value;
                 break;
             }
         }
         if (indexNextSong >= 0) {
-            dispatch(setData(songs[indexNextSong]));
-            dispatch(setActive(songs[indexNextSong].id));
+            dispatch(setData(playlist[indexNextSong]));
+            dispatch(setActive(playlist[indexNextSong].id));
             dispatch(setPlaying(true));
             currAudio.pause();
-            var audio = new Audio(songs[indexNextSong].audioUrl);
+            var audio = new Audio(playlist[indexNextSong].audioUrl);
             dispatch(setCurrAudio(audio));
             audio.play();
         }
@@ -148,7 +150,63 @@ function Footer({ data, isPlaying, currAudio, songs }) {
         }
     };
 
+    const CustomTooltip = ({ song }) => {
+        return song ? (
+            <div className="f-family pb-1">
+                <p className="fs-15 mb-1">Next song</p>
+                <div className="d-flex align-items-center">
+                    <div
+                        className={`${cx(
+                            'thumbnail_tooltip',
+                        )} rounded-2 overflow-hidden me-2`}
+                    >
+                        <img className="" src={song.thumbnail} alt="" />
+                    </div>
+                    <div
+                        className={`d-flex align-items-center ${cx('flex_1')}`}
+                    >
+                        <div className={`${cx('song__container--name')} pe-3`}>
+                            <Link
+                                to={`/album/${song.albums[0].id}?type=album`}
+                                className={`${cx(
+                                    ' text-decoration-none text-truncate',
+                                )} text-white f-family`}
+                            >
+                                {song.title}
+                            </Link>
+                            <div className="fs-13 f-family subtitle_color">
+                                {song.artists.map((artist, index) => {
+                                    let artist_name = artist.name;
+                                    if (
+                                        artist !==
+                                        song.artists[song.artists.length - 1]
+                                    ) {
+                                        artist_name += ',';
+                                    }
+                                    return (
+                                        <Link
+                                            key={index}
+                                            to={`/artist/${artist.id}`}
+                                            className={` subtitle_color is_truncate pe-1`}
+                                        >
+                                            {artist_name}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        ) : (
+            <div className="f-family">
+                There are no more songs in the playlist
+            </div>
+        );
+    };
+
     useEffect(() => {
+        setPlaylist(songs);
         if (songs.length > 0 && !currSong && !currAudio) {
             dispatch(setData(songs[0]));
             dispatch(setActive(songs[0].id));
@@ -158,6 +216,19 @@ function Footer({ data, isPlaying, currAudio, songs }) {
             audio.play();
         }
     }, [songs]);
+
+    useEffect(() => {
+        if (isShuffle) {
+            const songsTemp = [...songs];
+            const shuffled = songsTemp
+                .filter((song) => song.id !== data.id)
+                .sort(() => Math.random() - 0.5);
+            const res = [currSong, ...shuffled];
+            setPlaylist(res);
+        } else {
+            setPlaylist(songs);
+        }
+    }, [isShuffle]);
 
     useEffect(() => {
         let x = `translateX(${turnOnList ? 0 : 100}%)`;
@@ -381,26 +452,33 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                         <div
                                             className={` d-flex justify-content-center align-items-center`}
                                         >
-                                            <a
-                                                href=""
-                                                className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                            <nav
+                                                onClick={() =>
+                                                    setIsShuffle(
+                                                        (shuffled) => !shuffled,
+                                                    )
+                                                }
+                                                className={`${
+                                                    isShuffle
+                                                        ? 'is_active'
+                                                        : 'text-white'
+                                                } pointer fs-5 ms-3 me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
                                             >
                                                 <FontAwesomeIcon
                                                     icon={faShuffle}
                                                 />
-                                            </a>
-                                            <a
+                                            </nav>
+                                            <nav
                                                 onClick={() =>
                                                     handleNavigationSong(PREV)
                                                 }
-                                                href="#"
-                                                className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                                className="pointer fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                             >
                                                 <FontAwesomeIcon
                                                     icon={faBackwardStep}
                                                 />
-                                            </a>
-                                            <a
+                                            </nav>
+                                            <nav
                                                 onClick={() => {
                                                     if (isPlaying) {
                                                         handlePause();
@@ -408,8 +486,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                         handlePlay();
                                                     }
                                                 }}
-                                                href="#"
-                                                className="fs-1 ms-3 me-3 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
+                                                className="pointer fs-1 ms-3 me-3 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
                                             >
                                                 {isPlaying ? (
                                                     <FontAwesomeIcon
@@ -420,33 +497,46 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                         icon={faCirclePlay}
                                                     />
                                                 )}
-                                            </a>
-                                            <a
-                                                onClick={() =>
-                                                    handleNavigationSong(NEXT)
+                                            </nav>
+                                            <Tippy
+                                                content={
+                                                    <CustomTooltip
+                                                        song={
+                                                            playlist[
+                                                                getIndexSong() +
+                                                                    1
+                                                            ]
+                                                        }
+                                                    />
                                                 }
-                                                href="#"
-                                                className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                             >
-                                                <FontAwesomeIcon
-                                                    icon={faForwardStep}
-                                                />
-                                            </a>
-                                            <a
+                                                <nav
+                                                    onClick={() =>
+                                                        handleNavigationSong(
+                                                            NEXT,
+                                                        )
+                                                    }
+                                                    className="pointer fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={faForwardStep}
+                                                    />
+                                                </nav>
+                                            </Tippy>
+                                            <nav
                                                 onClick={() => {
                                                     setIsRepeat(!isRepeat);
                                                 }}
-                                                href="#"
-                                                className={`${
+                                                className={`pointer ${
                                                     isRepeat
-                                                        ? 'is_repeat'
+                                                        ? 'is_active'
                                                         : 'text-white'
                                                 } fs-5 ms-3 me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
                                             >
                                                 <FontAwesomeIcon
                                                     icon={faRepeat}
                                                 />
-                                            </a>
+                                            </nav>
                                         </div>
                                         <div
                                             className={`${cx(
@@ -513,7 +603,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                 '',
                                             )} d-flex align-items-center `}
                                         >
-                                            <a
+                                            <nav
                                                 onClick={() => {
                                                     if (!isMute) {
                                                         currAudio.volume = 0;
@@ -523,8 +613,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                     }
                                                     setIsMute(!isMute);
                                                 }}
-                                                href="#"
-                                                className="text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                                className="pointer text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                             >
                                                 {currAudio.volume === 0 ? (
                                                     <FontAwesomeIcon
@@ -539,7 +628,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                         icon={faVolumeHigh}
                                                     />
                                                 )}
-                                            </a>
+                                            </nav>
                                             <div
                                                 onClick={(e) => {
                                                     var widthCurrent =
@@ -604,24 +693,20 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                 <div
                                     className={` d-flex justify-content-center align-items-center`}
                                 >
-                                    <a
-                                        href=""
-                                        className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
-                                    >
+                                    <nav className="pointer fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30">
                                         <FontAwesomeIcon icon={faShuffle} />
-                                    </a>
-                                    <a
+                                    </nav>
+                                    <nav
                                         onClick={() =>
                                             handleNavigationSong(PREV)
                                         }
-                                        href="#"
-                                        className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                        className="pointer fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                     >
                                         <FontAwesomeIcon
                                             icon={faBackwardStep}
                                         />
-                                    </a>
-                                    <a
+                                    </nav>
+                                    <nav
                                         onClick={() => {
                                             if (isPlaying) {
                                                 handlePause();
@@ -630,7 +715,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                             }
                                         }}
                                         href="#"
-                                        className="fs-1 ms-3 me-3 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
+                                        className="pointer fs-1 ms-3 me-3 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
                                     >
                                         {isPlaying ? (
                                             <FontAwesomeIcon
@@ -641,29 +726,27 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                 icon={faCirclePlay}
                                             />
                                         )}
-                                    </a>
-                                    <a
+                                    </nav>
+                                    <nav
                                         onClick={() =>
                                             handleNavigationSong(NEXT)
                                         }
-                                        href="#"
-                                        className="fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
+                                        className="pointer fs-5 ms-3 me-3 text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
                                     >
                                         <FontAwesomeIcon icon={faForwardStep} />
-                                    </a>
-                                    <a
+                                    </nav>
+                                    <nav
                                         onClick={() => {
                                             setIsRepeat(!isRepeat);
                                         }}
-                                        href="#"
-                                        className={`${
+                                        className={`pointer ${
                                             isRepeat
-                                                ? 'is_repeat'
+                                                ? 'is_active'
                                                 : 'text-white'
                                         } fs-5 ms-3 me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30`}
                                     >
                                         <FontAwesomeIcon icon={faRepeat} />
-                                    </a>
+                                    </nav>
                                 </div>
                                 <div
                                     className={`${cx(
@@ -717,7 +800,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                             )} h-100 mb-5 `}
                         >
                             <div className=" ">
-                                {songs
+                                {playlist
                                     .slice(0, getIndexSong() + 1)
                                     .map((song) => (
                                         <div
@@ -734,7 +817,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                         >
                                             <ListSongItem
                                                 song={song}
-                                                songs={songs}
+                                                songs={playlist}
                                                 isInPlaylist={
                                                     song.id === data.id
                                                 }
@@ -755,13 +838,13 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                             <div
                                 className={`mt-2 h-100 ${cx('next__playlist')}`}
                             >
-                                {songs
-                                    .slice(getIndexSong() + 1, songs.length)
+                                {playlist
+                                    .slice(getIndexSong() + 1, playlist.length)
                                     .map((song) => (
                                         <ListSongItem
                                             key={song.id}
                                             song={song}
-                                            songs={songs}
+                                            songs={playlist}
                                             placement="bottom-end"
                                         />
                                     ))}

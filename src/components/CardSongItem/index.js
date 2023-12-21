@@ -29,7 +29,6 @@ function CardSongItem({ data, isSlider, type, playlist }) {
     const [like, setLike] = useState(false);
     const [user, setUser] = useState();
     const [visible, setVisible] = useState(false);
-    const [mess, setMess] = useState();
     useSelector(() => reducer);
     const dispatch = useDispatch();
 
@@ -53,7 +52,7 @@ function CardSongItem({ data, isSlider, type, playlist }) {
 
     const handleCheckExist = (id) => {
         if (user) {
-            const wishlist = type == 'album' ? user.albums : user.playlist;
+            const wishlist = type === 'album' ? user.albums : user.playlist;
             return wishlist.find((wish) => wish.id === id) ? true : false;
         }
     };

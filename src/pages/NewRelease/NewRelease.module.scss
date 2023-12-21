@@ -1,0 +1,24 @@
+.wrapper {
+    padding-bottom: 150px;
+}
+
+.active {
+    position: relative;
+    color: var(--iq-primary) !important;
+    transition: 0.3s;
+    &::after {
+        display: block;
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        height: 2px;
+        width: 100%;
+        left: 0;
+        background-color: var(--iq-primary) !important;
+        border-radius: 9999999px;
+    }
+}
+
+.not__active {
+    color: #000;
+}

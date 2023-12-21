@@ -795,7 +795,9 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
         favoriteSong: [],
         email: 'ndk@gmail.com',
         topicCode: '',
+        subTitle: '',
     });
+    const [subTitle, setSubTitle] = useState('');
     const [name, setName] = useState('');
     const [thumbnail, setThumbnail] = useState('');
     const [favoriteSong, setFavoriteSong] = useState([]);
@@ -814,9 +816,10 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                 thumbnail,
                 favoriteSong,
                 topicCode,
+                subTitle,
             };
         });
-    }, [name, thumbnail, favoriteSong, topicCode]);
+    }, [name, thumbnail, favoriteSong, topicCode, subTitle]);
 
     const handleExists = (song) => {
         return favoriteSong.indexOf(song) !== -1;
@@ -844,6 +847,7 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                 .then((res) => {
                     var data = res.data.results[0];
                     setName(data.name);
+                    setSubTitle(data.subTitle);
                     setThumbnail(data.thumbnail);
                     setFavoriteSong(data.songs.map((song) => song.title));
                     setTopicCode(convertToCode(data.topic));
@@ -875,6 +879,15 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                         <input
                             value={thumbnail}
                             onChange={(e) => setThumbnail(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Sub title:</label>
+                        <input
+                            value={subTitle}
+                            onChange={(e) => setSubTitle(e.target.value)}
                             type="text"
                             className="form-control"
                         />
@@ -1108,9 +1121,11 @@ function AdminItems() {
                 emailUser: data.email,
                 thumbnail: data.thumbnail,
                 topicCode: data.topicCode,
+                subTitle: data.subTitle,
             },
         })
-            .then(() => {
+            .then((res) => {
+                console.log(res);
                 setLoading(false);
                 setShowModal(true);
                 setSuccess(true);

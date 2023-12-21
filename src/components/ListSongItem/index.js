@@ -53,6 +53,11 @@ function ListSongItem({
     const hide = () => setVisible(false);
 
     const handleListSongClick = () => {
+        for (const song of songs) {
+            if (!song.albums) {
+                song.albums = [{ id: album_id }];
+            }
+        }
         let res = playlist ? [...playlist] : [...songs];
         if (playlist) {
             for (const item of songs) {
@@ -137,6 +142,7 @@ function ListSongItem({
                 });
         }
     }, [token]);
+
     return (
         <div onClick={onClick} className={`${cx('wrapper')} container pt-3`}>
             <div
