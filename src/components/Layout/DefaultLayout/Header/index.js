@@ -24,10 +24,10 @@ import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useDebounce } from '~/hooks';
+import { getUser } from '~/utils/getUser';
 const cx = classNames.bind(styles);
 
 function Header() {
-    const token = Cookies.get('token');
     const [search, setSearch] = useState('');
     const [songs, setSongs] = useState([]);
     const [turnProfile, setTurnProfile] = useState(false);
@@ -58,6 +58,14 @@ function Header() {
         setForward((prev) => [...prev, current]);
         setIsEnter(true);
         setCurrent(lastItemBack);
+    };
+
+    const handleRouter = (route) => {
+        if (route === '/') {
+            return window.location.pathname === route;
+        } else {
+            return window.location.pathname.includes(route);
+        }
     };
 
     const goToNextPage = () => {
@@ -139,26 +147,16 @@ function Header() {
     }, []);
 
     useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                });
-        }
-    }, [token]);
+        const fetch = async () => {
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+        };
+        fetch();
+    }, []);
 
     useEffect(() => {
         if (user && avatar) {
@@ -166,6 +164,7 @@ function Header() {
             axios
                 .put(`http://localhost:8080/api/user/${user.id}`, {
                     avatar: avatar,
+                    roleCode: user.roleCode,
                 })
                 .then((res) => setUser(res.data))
                 .catch((err) => console.log(err))
@@ -410,8 +409,8 @@ function Header() {
                             </a>
                             <button
                                 ref={refProfileBtn}
-                                data-bs-toggle={!token && 'modal'}
-                                data-bs-target={!token && '#modalLogin'}
+                                data-bs-toggle={!user && 'modal'}
+                                data-bs-target={!user && '#modalLogin'}
                                 className="rounded-circle square_40 d-block overflow-hidden border-0 p-0"
                                 onClick={handleTurnProfile}
                             >
@@ -576,7 +575,7 @@ function Header() {
                 )} position-fixed top-0 start-0 bottom-0 end-0`}
             >
                 <div
-                    className={` position-absolute top-0 start-0 bottom-0 p-3 ${cx(
+                    className={` position-absolute top-0 start-0 bottom-0  ${cx(
                         'menu__container',
                         `${isTurnOnMenu && 'active'}`,
                     )}`}
@@ -584,14 +583,19 @@ function Header() {
                     <div className="float-end">
                         <p
                             onClick={() => setIsTurnOnMenu(!isTurnOnMenu)}
-                            className="fs-3 text--primary text-decoration-none"
+                            className="pointer p-3 fs-3 text--primary text-decoration-none"
                         >
                             <FontAwesomeIcon icon={faXmark} />
                         </p>
                     </div>
                     <div className="pt-3">
                         <ul className={` m-0 p-0 list-unstyled mt-4`}>
-                            <li>
+                            <li
+                                className={`ps-3 pe-3 ${
+                                    handleRouter('/') &&
+                                    `${cx('nav_item', 'active')}`
+                                }`}
+                            >
                                 <Link
                                     to="/"
                                     className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
@@ -602,11 +606,16 @@ function Header() {
                                     </span>
                                 </Link>
                             </li>
-                            <li>
+                            <li
+                                className={`ps-3 pe-3 ${
+                                    handleRouter('/mymusic') &&
+                                    `${cx('nav_item', 'active')}`
+                                }`}
+                            >
                                 <Link
                                     to="/mymusic"
-                                    data-bs-toggle={!token && 'modal'}
-                                    data-bs-target={!token && '#modalLogin'}
+                                    data-bs-toggle={!user && 'modal'}
+                                    data-bs-target={!user && '#modalLogin'}
                                     className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
                                 >
                                     <FontAwesomeIcon icon={faCompactDisc} />
@@ -615,7 +624,12 @@ function Header() {
                                     </span>
                                 </Link>
                             </li>
-                            <li>
+                            <li
+                                className={`ps-3 pe-3 ${
+                                    handleRouter('/hub') &&
+                                    `${cx('nav_item', 'active')}`
+                                }`}
+                            >
                                 <Link
                                     to="/hub"
                                     className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}
@@ -626,13 +640,11 @@ function Header() {
                                     </span>
                                 </Link>
                             </li>
-                            <li>
+                            <li className={`ps-3 pe-3 `}>
                                 <Link
                                     data-bs-toggle={'modal'}
                                     data-bs-target={
-                                        !token
-                                            ? '#modalLogin'
-                                            : '#modalPlaylist'
+                                        !user ? '#modalLogin' : '#modalPlaylist'
                                     }
                                     to=""
                                     className={`pt-3 pb-3 d-block text-decoration-none d-flex align-items-center text--primary`}

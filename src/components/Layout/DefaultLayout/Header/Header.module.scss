@@ -148,3 +148,30 @@
         width: 100%;
     }
 }
+
+.nav_item {
+    transition: 0.3s;
+    &:hover {
+        background-color: black;
+    }
+}
+
+.nav_item.active {
+    background-color: rgba(0, 0, 0, 0.05);
+    position: relative;
+
+    a {
+        color: var(--iq-primary) !important;
+    }
+
+    &::after {
+        position: absolute;
+        content: '';
+        display: block;
+        top: 0;
+        height: 100%;
+        left: 0;
+        width: 3px;
+        background-color: var(--iq-primary);
+    }
+}

@@ -10,6 +10,8 @@ import axios from 'axios';
 import ListSong from '~/components/ListSong';
 import ListSongItem from '~/components/ListSongItem';
 import { Link } from 'react-router-dom';
+import { getUser } from '~/utils/getUser';
+import Cookies from 'js-cookie';
 
 const cx = classNames.bind(styles);
 
@@ -62,11 +64,37 @@ const banners = [
     },
 ];
 
+const DEFAULT = [
+    {
+        title: 'Chill',
+        code: 'chill',
+        more: '/hub/chill',
+    },
+    {
+        title: 'This Music Is Super Hot',
+        code: 'remix',
+    },
+];
+
 function Home() {
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState();
     const [songs, setSongs] = useState([]);
-    const [chill, setChill] = useState([]);
-    const [remix, setRemix] = useState([]);
+    const [categories, setCategories] = useState(DEFAULT);
+
+    const updateDataForCategory = async () => {
+        for (const category of DEFAULT) {
+            try {
+                const res = await axios.get(
+                    `http://localhost:8080/api/playlist/topic/${category.code}`,
+                );
+                category.data = res.data.results;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        return [...DEFAULT];
+    };
 
     useEffect(() => {
         setLoading(true);
@@ -74,31 +102,30 @@ function Home() {
             .get('http://localhost:8080/api/song')
             .then((res) => {
                 setSongs(res.data.results.reverse());
-                setLoading(false);
             })
             .catch((err) => console.log(err));
     }, []);
 
     useEffect(() => {
-        setLoading(true);
-        axios
-            .get('http://localhost:8080/api/playlist/topic/chill')
-            .then((res) => {
-                setChill(res.data.results);
-                setLoading(false);
-            })
-            .catch((err) => console.log(err));
+        const fetch = async () => {
+            setLoading(true);
+            const fetchCategories = await updateDataForCategory();
+            setCategories(fetchCategories);
+            setLoading(false);
+        };
+        fetch();
     }, []);
 
     useEffect(() => {
-        setLoading(true);
-        axios
-            .get('http://localhost:8080/api/playlist/topic/remix')
-            .then((res) => {
-                setRemix(res.data.results);
-                setLoading(false);
-            })
-            .catch((err) => console.log(err));
+        const fetch = async () => {
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+        };
+        fetch();
     }, []);
 
     return (
@@ -153,6 +180,7 @@ function Home() {
                                                 key={index}
                                                 song={song}
                                                 songs={songs}
+                                                user={user}
                                             />
                                         );
                                     }
@@ -166,6 +194,7 @@ function Home() {
                                                 key={index}
                                                 song={song}
                                                 songs={songs}
+                                                user={user}
                                             />
                                         );
                                     }
@@ -173,18 +202,15 @@ function Home() {
                             </div>
                         </div>
                     </div>
-                    <Receptacle
-                        title="Chill"
-                        type="playlist"
-                        data={chill}
-                        more="/hub/chill"
-                    />
-                    <Receptacle
-                        title="This Music Is Super Hot"
-                        type="playlist"
-                        data={remix}
-                        more={'/hub/remix'}
-                    />
+                    {categories.map((category, index) => (
+                        <Receptacle
+                            key={index}
+                            title={category.title}
+                            type="playlist"
+                            data={category.data}
+                            more={category.more}
+                        />
+                    ))}
                 </div>
             )}
         </>

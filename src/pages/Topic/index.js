@@ -31,7 +31,6 @@ function Topic() {
 
     // async await để thực hiện trong vòng for một cách tuần tự vì trong vòng for không chờ đợi call api
     const updateDataForCategory = async () => {
-        setLoading(true);
         for (const category of DEFAULT) {
             try {
                 const res = await axios.get(
@@ -42,8 +41,7 @@ function Topic() {
                 console.log(error);
             }
         }
-        setCategories([...DEFAULT]);
-        setLoading(false);
+        return [...DEFAULT];
     };
 
     useEffect(() => {
@@ -73,16 +71,15 @@ function Topic() {
                 .catch((err) => console.log(err))
                 .finally(() => setLoading(false));
         } else {
-            setCategories(DEFAULT);
-            updateDataForCategory();
+            const fetch = async () => {
+                setLoading(true);
+                const fetchData = await updateDataForCategory();
+                setCategories(fetchData);
+                setLoading(false);
+            };
+            fetch();
         }
     }, [slug]);
-
-    useEffect(() => {
-        if (!slug) {
-            updateDataForCategory();
-        }
-    }, []);
 
     return (
         <>

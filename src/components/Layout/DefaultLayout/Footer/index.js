@@ -38,6 +38,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import Tippy from '@tippyjs/react';
 import ReceptacleTippy from '~/components/ReceptacleTippy';
+import { getUser } from '~/utils/getUser';
 
 const cx = classNames.bind(styles);
 
@@ -45,7 +46,6 @@ const NEXT = 'next';
 const PREV = 'prev';
 
 function Footer({ data, isPlaying, currAudio, songs }) {
-    const token = Cookies.get('token');
     const [currSong, setCurrSong] = useState();
     const [currTimeSong, setCurrTimeSong] = useState();
     const [like, setLike] = useState(false);
@@ -136,11 +136,12 @@ function Footer({ data, isPlaying, currAudio, songs }) {
     };
 
     const handleWishlist = () => {
-        if (token) {
+        if (user) {
             setLike(!like);
             if (!like) {
                 axios.put(`http://localhost:8080/api/user/${user.id}`, {
                     songs: [data.id],
+                    roleCode: user.roleCode,
                 });
             } else {
                 axios.delete(
@@ -238,26 +239,16 @@ function Footer({ data, isPlaying, currAudio, songs }) {
     }, [turnOnList]);
 
     useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                });
-        }
-    }, [token]);
+        const fetch = async () => {
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+        };
+        fetch();
+    }, []);
 
     useEffect(() => {
         setLike(handleCheckExist(data.id));
@@ -274,14 +265,14 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                 setCurrTimeSong(currAudio.currentTime);
             });
         }
-    }, [currSong]);
+    }, [currSong, currAudio]);
 
     useEffect(() => {
         const handleAudioEnd = () => {
             if (isRepeat) {
                 currAudio.play();
             } else {
-                if (currSong.id === songs[songs.length - 1].id) {
+                if (currSong.id === playlist[playlist.length - 1].id) {
                     currAudio.pause();
                     dispatch(setPlaying(false));
                 } else {
@@ -297,7 +288,7 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                 currAudio.removeEventListener('ended', handleAudioEnd);
             };
         }
-    }, [isRepeat, currSong]);
+    }, [isRepeat, currSong, playlist]);
 
     return (
         <>
@@ -385,17 +376,16 @@ function Footer({ data, isPlaying, currAudio, songs }) {
                                                 visible={visible}
                                                 hide={hide}
                                                 handlePlay={handlePlay}
-                                                token={token}
                                                 user={user}
                                                 album_id={currSong.albums[0].id}
                                             >
                                                 <div className="d-flex">
                                                     <span
                                                         data-bs-toggle={
-                                                            !token && 'modal'
+                                                            !user && 'modal'
                                                         }
                                                         data-bs-target={
-                                                            !token &&
+                                                            !user &&
                                                             '#modalLogin'
                                                         }
                                                         onClick={handleWishlist}

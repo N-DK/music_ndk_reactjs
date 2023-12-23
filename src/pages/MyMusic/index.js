@@ -13,6 +13,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import Loading from '~/components/Loading';
 import { Link } from 'react-router-dom';
+import { getUser } from '~/utils/getUser';
 
 const cx = classNames.bind(styles);
 
@@ -34,7 +35,6 @@ function MyMusic() {
     const [playlist, setPlaylist] = useState([]);
     const [albums, setAlbums] = useState([]);
     const [user, setUser] = useState();
-    const token = Cookies.get('token');
 
     useEffect(() => {
         if (user) {
@@ -45,27 +45,18 @@ function MyMusic() {
     }, [user]);
 
     useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                })
-                .finally(() => setLoading(false));
-        }
-    }, [token]);
+        const fetch = async () => {
+            setLoading(true);
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+            setLoading(false);
+        };
+        fetch();
+    }, []);
 
     return (
         <>
@@ -83,20 +74,21 @@ function MyMusic() {
                                 >
                                     playlist
                                 </p>
-                                <a
-                                    href="#"
+                                <Link
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalPlaylist"
                                     className="ms-2 f-family text-black fs-5 d-flex align-items-center text-decoration-none"
                                 >
                                     <FontAwesomeIcon icon={faCirclePlus} />
-                                </a>
+                                </Link>
                             </div>
-                            <a
+                            <Link
                                 href="#"
                                 className="f-family text--primary d-flex align-items-center text-decoration-none"
                             >
                                 <span className="me-2">View more</span>
                                 <FontAwesomeIcon icon={faChevronRight} />
-                            </a>
+                            </Link>
                         </div>
                         <div className={` row`}>
                             {playlist.map((item) => (

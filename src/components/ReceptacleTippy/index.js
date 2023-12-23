@@ -18,6 +18,7 @@ import HeadlessTippy from '@tippyjs/react/headless';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { reducer, setMessage } from '~/redux_';
+import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -26,14 +27,16 @@ function ReceptacleTippy({
     song,
     hide,
     visible,
-    token,
     user,
     handlePlay,
     album_id,
     placement,
+    allowEdit,
+    onClick,
 }) {
     const [playlist, setPlaylist] = useState([]);
     const [downloading, setDownloading] = useState(false);
+    const [searchPlaylist, setSearchPlaylist] = useState('');
     useSelector(() => reducer);
     const dispatch = useDispatch();
 
@@ -49,15 +52,6 @@ function ReceptacleTippy({
             setDownloading(false);
         });
     };
-
-    useEffect(() => {
-        if (user) {
-            axios
-                .get(`http://localhost:8080/api/playlist/user/${user.id}`)
-                .then((res) => setPlaylist(res.data.results))
-                .catch((err) => console.log(err));
-        }
-    }, [user]);
 
     const createMessageAddSuccess = (title) => (
         <div className={` bg-white rounded-2 f-family p-3 ${cx('message')}`}>
@@ -86,7 +80,7 @@ function ReceptacleTippy({
 
     const handleIntoPlayList = (id) => {
         axios
-            .put(`http://localhost:8080/api/playlist/${id}`, {
+            .put(`http://localhost:8080/api/playlist/addToPlaylist/${id}`, {
                 favoriteSong: [song.title],
                 thumbnail: song.thumbnail,
             })
@@ -98,6 +92,15 @@ function ReceptacleTippy({
             })
             .then((err) => console.log(err));
     };
+
+    useEffect(() => {
+        if (user) {
+            axios
+                .get(`http://localhost:8080/api/playlist/user/${user.id}`)
+                .then((res) => setPlaylist(res.data.results))
+                .catch((err) => console.log(err));
+        }
+    }, [user]);
 
     return (
         <HeadlessTippy
@@ -207,15 +210,21 @@ function ReceptacleTippy({
                                         >
                                             <div className=" ps-3 pe-3 pt-3 mb-2">
                                                 <input
+                                                    value={searchPlaylist}
                                                     className="rounded-5 border w-100 ps-3 pe-3"
                                                     placeholder="Find playlist"
+                                                    onChange={(e) =>
+                                                        setSearchPlaylist(
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                 />
                                             </div>
                                             <div
                                                 onClick={hide}
                                                 data-bs-toggle={'modal'}
                                                 data-bs-target={
-                                                    !token
+                                                    !user
                                                         ? '#modalLogin'
                                                         : '#modalPlaylist'
                                                 }
@@ -232,34 +241,42 @@ function ReceptacleTippy({
                                                 </span>
                                             </div>
                                             <ul className=" list-unstyled">
-                                                {playlist.map((pl) => (
-                                                    <li
-                                                        key={pl.id}
-                                                        onClick={() =>
-                                                            handleIntoPlayList(
-                                                                pl.id,
-                                                            )
-                                                        }
-                                                        className={`p-3 pt-2 pb-2 ${cx(
-                                                            'more__item',
-                                                        )}`}
-                                                    >
-                                                        <div className="d-flex align-items-center">
-                                                            <FontAwesomeIcon
-                                                                style={{
-                                                                    fontSize: 20,
-                                                                }}
-                                                                className="me-2"
-                                                                icon={
-                                                                    faCompactDisc
-                                                                }
-                                                            />
-                                                            <span>
-                                                                {pl.name}
-                                                            </span>
-                                                        </div>
-                                                    </li>
-                                                ))}
+                                                {playlist
+                                                    .filter((item) =>
+                                                        item.name
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                searchPlaylist.toLowerCase(),
+                                                            ),
+                                                    )
+                                                    .map((pl) => (
+                                                        <li
+                                                            key={pl.id}
+                                                            onClick={() =>
+                                                                handleIntoPlayList(
+                                                                    pl.id,
+                                                                )
+                                                            }
+                                                            className={`p-3 pt-2 pb-2 ${cx(
+                                                                'more__item',
+                                                            )}`}
+                                                        >
+                                                            <div className="d-flex align-items-center">
+                                                                <FontAwesomeIcon
+                                                                    style={{
+                                                                        fontSize: 20,
+                                                                    }}
+                                                                    className="me-2"
+                                                                    icon={
+                                                                        faCompactDisc
+                                                                    }
+                                                                />
+                                                                <span>
+                                                                    {pl.name}
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    ))}
                                             </ul>
                                         </div>
                                     </div>
@@ -304,6 +321,20 @@ function ReceptacleTippy({
                                 />
                                 <span>Copy link</span>
                             </li>
+                            {allowEdit && (
+                                <li
+                                    onClick={onClick}
+                                    className={`d-flex align-items-center p-3 pt-2 pb-2 ${cx(
+                                        'more__item',
+                                    )}`}
+                                >
+                                    <FontAwesomeIcon
+                                        className="me-2"
+                                        icon={faTrashCan}
+                                    />
+                                    <span>Remove from this playlist</span>
+                                </li>
+                            )}
                         </ul>
                     </div>
                 </div>

@@ -43,6 +43,10 @@
     animation-delay: 0s, 1.5s; /* Delay giữa hai animation */
 }
 
+.information__item {
+    width: 170px;
+}
+
 @keyframes message_in {
     0% {
         transform: translateX(-100%);

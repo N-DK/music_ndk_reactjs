@@ -20,12 +20,20 @@ import Tippy from '@tippyjs/react';
 import clipboard from 'clipboard-copy';
 import HeadlessTippy from '@tippyjs/react/headless';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { reducer, setListSongs, setMessage } from '~/redux_';
+import {
+    reducer,
+    setActive,
+    setCurrAudio,
+    setData,
+    setListSongs,
+    setMessage,
+    setPlaying,
+} from '~/redux_';
+import { getUser } from '~/utils/getUser';
 
 const cx = classNames.bind(styles);
 
-function CardSongItem({ data, isSlider, type, playlist }) {
-    const token = Cookies.get('token');
+function CardSongItem({ data, isSlider, type, playlist, currAudio }) {
     const [like, setLike] = useState(false);
     const [user, setUser] = useState();
     const [visible, setVisible] = useState(false);
@@ -36,11 +44,12 @@ function CardSongItem({ data, isSlider, type, playlist }) {
     const hide = () => setVisible(false);
 
     const handleLike = () => {
-        if (user && token) {
+        if (user) {
             setLike(!like);
             if (!like) {
                 axios.put(`http://localhost:8080/api/user/${user.id}`, {
                     [type]: [data.id],
+                    roleCode: user.roleCode,
                 });
             } else {
                 axios.delete(
@@ -72,6 +81,11 @@ function CardSongItem({ data, isSlider, type, playlist }) {
     };
 
     const handleIntoPlaylist = () => {
+        for (const song of data.songs) {
+            if (!song.albums) {
+                song.albums = [{ id: data.id }];
+            }
+        }
         let res = playlist ? [...playlist] : [...data.songs];
         if (playlist) {
             for (const item of data.songs) {
@@ -94,27 +108,48 @@ function CardSongItem({ data, isSlider, type, playlist }) {
         }, 2000);
     };
 
-    useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                });
+    const handleSetListSongs = () => {
+        for (const song of data.songs) {
+            if (!song.albums) {
+                song.albums = [{ id: data.id }];
+            }
         }
-    }, [token]);
+        let res = playlist ? [...playlist] : [...data.songs];
+        if (playlist) {
+            for (const item of data.songs) {
+                const isExist = playlist.find((pl) => item.id === pl.id);
+                if (!isExist) {
+                    res.push(item);
+                }
+            }
+        }
+        dispatch(setListSongs(res));
+    };
+
+    const handlePlay = () => {
+        if (currAudio) {
+            currAudio.pause();
+        }
+        dispatch(setData(data.songs[0]));
+        dispatch(setActive(data.songs[0].id));
+        dispatch(setPlaying(true));
+        var audio = new Audio(data.songs[0].audioUrl);
+        dispatch(setCurrAudio(audio));
+        audio.play();
+        handleSetListSongs();
+    };
+
+    useEffect(() => {
+        const fetch = async () => {
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+        };
+        fetch();
+    }, []);
 
     useEffect(() => {
         setLike(handleCheckExist(data.id));
@@ -192,7 +227,7 @@ function CardSongItem({ data, isSlider, type, playlist }) {
                     <div
                         className={`${cx(
                             'thumbnail__container',
-                        )} overflow-hidden position-relative`}
+                        )} overflow-hidden position-relative d-block`}
                     >
                         <img
                             src={data.thumbnail}
@@ -206,8 +241,8 @@ function CardSongItem({ data, isSlider, type, playlist }) {
                         >
                             <Link
                                 onClick={handleLike}
-                                data-bs-toggle={!token && 'modal'}
-                                data-bs-target={!token && '#modalLogin'}
+                                data-bs-toggle={!user && 'modal'}
+                                data-bs-target={!user && '#modalLogin'}
                                 className={`rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30 ${cx(
                                     `${like ? 'liked' : 'like'}`,
                                 )}`}
@@ -217,12 +252,13 @@ function CardSongItem({ data, isSlider, type, playlist }) {
                                 />
                             </Link>
                             <Link
+                                onClick={handlePlay}
                                 to={`/album/${data.id}?type=${type}`}
                                 className="fs-1 ms-4 me-4 text-white rounded-circle d-flex align-items-center justify-content-center square_30"
                             >
                                 <FontAwesomeIcon icon={faCirclePlay} />
                             </Link>
-                            <Tippy content="Khác">
+                            <Tippy content="More">
                                 <nav
                                     onClick={show}
                                     className=" pointer text-white rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30"
@@ -242,7 +278,7 @@ function CardSongItem({ data, isSlider, type, playlist }) {
                             'text',
                         )} mb-1 d-block text-decoration-none text-black`}
                     >
-                        {data.name}
+                        {data.preface || data.name}
                     </Link>
                     {type !== 'playlist' &&
                         data.artists &&
@@ -275,6 +311,7 @@ const mapStateToProps = (state) => {
     if (state) {
         return {
             playlist: state.songs,
+            currAudio: state.currSong,
         };
     }
 };

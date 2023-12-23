@@ -15,11 +15,11 @@ import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '~/components/Loading';
 import Cookies from 'js-cookie';
+import { getUser } from '~/utils/getUser';
 
 const cx = classNames.bind(styles);
 
 function Artist() {
-    const token = Cookies.get('token');
     let { id } = useParams();
     const [user, setUser] = useState();
     const [songs, setSongs] = useState([]);
@@ -77,26 +77,16 @@ function Artist() {
     }, [id]);
 
     useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                });
-        }
-    }, [token]);
+        const fetch = async () => {
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+        };
+        fetch();
+    }, []);
 
     const handleCheckExist = (id) => {
         if (user) {
@@ -110,7 +100,7 @@ function Artist() {
     }, [user]);
 
     const handleSub = () => {
-        if (token && user) {
+        if (user) {
             setNumberInterested((prev) => prev + 1);
             setIsInterested(true);
             axios.put(
@@ -120,7 +110,7 @@ function Artist() {
     };
 
     const handleUnSub = () => {
-        if (token && user) {
+        if (user) {
             setNumberInterested((prev) => prev - 1);
             setIsInterested(false);
             axios.put(
@@ -186,6 +176,10 @@ function Artist() {
                                     </p>
                                     {!isInterested ? (
                                         <Link
+                                            data-bs-toggle={!user && 'modal'}
+                                            data-bs-target={
+                                                !user && '#modalLogin'
+                                            }
                                             onClick={handleSub}
                                             className={` text-decoration-none ${cx(
                                                 'btn-interested',
@@ -233,13 +227,17 @@ function Artist() {
                                 <h4 className={`${cx('')} mb-2 fs-4`}>
                                     Hot song
                                 </h4>
-                                <Link
-                                    to={'song'}
-                                    className="f-family text--primary d-flex align-items-center text-decoration-none"
-                                >
-                                    <span className="me-2">View more</span>
-                                    <FontAwesomeIcon icon={faChevronRight} />
-                                </Link>
+                                {songs.length > 8 && (
+                                    <Link
+                                        to={'song'}
+                                        className="f-family text--primary d-flex align-items-center text-decoration-none"
+                                    >
+                                        <span className="me-2">View more</span>
+                                        <FontAwesomeIcon
+                                            icon={faChevronRight}
+                                        />
+                                    </Link>
+                                )}
                             </div>
                             <div className={`${cx('')} row `}>
                                 <div className="col-xl-6 col-md-12">
@@ -248,6 +246,7 @@ function Artist() {
                                             key={index}
                                             song={song}
                                             songs={songs}
+                                            user={user}
                                         />
                                     ))}
                                 </div>
@@ -257,27 +256,40 @@ function Artist() {
                                             key={index}
                                             song={song}
                                             songs={songs}
+                                            user={user}
                                         />
                                     ))}
                                 </div>
                             </div>
                         </div>
-                        <Receptacle
-                            title="Single & EP"
-                            more="single"
-                            type="album"
-                            data={handleFilterAlbumsSingle(albums)}
-                        />
-                        <Receptacle
-                            title="Album"
-                            type="album"
-                            data={handleFilterAlbumsNotSingle(albums)}
-                        />
+                        {handleFilterAlbumsSingle(albums).length > 0 && (
+                            <Receptacle
+                                title="Single & EP"
+                                more={
+                                    handleFilterAlbumsSingle(albums).length >
+                                        5 && 'single'
+                                }
+                                type="album"
+                                data={handleFilterAlbumsSingle(albums)}
+                            />
+                        )}
+                        {handleFilterAlbumsNotSingle(albums).length > 0 && (
+                            <Receptacle
+                                title="Album"
+                                type="album"
+                                more={
+                                    handleFilterAlbumsNotSingle(albums).length >
+                                        5 && 'album'
+                                }
+                                data={handleFilterAlbumsNotSingle(albums)}
+                            />
+                        )}
                         {playlist.length > 0 && (
                             <Receptacle
                                 title="Playlist"
                                 type="playlist"
                                 data={playlist}
+                                more={playlist.length > 5 && 'playlist'}
                             />
                         )}
                         <div className={`${cx('about__artist')} f-family mt-5`}>
@@ -317,7 +329,7 @@ function Artist() {
                                                     </span>
                                                     <span>Người quan tâm</span>
                                                 </div>
-                                                <div className="me-5">
+                                                {/* <div className="me-5">
                                                     <span className="d-block fs-5 fw-bold">
                                                         3
                                                     </span>
@@ -331,7 +343,7 @@ function Artist() {
                                                         }}
                                                         src={zing}
                                                     />
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
                                     </div>

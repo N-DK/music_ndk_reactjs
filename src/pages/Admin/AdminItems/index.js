@@ -17,7 +17,7 @@ const ALBUMS = 'album';
 const PLAYLIST = 'playlist';
 const TOPIC = 'topic';
 
-const CreateGenres = ({ handleCreate, type, id }) => {
+const CreateGenres = ({ handleCreate, type, id, user }) => {
     const [data, setData] = useState({
         name: '',
         code: '',
@@ -83,7 +83,7 @@ const CreateGenres = ({ handleCreate, type, id }) => {
     );
 };
 
-const CreateTopic = ({ handleCreate, type, id }) => {
+const CreateTopic = ({ handleCreate, type, id, user }) => {
     const [data, setData] = useState({
         name: '',
         code: '',
@@ -149,7 +149,7 @@ const CreateTopic = ({ handleCreate, type, id }) => {
     );
 };
 
-const CreateSong = ({ handleCreate, type, id }) => {
+const CreateSong = ({ handleCreate, type, id, user }) => {
     const [genres, setGenres] = useState([]);
     const [listArtist, setListArtist] = useState([]);
     const [listAlbum, setListAlbum] = useState([]);
@@ -474,7 +474,7 @@ const CreateSong = ({ handleCreate, type, id }) => {
     );
 };
 
-const CreateArtist = ({ handleCreate, type, id }) => {
+const CreateArtist = ({ handleCreate, type, id, user }) => {
     const [data, setData] = useState({
         artistName: '',
         gender: 3,
@@ -623,7 +623,7 @@ const CreateArtist = ({ handleCreate, type, id }) => {
     );
 };
 
-const CreateAlbums = ({ handleCreate, type, id }) => {
+const CreateAlbums = ({ handleCreate, type, id, user }) => {
     const [genres, setGenres] = useState([]);
     const [listArtist, setListArtist] = useState([]);
     const [data, setData] = useState({
@@ -786,22 +786,24 @@ const CreateAlbums = ({ handleCreate, type, id }) => {
     );
 };
 
-const CreatePlaylist = ({ handleCreate, type, id }) => {
+const CreatePlaylist = ({ handleCreate, type, id, user }) => {
     const [topics, setTopics] = useState([]);
     const [listSong, setListSong] = useState([]);
     const [data, setData] = useState({
         name: '',
         thumbnail: '',
         favoriteSong: [],
-        email: 'ndk@gmail.com',
+        email: user.email,
         topicCode: '',
         subTitle: '',
+        preface: '',
     });
     const [subTitle, setSubTitle] = useState('');
     const [name, setName] = useState('');
     const [thumbnail, setThumbnail] = useState('');
     const [favoriteSong, setFavoriteSong] = useState([]);
     const [topicCode, setTopicCode] = useState('');
+    const [preface, setPreface] = useState('');
     const [loading, setLoading] = useState(true);
 
     const convertToCode = (name) => {
@@ -817,9 +819,10 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                 favoriteSong,
                 topicCode,
                 subTitle,
+                preface,
             };
         });
-    }, [name, thumbnail, favoriteSong, topicCode, subTitle]);
+    }, [name, thumbnail, favoriteSong, topicCode, subTitle, preface]);
 
     const handleExists = (song) => {
         return favoriteSong.indexOf(song) !== -1;
@@ -847,6 +850,7 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                 .then((res) => {
                     var data = res.data.results[0];
                     setName(data.name);
+                    setPreface(data.preface);
                     setSubTitle(data.subTitle);
                     setThumbnail(data.thumbnail);
                     setFavoriteSong(data.songs.map((song) => song.title));
@@ -870,6 +874,15 @@ const CreatePlaylist = ({ handleCreate, type, id }) => {
                         <input
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            type="text"
+                            className="form-control"
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label className="d-block mb-1">Preface:</label>
+                        <input
+                            value={preface}
+                            onChange={(e) => setPreface(e.target.value)}
                             type="text"
                             className="form-control"
                         />
@@ -997,7 +1010,7 @@ const listNav = [
     },
 ];
 
-function AdminItems() {
+function AdminItems({ user }) {
     let { item, id } = useParams();
 
     const [loading, setLoading] = useState(false);
@@ -1122,6 +1135,7 @@ function AdminItems() {
                 thumbnail: data.thumbnail,
                 topicCode: data.topicCode,
                 subTitle: data.subTitle,
+                preface: data.preface,
             },
         })
             .then((res) => {
@@ -1215,6 +1229,7 @@ function AdminItems() {
                                     if (nav.content === item)
                                         return (
                                             <Page
+                                                user={user}
                                                 key={index}
                                                 handleCreate={handleCreate}
                                                 type={nav.content}

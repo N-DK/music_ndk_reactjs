@@ -4,12 +4,36 @@ import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import { getUser } from '~/utils/getUser';
 
 const cx = classNames.bind(styles);
 
 function CardArtist({ data }) {
+    const [user, setUser] = useState();
     const [numberInterested, setNumberInterested] = useState(0);
     const [isInterested, setIsInterested] = useState(false);
+
+    const handleSub = () => {
+        if (user) {
+            setNumberInterested((prev) => prev + 1);
+            setIsInterested(true);
+            axios.put(
+                `http://localhost:8080/api/arist/sub/${data.id}?user_id=${user.id}`,
+            );
+        }
+    };
+
+    const handleUnSub = () => {
+        if (user) {
+            setNumberInterested((prev) => prev - 1);
+            setIsInterested(false);
+            axios.put(
+                `http://localhost:8080/api/arist/unsub/${data.id}?user_id=${user.id}`,
+            );
+        }
+    };
 
     const convertNumber = (number = 0) => {
         var suffixes = ['', 'K', 'M', 'B', 'T'];
@@ -24,6 +48,29 @@ function CardArtist({ data }) {
             ? number.toFixed(1) + suffixes[suffixNum]
             : number.toFixed(0) + suffixes[suffixNum];
     };
+
+    useEffect(() => {
+        const fetch = async () => {
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+        };
+        fetch();
+    }, []);
+
+    const handleCheckExist = (id) => {
+        if (user) {
+            const wishlist = user.artistIds;
+            return wishlist.find((wish) => wish === Number(id)) ? true : false;
+        }
+    };
+
+    useEffect(() => {
+        setIsInterested(handleCheckExist(data.id));
+    }, [user]);
 
     useEffect(() => {
         setNumberInterested(data.numberFollower);
@@ -54,23 +101,19 @@ function CardArtist({ data }) {
                 </p>
                 {!isInterested ? (
                     <div
-                        onClick={() => {
-                            setNumberInterested((prev) => prev + 1);
-                            setIsInterested(true);
-                        }}
+                        onClick={handleSub}
+                        data-bs-toggle={!user && 'modal'}
+                        data-bs-target={!user && '#modalLogin'}
                         className={`${cx(
                             'interested',
-                        )} border fs-13 rounded-5 w-75 m-auto p-1 `}
+                        )} border fs-13 rounded-5 w-75 m-auto p-1 bg--primary`}
                     >
                         <FontAwesomeIcon icon={faUserPlus} className="me-2 " />
                         <span className=" text-uppercase">quan tâm</span>
                     </div>
                 ) : (
                     <div
-                        onClick={() => {
-                            setNumberInterested((prev) => prev - 1);
-                            setIsInterested(false);
-                        }}
+                        onClick={handleUnSub}
                         className={`${cx(
                             'interested',
                         )} border fs-13 rounded-5 w-75 m-auto p-1  `}

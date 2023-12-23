@@ -19,10 +19,9 @@ import {
 } from '~/redux_';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
-import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import 'tippy.js/dist/tippy.css'; // optional
+import 'tippy.js/dist/tippy.css';
 import Tippy from '@tippyjs/react';
 import ReceptacleTippy from '../ReceptacleTippy';
 const cx = classNames.bind(styles);
@@ -40,19 +39,18 @@ function ListSongItem({
     isInPlaylist,
     placement,
     playlist,
+    user,
+    allowEdit,
 }) {
     useSelector(() => reducer);
-    const token = Cookies.get('token');
-    const [user, setUser] = useState();
     const [like, setLike] = useState(false);
     const dispatch = useDispatch();
     const isTabletMobile = useMediaQuery({ maxWidth: 1200 });
     const [visible, setVisible] = useState(false);
-
     const show = () => setVisible(true);
     const hide = () => setVisible(false);
 
-    const handleListSongClick = () => {
+    const handleSetListSongs = () => {
         for (const song of songs) {
             if (!song.albums) {
                 song.albums = [{ id: album_id }];
@@ -85,7 +83,7 @@ function ListSongItem({
         dispatch(setPlaying(true));
         dispatch(setCurrAudio(audio));
         dispatch(setActive(songActive));
-        handleListSongClick();
+        handleSetListSongs();
     };
 
     const handlePause = () => {
@@ -101,11 +99,12 @@ function ListSongItem({
     };
 
     const handleWishlist = () => {
-        if (token) {
+        if (user) {
             setLike(!like);
             if (!like) {
                 axios.put(`http://localhost:8080/api/user/${user.id}`, {
                     songs: [song.id],
+                    roleCode: user.roleCode,
                 });
             } else {
                 axios.delete(
@@ -121,30 +120,8 @@ function ListSongItem({
         }
     }, [user, song.id]);
 
-    useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                });
-        }
-    }, [token]);
-
     return (
-        <div onClick={onClick} className={`${cx('wrapper')} container pt-3`}>
+        <div className={`${cx('wrapper')} container pt-3`}>
             <div
                 className={`row ${
                     isSearchItem ? 'pb-3' : 'border-bottom pb-3'
@@ -280,10 +257,11 @@ function ListSongItem({
                                     handlePlay={() =>
                                         handlePlay(song.audioUrl, song.id)
                                     }
-                                    token={token}
                                     user={user}
                                     album_id={album_id}
                                     placement={placement}
+                                    allowEdit={allowEdit}
+                                    onClick={onClick}
                                 >
                                     <div
                                         className={` position-absolute  d-flex algin-items-center end-0 ${cx(
@@ -306,9 +284,9 @@ function ListSongItem({
                                             />
                                         </a>
                                         <span
-                                            data-bs-toggle={!token && 'modal'}
+                                            data-bs-toggle={!user && 'modal'}
                                             data-bs-target={
-                                                !token && '#modalLogin'
+                                                !user && '#modalLogin'
                                             }
                                             onClick={handleWishlist}
                                             className={` me-3 rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30  ${cx(
@@ -335,7 +313,7 @@ function ListSongItem({
                                                 }
                                             />
                                         </span>
-                                        <Tippy animation="fade" content="Khác">
+                                        <Tippy animation="fade" content="More">
                                             <span
                                                 onClick={show}
                                                 className={`${

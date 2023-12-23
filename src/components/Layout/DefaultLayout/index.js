@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { reducer, setMessage } from '~/redux_';
+import { getUser } from '~/utils/getUser';
 
 const cx = classNames.bind(styles);
 
@@ -31,7 +32,6 @@ function DefaultLayout({ children, message, currSong }) {
     const [messContent, setMessContent] = useState();
     const navigate = useNavigate();
     const isTabletMobile = useMediaQuery({ maxWidth: 900 });
-    const token = Cookies.get('token');
     const refMessage = useRef();
     useSelector(() => reducer);
     const dispatch = useDispatch();
@@ -178,26 +178,16 @@ function DefaultLayout({ children, message, currSong }) {
     }, [message]);
 
     useEffect(() => {
-        if (token) {
-            axios
-                .get('http://localhost:8080/api/user', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-                .then((res) => {
-                    if (res.data === '') {
-                        Cookies.remove('token');
-                    } else {
-                        setUser(res.data);
-                    }
-                })
-                .catch((err) => {
-                    Cookies.remove('token');
-                    console.log(err);
-                });
-        }
-    }, [token]);
+        const fetch = async () => {
+            const user = await getUser();
+            if (!user) {
+                Cookies.remove('token');
+            } else {
+                setUser(user);
+            }
+        };
+        fetch();
+    }, []);
 
     return (
         <>
