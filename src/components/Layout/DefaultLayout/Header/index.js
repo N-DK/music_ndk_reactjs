@@ -11,20 +11,21 @@ import {
     faPlus,
     faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
+import { useDebounce } from '~/hooks';
+import { getUser } from '~/utils/getUser';
+import * as searchService from '~/service/searchServices';
 import logo from '~/img/logo.png';
 import bar from '~/img/bar.png';
 import styles from './Header.module.scss';
 import classNames from 'classnames/bind';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ListSongItem from '~/components/ListSongItem';
 import HeadlessTippy from '@tippyjs/react/headless';
-import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useMediaQuery } from 'react-responsive';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { useDebounce } from '~/hooks';
-import { getUser } from '~/utils/getUser';
 const cx = classNames.bind(styles);
 
 function Header() {
@@ -208,12 +209,13 @@ function Header() {
             setSongs([]);
             return;
         }
-        axios
-            .get(`http://localhost:8080/api/search/song?page=1&query=${search}`)
-            .then((res) => {
-                setSongs(res.data.results);
-            })
-            .catch((err) => console.log(err));
+
+        const fetchAPI = async () => {
+            const data = await searchService.search(debouncedValue);
+            setSongs(data);
+        };
+
+        fetchAPI();
     }, [debouncedValue]);
 
     useEffect(() => {
