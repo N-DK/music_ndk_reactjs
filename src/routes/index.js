@@ -5,6 +5,7 @@ import Artist from '~/pages/Artist';
 import ArtistMore from '~/pages/Artist/ArtistMore';
 import Home from '~/pages/Home';
 import MyMusic from '~/pages/MyMusic';
+import Playlist from '~/pages/MyMusic/Playlist';
 import NewRelease from '~/pages/NewRelease';
 import Search from '~/pages/Search';
 import Topic from '~/pages/Topic';
@@ -13,6 +14,8 @@ import Topic from '~/pages/Topic';
 const publicRoutes = [
     { path: '/', component: Home },
     { path: '/mymusic', component: MyMusic },
+    { path: '/mymusic/playlist/:slug', component: Playlist },
+    { path: '/mymusic/playlist/', component: Playlist },
     { path: '/hub', component: Topic },
     { path: '/hub/:slug', component: Topic },
     { path: '/new-release/:slug', component: NewRelease },

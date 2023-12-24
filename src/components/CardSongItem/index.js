@@ -33,7 +33,7 @@ import { getUser } from '~/utils/getUser';
 
 const cx = classNames.bind(styles);
 
-function CardSongItem({ data, isSlider, type, playlist, currAudio }) {
+function CardSongItem({ data, isSlider, type, playlist, currAudio, onClick }) {
     const [like, setLike] = useState(false);
     const [user, setUser] = useState();
     const [visible, setVisible] = useState(false);
@@ -127,16 +127,18 @@ function CardSongItem({ data, isSlider, type, playlist, currAudio }) {
     };
 
     const handlePlay = () => {
-        if (currAudio) {
-            currAudio.pause();
+        if (data.songs.length > 0) {
+            if (currAudio) {
+                currAudio.pause();
+            }
+            dispatch(setData(data.songs[0]));
+            dispatch(setActive(data.songs[0].id));
+            dispatch(setPlaying(true));
+            var audio = new Audio(data.songs[0].audioUrl);
+            dispatch(setCurrAudio(audio));
+            audio.play();
+            handleSetListSongs();
         }
-        dispatch(setData(data.songs[0]));
-        dispatch(setActive(data.songs[0].id));
-        dispatch(setPlaying(true));
-        var audio = new Audio(data.songs[0].audioUrl);
-        dispatch(setCurrAudio(audio));
-        audio.play();
-        handleSetListSongs();
     };
 
     useEffect(() => {
@@ -240,7 +242,7 @@ function CardSongItem({ data, isSlider, type, playlist, currAudio }) {
                             )} position-absolute w-100 h-100 start-0 top-0 d-flex align-items-center justify-content-center`}
                         >
                             <Link
-                                onClick={handleLike}
+                                onClick={onClick ? onClick : handleLike}
                                 data-bs-toggle={!user && 'modal'}
                                 data-bs-target={!user && '#modalLogin'}
                                 className={`rounded-circle d-flex align-items-center is-hover-circle justify-content-center square_30 ${cx(

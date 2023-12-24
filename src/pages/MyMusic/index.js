@@ -8,12 +8,12 @@ import {
 import CardSongItem from '~/components/CardSongItem';
 import { useEffect, useState } from 'react';
 import ListSong from '~/components/ListSong';
-import MyAlbum from '~/components/MyAlbum';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import Loading from '~/components/Loading';
 import { Link } from 'react-router-dom';
 import { getUser } from '~/utils/getUser';
+import ModalConfirm from './ModalConfirm';
 
 const cx = classNames.bind(styles);
 
@@ -29,12 +29,43 @@ const items = [
 ];
 
 function MyMusic() {
+    // Confirm trước khi xóa playlist
+    // -- Tạo modal
+    // -- set onClick prop của CardSongItem
+    // -- Câu confirm: Your playlist will be removed from your personal library. Do you want to delete?
+    // -- Title: Delete playlist
     const [item, setItem] = useState(1);
     const [loading, setLoading] = useState(true);
     const [songs, setSongs] = useState([]);
     const [playlist, setPlaylist] = useState([]);
     const [albums, setAlbums] = useState([]);
     const [user, setUser] = useState();
+    const [turnModal, setTurnModal] = useState(false);
+    const [type, setType] = useState('');
+    const [id, setId] = useState();
+
+    const handleConfirmUnLike = () => {
+        if (user) {
+            axios
+                .delete(
+                    `http://localhost:8080/api/user/${user.id}?type=${type}&type_id=${id}`,
+                )
+                .then((res) => {
+                    if (type === 'playlist') {
+                        setPlaylist(res.data.playlist);
+                    } else if (type === 'album') {
+                        setAlbums(res.data.albums);
+                    }
+                    setTurnModal(false);
+                });
+        }
+    };
+
+    const handleUnLike = (type, id) => {
+        setTurnModal(true);
+        setType(type);
+        setId(id);
+    };
 
     useEffect(() => {
         if (user) {
@@ -82,22 +113,34 @@ function MyMusic() {
                                     <FontAwesomeIcon icon={faCirclePlus} />
                                 </Link>
                             </div>
-                            <Link
-                                href="#"
-                                className="f-family text--primary d-flex align-items-center text-decoration-none"
-                            >
-                                <span className="me-2">View more</span>
-                                <FontAwesomeIcon icon={faChevronRight} />
-                            </Link>
+                            {playlist.length > 5 && (
+                                <Link
+                                    to="/mymusic/playlist"
+                                    className="f-family text--primary d-flex align-items-center text-decoration-none"
+                                >
+                                    <span className="me-2">View more</span>
+                                    <FontAwesomeIcon icon={faChevronRight} />
+                                </Link>
+                            )}
                         </div>
                         <div className={` row`}>
-                            {playlist.map((item) => (
-                                <CardSongItem
-                                    key={item.id}
-                                    data={item}
-                                    type="playlist"
-                                />
-                            ))}
+                            {playlist.map((item, index) => {
+                                if (index < 5) {
+                                    return (
+                                        <CardSongItem
+                                            key={item.id}
+                                            data={item}
+                                            type="playlist"
+                                            onClick={() =>
+                                                handleUnLike(
+                                                    'playlist',
+                                                    item.id,
+                                                )
+                                            }
+                                        />
+                                    );
+                                }
+                            })}
                         </div>
                     </div>
                     <div>
@@ -107,7 +150,7 @@ function MyMusic() {
                                     to=""
                                     key={i}
                                     className={`f-family text-dark text-uppercase text-decoration-none d-inline-block me-4 ${
-                                        v.id == item && `${cx('active')}`
+                                        v.id === item && `${cx('active')}`
                                     }`}
                                     onClick={() => setItem(v.id)}
                                 >
@@ -116,7 +159,7 @@ function MyMusic() {
                             ))}
                         </div>
                         <div className="">
-                            {item == 1 ? (
+                            {item === 1 ? (
                                 songs.length > 0 ? (
                                     <ListSong
                                         isShowAlbums={true}
@@ -147,7 +190,23 @@ function MyMusic() {
                                     </div>
                                 )
                             ) : albums.length > 0 ? (
-                                <MyAlbum data={albums} />
+                                <div className={`${cx('album')} mt-4`}>
+                                    <div className="row">
+                                        {albums.map((item) => (
+                                            <CardSongItem
+                                                key={item.id}
+                                                data={item}
+                                                type="album"
+                                                onClick={() =>
+                                                    handleUnLike(
+                                                        'album',
+                                                        item.id,
+                                                    )
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
                             ) : (
                                 <div className="f-family d-flex justify-content-center align-items-center pb-5">
                                     <div className=" d-flex flex-column align-items-center mt-5">
@@ -168,6 +227,12 @@ function MyMusic() {
                             )}
                         </div>
                     </div>
+                    {turnModal && (
+                        <ModalConfirm
+                            turnOffModal={() => setTurnModal(false)}
+                            handleConfirm={handleConfirmUnLike}
+                        />
+                    )}
                 </div>
             )}
         </>

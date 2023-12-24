@@ -1,0 +1,28 @@
+.empty__playlist {
+    padding-bottom: calc(100% + 75.2px);
+    a {
+        color: var(--iq-primary);
+    }
+}
+
+.un_active {
+    color: #000;
+}
+
+.active {
+    position: relative;
+    transition: 0.3s;
+    color: var(--iq-primary);
+
+    &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: -6px;
+        width: 100%;
+        right: 0;
+        height: 3px;
+        background-color: var(--iq-primary);
+        border-radius: 999999px;
+    }
+}
